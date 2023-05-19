@@ -26,7 +26,13 @@ const Login = () => {
       const response = await axios.post("/api/Auth", JSON.stringify(Data), {
         headers: { "Content-Type": "application/json" },
       });
-      if (response.data === "Berhasil Login") {
+      if (response.data !== "Maaf Username atau Password anda salah") {
+        const data = response.data;
+        const sess = await axios.post("/api/get-session", {
+          username: data[0],
+          role: data[1],
+          idUser: data[2],
+        });
         router.push("/Dashboard");
       } else {
         setHasil(response.data);

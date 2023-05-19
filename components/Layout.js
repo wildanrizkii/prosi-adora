@@ -1,4 +1,6 @@
 import { ImageOfAdora, Menu, MenuWithDropdown } from "./LayoutComponent";
+import nextConfig from "../next.config";
+import { useEffect, useState } from "react";
 const Layout = ({ children, clicked }) => {
   const clickedMenu = clicked;
   const dropdownProduk = ["Daftar Item", "Jenis Item", "Satuan Item"];
@@ -56,8 +58,8 @@ const Layout = ({ children, clicked }) => {
           style={{
             padding: "100px",
             backgroundColor: "#f3f3f3",
+            overflowY: "auto",
             height: 688,
-            overflow: "auto",
           }}
         >
           {children}
@@ -68,3 +70,4 @@ const Layout = ({ children, clicked }) => {
 };
 
 export default Layout;
+// 688

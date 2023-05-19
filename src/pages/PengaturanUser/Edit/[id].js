@@ -1,39 +1,42 @@
 import Head from "next/head";
-import Layout from "../../../components/Layout";
-import { useReducer, useState } from "react";
-import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useRouter } from "next/router";
+import Layout from "../../../../components/Layout";
+import handlerQuery from "../../../../lib/db";
 import {
   Username,
   Password,
-  FieldButton,
   Role,
+  FieldButton,
   Usernamereducer,
-  userinitValue,
   passwordReducer,
+  userinitValue,
   passinitValue,
   Modal,
-  IsiModalSuccess,
   IsiModalFailed,
-} from "../../../components/TambahUserComp";
-
-export default function Tambah() {
+  IsiModalSuccess,
+} from "../../../../components/TambahUserComp";
+import { useRouter } from "next/router";
+import { useState, useReducer } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
+export default function Edit({ hasil }) {
   const [state, dispacth] = useReducer(Usernamereducer, userinitValue);
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(hasil[0].username);
   const [password, setPassword] = useState("");
   const [isShow, setShow] = useState(false);
   const [passState, dispacthPass] = useReducer(passwordReducer, passinitValue);
-  const [role, setRole] = useState("pemilik");
+  const [role, setRole] = useState(hasil[0].role);
   const [isModalClosed, setModalClosed] = useState(true);
   const [isSubmitSuccess, setisSubmitSuccess] = useState(false);
   const [isShowRetype, setShowRetype] = useState(false);
   const [passRetype, setPassRetype] = useState("");
   const router = useRouter();
   const isDisabled =
-    state.warnaTextbox === "input is-success" &&
-    password.length === 8 &&
-    passRetype === password
+    ((state.warnaTextbox === "input is-success" ||
+      state.warnaTextbox === "input") &&
+      password.length === 8 &&
+      passRetype === password) ||
+    state.warnaTextbox === "input is-success" ||
+    (state.warnaTextbox === "input" && password.length === 0)
       ? false
       : true;
   const changeisShow = (e) => {
@@ -63,14 +66,6 @@ export default function Tambah() {
     );
   };
 
-  // const eyeSlash = (
-  //   <FontAwesomeIcon
-  //     icon="eye-slash"
-  //     onClick={changeisShow}
-  //     pointerEvents="all"
-  //     cursor="pointer"
-  //   />
-  // );
   const typeOfIcon =
     isShow === false ? (
       <EyeSlash onClick={changeisShow} />
@@ -89,7 +84,8 @@ export default function Tambah() {
     try {
       const response = await axios.post("/api/CheckUsername", {
         sendUsername: e.target.value,
-        tujuan: "add",
+        tujuan: "edit",
+        id: router.query.id,
       });
       if (response.data === "available") {
         dispacth({ type: "available" });
@@ -108,16 +104,19 @@ export default function Tambah() {
     }
     setPassword(e.target.value);
   };
+
   const onChangeRetype = (e) => {
     setPassRetype(e.target.value);
   };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("/api/TambahUser", {
+      await axios.patch("/api/EditUser", {
         username,
         password,
         role,
+        id: router.query.id,
       });
       setisSubmitSuccess(true);
     } catch (e) {
@@ -129,18 +128,14 @@ export default function Tambah() {
   const onChangeRole = (e) => {
     setRole(e.target.value);
   };
-  const MenambahkanUserLagi = () => {
-    dispacth({ type: "default" });
-    dispacthPass({ type: "default" });
-    setUsername("");
-    setPassword("");
-    setPassRetype("");
-    setShow(false);
-    setShowRetype(false);
-    setRole("pemilik");
-    setModalClosed();
-  };
-
+  // const MenambahkanUserLagi = () => {
+  //   dispacth({ type: "default" });
+  //   dispacthPass({ type: "default" });
+  //   setUsername("");
+  //   setPassword("");
+  //   setRole("pemilik");
+  //   setModalClosed();
+  // };
   const typeOfIcon2 =
     isShowRetype === false ? (
       <EyeSlash onClick={changeisShowRetype} />
@@ -166,13 +161,12 @@ export default function Tambah() {
       : password !== passRetype && password.length === 8
       ? "input is-danger"
       : "input";
-
   return (
     <>
       <Head>
-        <title>Tambah User</title>
+        <title>Edit User</title>
       </Head>
-      <h1 className="title">Tambah User</h1>
+      <h1 className="title">Edit User</h1>
       <form onSubmit={onSubmit}>
         <Username
           className={state.warnaTextbox}
@@ -189,6 +183,7 @@ export default function Tambah() {
           onChange={onChangePassword}
           icon={typeOfIcon}
           hasil={passState.hasil}
+          label="Password Pengganti"
         />
         <Password
           className={warnaTexboxtRetype}
@@ -197,7 +192,7 @@ export default function Tambah() {
           onChange={onChangeRetype}
           icon={typeOfIcon2}
           hasil={hasilRetype}
-          label="Retype-Password"
+          label="Retype-Password Pengganti"
           disabled={
             passState.warnaTextbox === "input is-success" ? false : true
           }
@@ -206,19 +201,12 @@ export default function Tambah() {
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
         {isSubmitSuccess === true ? (
-          <IsiModalSuccess pesan="Berhasil Menambahkan User">
-            <button
-              className="button is-primary"
-              onClick={MenambahkanUserLagi}
-              style={{ marginRight: "10px" }}
-            >
-              Lanjutkan Menambah User
-            </button>
+          <IsiModalSuccess pesan="Berhasil Mengupdate User">
             <button
               className="button is-primary"
               onClick={() => router.push("/PengaturanUser")}
             >
-              Kembali Ke Pengaturan User
+              OK
             </button>
           </IsiModalSuccess>
         ) : (
@@ -243,6 +231,28 @@ export default function Tambah() {
     </>
   );
 }
-Tambah.getLayout = function getLayout(page) {
+
+export async function getServerSideProps(context) {
+  const query = "select username,role from user where idUser=?";
+  const values = [context.query.id];
+  try {
+    const getData = await handlerQuery({ query, values });
+    const hasil = JSON.parse(JSON.stringify(getData));
+
+    return {
+      props: {
+        hasil,
+      },
+    };
+  } catch (e) {
+    return {
+      props: {
+        hasil: e.message,
+      },
+    };
+  }
+}
+
+Edit.getLayout = function getLayout(page) {
   return <Layout clicked="Pengaturan User">{page}</Layout>;
 };
