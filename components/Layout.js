@@ -4,16 +4,9 @@ import { useEffect, useState } from "react";
 const Layout = ({ children, clicked }) => {
   const clickedMenu = clicked;
   const dropdownProduk = ["Daftar Item", "Jenis Item", "Satuan Item"];
-  const dropdownTransaksi = [
-    "Transaksi Stok Opname",
-    "Transaksi Pembelian",
-    "Transaksi Penjualan",
-  ];
-  const dropdownLaporan = [
-    "Laporan Penjualan",
-    "Laporan Pembelian",
-    "Laporan Item Terlaris",
-  ];
+  const dropdownTransaksi = ["Transaksi Stok Opname", "Transaksi Pembelian", "Transaksi Penjualan"];
+  const dropdownLaporan = ["Laporan Penjualan", "Laporan Pembelian", "Laporan Item Terlaris"];
+  const dropdownSupplier = ["Data Supplier", "Kota"];
 
   return (
     <>
@@ -24,22 +17,10 @@ const Layout = ({ children, clicked }) => {
               <ImageOfAdora />
               <Menu clickedMenu={clickedMenu} nama="Dashboard"></Menu>
               <Menu clickedMenu={clickedMenu} nama="Kasir"></Menu>
-              <Menu clickedMenu={clickedMenu} nama="Supplier"></Menu>
-              <MenuWithDropdown
-                clickedMenu={clickedMenu}
-                nama="Transaksi"
-                dropdown={dropdownTransaksi}
-              ></MenuWithDropdown>
-              <MenuWithDropdown
-                clickedMenu={clickedMenu}
-                nama="Produk"
-                dropdown={dropdownProduk}
-              ></MenuWithDropdown>
-              <MenuWithDropdown
-                clickedMenu={clickedMenu}
-                nama="Laporan"
-                dropdown={dropdownLaporan}
-              ></MenuWithDropdown>
+              <MenuWithDropdown clickedMenu={clickedMenu} nama="Supplier" dropdown={dropdownSupplier}></MenuWithDropdown>
+              <MenuWithDropdown clickedMenu={clickedMenu} nama="Transaksi" dropdown={dropdownTransaksi}></MenuWithDropdown>
+              <MenuWithDropdown clickedMenu={clickedMenu} nama="Produk" dropdown={dropdownProduk}></MenuWithDropdown>
+              <MenuWithDropdown clickedMenu={clickedMenu} nama="Laporan" dropdown={dropdownLaporan}></MenuWithDropdown>
             </ul>
           </aside>
           <div className="columns" style={{ marginTop: 60 }}>

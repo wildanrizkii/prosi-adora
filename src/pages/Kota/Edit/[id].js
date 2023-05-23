@@ -1,27 +1,24 @@
 import Head from "next/head";
 import Layout from "../../../../components/Layout";
 import handlerQuery from "../../../../lib/db";
-import { Username, Password, Role, FieldButton, Usernamereducer, passwordReducer, userinitValue, passinitValue, Modal, IsiModalFailed, IsiModalSuccess } from "../../../../components/TambahUserComp";
+import { NamaKota, Kode, FieldButton, Namereducer, kotainitValue, kodeReducer, kodeinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../../components/TambahKotaComp";
 import { useRouter } from "next/router";
 import { useState, useReducer } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 export default function Edit({ hasil }) {
-  const [state, dispacth] = useReducer(Usernamereducer, userinitValue);
-  const [username, setUsername] = useState(hasil[0].username);
-  const [password, setPassword] = useState("");
+  const [state, dispacth] = useReducer(Namereducer, kotainitValue);
+  const [namaKota, setNamaKota] = useState(hasil[0].nama_kota);
+  const [kode, setKode] = useState(hasil[0].kode_kota);
   const [isShow, setShow] = useState(false);
-  const [passState, dispacthPass] = useReducer(passwordReducer, passinitValue);
-  const [role, setRole] = useState(hasil[0].role);
+  const [kodeState, dispacthKode] = useReducer(kodeReducer, kodeinitValue);
   const [isModalClosed, setModalClosed] = useState(true);
   const [isSubmitSuccess, setisSubmitSuccess] = useState(false);
   const [isShowRetype, setShowRetype] = useState(false);
-  const [passRetype, setPassRetype] = useState("");
+  const [kodeRetype, setKodeRetype] = useState("");
   const router = useRouter();
   const isDisabled =
-    ((state.warnaTextbox === "input is-success" || state.warnaTextbox === "input") && password.length === 8 && passRetype === password) ||
-    state.warnaTextbox === "input is-success" ||
-    (state.warnaTextbox === "input" && password.length === 0)
+    ((state.warnaTextbox === "input is-success" || state.warnaTextbox === "input") && kode.length === 8 && kodeRetype === kode) || state.warnaTextbox === "input is-success" || (state.warnaTextbox === "input" && kode.length === 0)
       ? false
       : true;
   const changeisShow = (e) => {
@@ -39,17 +36,17 @@ export default function Edit({ hasil }) {
 
   const typeOfIcon = isShow === false ? <EyeSlash onClick={changeisShow} /> : <Eye onClick={changeisShow} />;
 
-  const onChangeUsername = async (e) => {
-    setUsername(e.target.value);
+  const onChangeNamaKota = async (e) => {
+    setNamaKota(e.target.value);
     dispacth({ type: "loading" });
     if (e.target.value === "" || e.target.value.length > 15) {
-      setUsername(e.target.value);
+      setNamaKota(e.target.value);
       dispacth({ type: "not allowed" });
       return;
     }
     try {
-      const response = await axios.post("/api/CheckUsername", {
-        sendUsername: e.target.value,
+      const response = await axios.post("/api/CheckKota", {
+        sendNamaKota: e.target.value,
         tujuan: "edit",
         id: router.query.id,
       });
@@ -62,26 +59,41 @@ export default function Edit({ hasil }) {
       dispacth({ type: "error" });
     }
   };
-  const onChangePassword = (e) => {
-    if (e.target.value.length < 8 || e.target.value.length > 8) {
-      dispacthPass({ type: "tidak boleh" });
-    } else {
-      dispacthPass({ type: "boleh" });
+
+  const onChangeKodeKota = async (e) => {
+    setKode(e.target.value);
+    dispacthKode({ type: "loading" });
+    if (e.target.value === "" || e.target.value.length > 15) {
+      setKode(e.target.value);
+      dispacthKode({ type: "not allowed" });
+      return;
     }
-    setPassword(e.target.value);
+    try {
+      const response = await axios.post("/api/CheckKodeKota", {
+        sendNamaKode: e.target.value,
+        tujuan: "edit",
+        id: router.query.id,
+      });
+      if (response.data === "available") {
+        dispacthKode({ type: "available" });
+      } else if (response.data === "not available") {
+        dispacthKode({ type: "not available" });
+      }
+    } catch (e) {
+      dispacthKode({ type: "error" });
+    }
   };
 
   const onChangeRetype = (e) => {
-    setPassRetype(e.target.value);
+    setKodeRetype(e.target.value);
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch("/api/EditUser", {
-        username,
-        password,
-        role,
+      await axios.patch("/api/EditKota", {
+        namaKota,
+        kode,
         id: router.query.id,
       });
       setisSubmitSuccess(true);
@@ -91,9 +103,10 @@ export default function Edit({ hasil }) {
       setModalClosed(false);
     }
   };
-  const onChangeRole = (e) => {
-    setRole(e.target.value);
-  };
+
+  //   const onChangeRole = (e) => {
+  //     setRole(e.target.value);
+  //   };
   // const MenambahkanUserLagi = () => {
   //   dispacth({ type: "default" });
   //   dispacthPass({ type: "default" });
@@ -105,44 +118,33 @@ export default function Edit({ hasil }) {
   const typeOfIcon2 = isShowRetype === false ? <EyeSlash onClick={changeisShowRetype} /> : <Eye onClick={changeisShowRetype} />;
 
   const hasilRetype =
-    passRetype === password && password.length === 8 ? (
+    kodeRetype === kode && kode.length === 8 ? (
       <p className="help is-success" style={{ fontSize: "15px" }}>
-        password sudah sama!
+        kode sudah sama!
       </p>
-    ) : password !== passRetype && password.length === 8 ? (
+    ) : kode !== kodeRetype && kode.length === 8 ? (
       <p className="help is-danger" style={{ fontSize: "15px" }}>
-        password tidak sama!
+        kode tidak sama!
       </p>
     ) : (
       ""
     );
-  const warnaTexboxtRetype = passRetype === password && password.length === 8 ? "input is-success" : password !== passRetype && password.length === 8 ? "input is-danger" : "input";
+  const warnaTexboxtRetype = kodeRetype === kode && kode.length === 8 ? "input is-success" : kode !== kodeRetype && kode.length === 8 ? "input is-danger" : "input";
   return (
     <>
       <Head>
-        <title>Edit User</title>
+        <title>Edit Kota</title>
       </Head>
-      <h1 className="title">Edit User</h1>
+      <h1 className="title">Edit Kota</h1>
       <form onSubmit={onSubmit}>
-        <Username className={state.warnaTextbox} value={username} onChange={onChangeUsername} icon={state.icon} hasil={state.hasil} />
-        <Role onChange={onChangeRole} value={role} />
-        <Password className={passState.warnaTextbox} type={isShow === true ? "text" : "password"} value={password} onChange={onChangePassword} icon={typeOfIcon} hasil={passState.hasil} label="Password Pengganti" />
-        <Password
-          className={warnaTexboxtRetype}
-          type={isShowRetype === true ? "text" : "password"}
-          value={passRetype}
-          onChange={onChangeRetype}
-          icon={typeOfIcon2}
-          hasil={hasilRetype}
-          label="Retype-Password Pengganti"
-          disabled={passState.warnaTextbox === "input is-success" ? false : true}
-        />
+        <NamaKota className={state.warnaTextbox} value={namaKota} onChange={onChangeNamaKota} icon={state.icon} hasil={state.hasil} />
+        <Kode className={kodeState.warnaTextbox} value={kode} onChange={onChangeKodeKota} icon={kodeState.icon} hasil={kodeState.hasil} />
         <FieldButton nama="Submit" disabled={isDisabled} />
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
         {isSubmitSuccess === true ? (
-          <IsiModalSuccess pesan="Berhasil Mengupdate User">
-            <button className="button is-primary" onClick={() => router.push("/PengaturanUser")}>
+          <IsiModalSuccess pesan="Berhasil Mengupdate Kota">
+            <button className="button is-primary" onClick={() => router.push("/Kota")}>
               OK
             </button>
           </IsiModalSuccess>
@@ -150,7 +152,7 @@ export default function Edit({ hasil }) {
           <IsiModalFailed
             pesan={
               <>
-                Tidak berhasil menambahkan user
+                Tidak berhasil menambahkan Kota
                 <br />
                 Silahkan Coba Lagi!
               </>
@@ -167,7 +169,7 @@ export default function Edit({ hasil }) {
 }
 
 export async function getServerSideProps(context) {
-  const query = "select username,role from user where idUser=?";
+  const query = "select nama_kota,kode_kota,status from kota where id_kota=?";
   const values = [context.query.id];
   try {
     const getData = await handlerQuery({ query, values });
@@ -188,5 +190,5 @@ export async function getServerSideProps(context) {
 }
 
 Edit.getLayout = function getLayout(page) {
-  return <Layout clicked="Pengaturan User">{page}</Layout>;
+  return <Layout clicked="Kota">{page}</Layout>;
 };
