@@ -1,9 +1,9 @@
 import { getSession } from "../../../lib/get-sessions";
 
 export default async function handler(req, res) {
-  if (req.method === "GET") {
+  if (req.method === "POST") {
     const session = await getSession(req, res);
-    const hasil = [session.username, session.role, session.idUser];
-    res.send(hasil);
+    await session.destroy();
+    res.send("Berhasil");
   }
 }

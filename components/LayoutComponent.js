@@ -10,7 +10,7 @@ export function ImageOfAdora() {
   );
 }
 
-export function Menu({ nama, clickedMenu }) {
+export function Menu({ nama, clickedMenu, onClick }) {
   const router = useRouter();
   const nameStyle =
     clickedMenu === nama ? (
@@ -24,7 +24,7 @@ export function Menu({ nama, clickedMenu }) {
   }
   return (
     <li style={{ marginBottom: 10, marginLeft: 10 }}>
-      <a onClick={handleClick}>{nameStyle}</a>
+      <a onClick={onClick ? onClick : handleClick}>{nameStyle}</a>
     </li>
   );
 }

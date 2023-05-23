@@ -1,6 +1,10 @@
 import { ImageOfAdora, Menu, MenuWithDropdown } from "./LayoutComponent";
 import nextConfig from "../next.config";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { redirect } from "next/dist/server/api-utils";
+// import { getSession } from "../lib/get-sessions";
+// import { NextRequest, Nex } from "next/server";
 const Layout = ({ children, clicked }) => {
   const clickedMenu = clicked;
   const dropdownProduk = ["Daftar Item", "Jenis Item", "Satuan Item"];
@@ -14,6 +18,20 @@ const Layout = ({ children, clicked }) => {
     "Laporan Pembelian",
     "Laporan Item Terlaris",
   ];
+
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    async function getSessionData() {
+      const hasil = await axios.get("/api/Get-Session");
+      setUsername(hasil.data[0]);
+    }
+    getSessionData();
+  }, []);
+
+  const LogOut = async () => {
+    await axios.post("/api/DestroySession");
+  };
 
   return (
     <>
@@ -47,7 +65,11 @@ const Layout = ({ children, clicked }) => {
               <aside className="menu">
                 <ul className="menu-list">
                   <Menu clickedMenu={clickedMenu} nama="Pengaturan User"></Menu>
-                  <Menu clickedMenu={clickedMenu} nama="Log Out"></Menu>
+                  <Menu
+                    clickedMenu={clickedMenu}
+                    nama="Log Out"
+                    onClick={LogOut}
+                  ></Menu>
                 </ul>
               </aside>
             </div>
@@ -62,6 +84,15 @@ const Layout = ({ children, clicked }) => {
             height: 688,
           }}
         >
+          <div
+            style={{
+              textAlign: "right",
+              fontWeight: "bold",
+              textDecoration: "underline",
+            }}
+          >
+            {username}
+          </div>
           {children}
         </div>
       </div>
