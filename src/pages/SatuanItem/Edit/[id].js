@@ -1,14 +1,14 @@
 import Head from "next/head";
 import Layout from "../../../../components/Layout";
 import handlerQuery from "../../../../lib/db";
-import { NamaJenis, Kode, FieldButton, Namereducer, jenisinitValue, kodeReducer, kodeinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../../components/TambahJenisComp";
+import { NamaSatuan, Kode, FieldButton, Namereducer, satuaninitValue, kodeReducer, kodeinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../../components/TambahSatuanComp";
 import { useRouter } from "next/router";
 import { useState, useReducer } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 export default function Edit({ hasil }) {
-  const [state, dispacth] = useReducer(Namereducer, jenisinitValue);
-  const [namaJenis, setNamaJenis] = useState(hasil[0].nama);
+  const [state, dispacth] = useReducer(Namereducer, satuaninitValue);
+  const [namaSatuan, setNamaSatuan] = useState(hasil[0].nama);
   const [kode, setKode] = useState(hasil[0].kode);
   const [isShow, setShow] = useState(false);
   const [kodeState, dispacthKode] = useReducer(kodeReducer, kodeinitValue);
@@ -36,17 +36,17 @@ export default function Edit({ hasil }) {
 
   const typeOfIcon = isShow === false ? <EyeSlash onClick={changeisShow} /> : <Eye onClick={changeisShow} />;
 
-  const onChangeNamaJenis = async (e) => {
-    setNamaJenis(e.target.value);
+  const onChangeNamaSatuan = async (e) => {
+    setNamaSatuan(e.target.value);
     dispacth({ type: "loading" });
     if (e.target.value === "" || e.target.value.length > 15) {
-      setNamaJenis(e.target.value);
+      setNamaSatuan(e.target.value);
       dispacth({ type: "not allowed" });
       return;
     }
     try {
-      const response = await axios.post("/api/CheckJenis", {
-        sendNamaJenis: e.target.value,
+      const response = await axios.post("/api/CheckSatuan", {
+        sendNamaSatuan: e.target.value,
         tujuan: "edit",
         id: router.query.id,
       });
@@ -69,7 +69,7 @@ export default function Edit({ hasil }) {
       return;
     }
     try {
-      const response = await axios.post("/api/CheckKodeJenis", {
+      const response = await axios.post("/api/CheckKodeSatuan", {
         sendNamaKode: e.target.value,
         tujuan: "edit",
         id: router.query.id,
@@ -91,8 +91,8 @@ export default function Edit({ hasil }) {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch("/api/EditJenis", {
-        namaJenis,
+      await axios.patch("/api/EditSatuan", {
+        namaSatuan,
         kode,
         id: router.query.id,
       });
@@ -133,18 +133,18 @@ export default function Edit({ hasil }) {
   return (
     <>
       <Head>
-        <title>Edit Jenis Item</title>
+        <title>Edit Satuan Item</title>
       </Head>
-      <h1 className="title">Edit Jenis Item</h1>
+      <h1 className="title">Edit Satuan Item</h1>
       <form onSubmit={onSubmit}>
-        <NamaJenis className={state.warnaTextbox} value={namaJenis} onChange={onChangeNamaJenis} icon={state.icon} hasil={state.hasil} />
+        <NamaSatuan className={state.warnaTextbox} value={namaSatuan} onChange={onChangeNamaSatuan} icon={state.icon} hasil={state.hasil} />
         <Kode className={kodeState.warnaTextbox} value={kode} onChange={onChangeKodeKota} icon={kodeState.icon} hasil={kodeState.hasil} />
         <FieldButton nama="Submit" />
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
         {isSubmitSuccess === true ? (
-          <IsiModalSuccess pesan="Berhasil Mengupdate Jenis Item">
-            <button className="button is-primary" onClick={() => router.push("/JenisItem")}>
+          <IsiModalSuccess pesan="Berhasil Mengupdate Satuan Item">
+            <button className="button is-primary" onClick={() => router.push("/SatuanItem")}>
               OK
             </button>
           </IsiModalSuccess>
@@ -152,7 +152,7 @@ export default function Edit({ hasil }) {
           <IsiModalFailed
             pesan={
               <>
-                Tidak berhasil menambahkan jenis item
+                Tidak berhasil menambahkan satuan item
                 <br />
                 Silahkan Coba Lagi!
               </>
@@ -169,7 +169,7 @@ export default function Edit({ hasil }) {
 }
 
 export async function getServerSideProps(context) {
-  const query = "select nama,kode,status from jenis where id_jenis=?";
+  const query = "select nama,kode,status from satuan where id_satuan=?";
   const values = [context.query.id];
   try {
     const getData = await handlerQuery({ query, values });
@@ -190,5 +190,5 @@ export async function getServerSideProps(context) {
 }
 
 Edit.getLayout = function getLayout(page) {
-  return <Layout clicked="Jenis Item">{page}</Layout>;
+  return <Layout clicked="Satuan Item">{page}</Layout>;
 };

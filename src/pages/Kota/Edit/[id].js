@@ -139,7 +139,7 @@ export default function Edit({ hasil }) {
       <form onSubmit={onSubmit}>
         <NamaKota className={state.warnaTextbox} value={namaKota} onChange={onChangeNamaKota} icon={state.icon} hasil={state.hasil} />
         <Kode className={kodeState.warnaTextbox} value={kode} onChange={onChangeKodeKota} icon={kodeState.icon} hasil={kodeState.hasil} />
-        <FieldButton nama="Submit" disabled={isDisabled} />
+        <FieldButton nama="Submit" />
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
         {isSubmitSuccess === true ? (

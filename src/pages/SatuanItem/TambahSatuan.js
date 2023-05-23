@@ -1,15 +1,15 @@
 import Head from "next/head";
-import Layout from "../../../../components/Layout";
-import handlerQuery from "../../../../lib/db";
-import { NamaJenis, Kode, FieldButton, Namereducer, jenisinitValue, kodeReducer, kodeinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../../components/TambahJenisComp";
-import { useRouter } from "next/router";
-import { useState, useReducer } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Layout from "../../../components/Layout";
+import { useReducer, useState } from "react";
 import axios from "axios";
-export default function Edit({ hasil }) {
-  const [state, dispacth] = useReducer(Namereducer, jenisinitValue);
-  const [namaJenis, setNamaJenis] = useState(hasil[0].nama);
-  const [kode, setKode] = useState(hasil[0].kode);
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useRouter } from "next/router";
+import { NamaSatuan, Kode, FieldButton, Namereducer, satuaninitValue, kodeReducer, kodeinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../components/TambahSatuanComp";
+
+export default function TambahSatuan() {
+  const [state, dispacth] = useReducer(Namereducer, satuaninitValue);
+  const [namaSatuan, setNamaSatuan] = useState("");
+  const [kode, setKode] = useState("");
   const [isShow, setShow] = useState(false);
   const [kodeState, dispacthKode] = useReducer(kodeReducer, kodeinitValue);
   const [isModalClosed, setModalClosed] = useState(true);
@@ -17,10 +17,7 @@ export default function Edit({ hasil }) {
   const [isShowRetype, setShowRetype] = useState(false);
   const [kodeRetype, setKodeRetype] = useState("");
   const router = useRouter();
-  const isDisabled =
-    ((state.warnaTextbox === "input is-success" || state.warnaTextbox === "input") && kode.length === 8 && kodeRetype === kode) || state.warnaTextbox === "input is-success" || (state.warnaTextbox === "input" && kode.length === 0)
-      ? false
-      : true;
+  const isDisabled = state.warnaTextbox === "input is-success" && kode.length === 8 && kodeRetype === kode ? false : true;
   const changeisShow = (e) => {
     setShow(!isShow);
   };
@@ -34,21 +31,28 @@ export default function Edit({ hasil }) {
     return <FontAwesomeIcon icon="eye-slash" onClick={onClick} pointerEvents="all" cursor="pointer" />;
   };
 
-  const typeOfIcon = isShow === false ? <EyeSlash onClick={changeisShow} /> : <Eye onClick={changeisShow} />;
+  // const eyeSlash = (
+  //   <FontAwesomeIcon
+  //     icon="eye-slash"
+  //     onClick={changeisShow}
+  //     pointerEvents="all"
+  //     cursor="pointer"
+  //   />
+  // );
+  // const typeOfIcon = isShow === false ? <EyeSlash onClick={changeisShow} /> : <Eye onClick={changeisShow} />;
 
-  const onChangeNamaJenis = async (e) => {
-    setNamaJenis(e.target.value);
+  const onChangeNamaSatuan = async (e) => {
+    setNamaSatuan(e.target.value);
     dispacth({ type: "loading" });
     if (e.target.value === "" || e.target.value.length > 15) {
-      setNamaJenis(e.target.value);
+      setNamaSatuan(e.target.value);
       dispacth({ type: "not allowed" });
       return;
     }
     try {
-      const response = await axios.post("/api/CheckJenis", {
-        sendNamaJenis: e.target.value,
-        tujuan: "edit",
-        id: router.query.id,
+      const response = await axios.post("/api/CheckSatuan", {
+        sendNamaSatuan: e.target.value,
+        tujuan: "add",
       });
       if (response.data === "available") {
         dispacth({ type: "available" });
@@ -69,10 +73,9 @@ export default function Edit({ hasil }) {
       return;
     }
     try {
-      const response = await axios.post("/api/CheckKodeJenis", {
+      const response = await axios.post("/api/CheckKodeSatuan", {
         sendNamaKode: e.target.value,
-        tujuan: "edit",
-        id: router.query.id,
+        tujuan: "add",
       });
       if (response.data === "available") {
         dispacthKode({ type: "available" });
@@ -84,6 +87,15 @@ export default function Edit({ hasil }) {
     }
   };
 
+  // const onChangePassword = (e) => {
+  //   if (e.target.value.length < 8 || e.target.value.length > 8) {
+  //     dispacthPass({ type: "tidak boleh" });
+  //   } else {
+  //     dispacthPass({ type: "boleh" });
+  //   }
+  //   setPassword(e.target.value);
+  // };
+
   const onChangeRetype = (e) => {
     setKodeRetype(e.target.value);
   };
@@ -91,10 +103,9 @@ export default function Edit({ hasil }) {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch("/api/EditJenis", {
-        namaJenis,
+      await axios.post("/api/TambahSatuanItem", {
+        namaSatuan,
         kode,
-        id: router.query.id,
       });
       setisSubmitSuccess(true);
     } catch (e) {
@@ -104,17 +115,17 @@ export default function Edit({ hasil }) {
     }
   };
 
-  //   const onChangeRole = (e) => {
-  //     setRole(e.target.value);
-  //   };
-  // const MenambahkanUserLagi = () => {
-  //   dispacth({ type: "default" });
-  //   dispacthPass({ type: "default" });
-  //   setUsername("");
-  //   setPassword("");
-  //   setRole("pemilik");
-  //   setModalClosed();
-  // };
+  const MenambahkanUserLagi = () => {
+    dispacth({ type: "default" });
+    dispacthKode({ type: "default" });
+    setNamaSatuan("");
+    setKode("");
+    setKodeRetype("");
+    setShow(false);
+    setShowRetype(false);
+    setModalClosed();
+  };
+
   const typeOfIcon2 = isShowRetype === false ? <EyeSlash onClick={changeisShowRetype} /> : <Eye onClick={changeisShowRetype} />;
 
   const hasilRetype =
@@ -130,29 +141,33 @@ export default function Edit({ hasil }) {
       ""
     );
   const warnaTexboxtRetype = kodeRetype === kode && kode.length === 8 ? "input is-success" : kode !== kodeRetype && kode.length === 8 ? "input is-danger" : "input";
+
   return (
     <>
       <Head>
-        <title>Edit Jenis Item</title>
+        <title>Tambah Satuan Item</title>
       </Head>
-      <h1 className="title">Edit Jenis Item</h1>
+      <h1 className="title">Tambah Satuan Item</h1>
       <form onSubmit={onSubmit}>
-        <NamaJenis className={state.warnaTextbox} value={namaJenis} onChange={onChangeNamaJenis} icon={state.icon} hasil={state.hasil} />
+        <NamaSatuan className={state.warnaTextbox} value={namaSatuan} onChange={onChangeNamaSatuan} icon={state.icon} hasil={state.hasil} />
         <Kode className={kodeState.warnaTextbox} value={kode} onChange={onChangeKodeKota} icon={kodeState.icon} hasil={kodeState.hasil} />
         <FieldButton nama="Submit" />
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
         {isSubmitSuccess === true ? (
-          <IsiModalSuccess pesan="Berhasil Mengupdate Jenis Item">
-            <button className="button is-primary" onClick={() => router.push("/JenisItem")}>
-              OK
+          <IsiModalSuccess pesan="Berhasil Menambahkan Satuan Item">
+            <button className="button is-primary" onClick={MenambahkanUserLagi} style={{ marginRight: "10px" }}>
+              Lanjutkan Menambah satuan item
+            </button>
+            <button className="button is-primary" onClick={() => router.push("/SatuanItem")}>
+              Kembali Ke halaman satuan item
             </button>
           </IsiModalSuccess>
         ) : (
           <IsiModalFailed
             pesan={
               <>
-                Tidak berhasil menambahkan jenis item
+                Tidak berhasil menambahkan satuan item
                 <br />
                 Silahkan Coba Lagi!
               </>
@@ -167,28 +182,6 @@ export default function Edit({ hasil }) {
     </>
   );
 }
-
-export async function getServerSideProps(context) {
-  const query = "select nama,kode,status from jenis where id_jenis=?";
-  const values = [context.query.id];
-  try {
-    const getData = await handlerQuery({ query, values });
-    const hasil = JSON.parse(JSON.stringify(getData));
-
-    return {
-      props: {
-        hasil,
-      },
-    };
-  } catch (e) {
-    return {
-      props: {
-        hasil: e.message,
-      },
-    };
-  }
-}
-
-Edit.getLayout = function getLayout(page) {
-  return <Layout clicked="Jenis Item">{page}</Layout>;
+TambahSatuan.getLayout = function getLayout(page) {
+  return <Layout clicked="Satuan Item">{page}</Layout>;
 };
