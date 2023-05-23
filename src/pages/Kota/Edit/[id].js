@@ -192,3 +192,5 @@ export async function getServerSideProps(context) {
 Edit.getLayout = function getLayout(page) {
   return <Layout clicked="Kota">{page}</Layout>;
 };
+
+//tes komen
