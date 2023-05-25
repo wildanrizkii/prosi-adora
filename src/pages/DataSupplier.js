@@ -1,8 +1,8 @@
-import Layout from "../../../components/Layout";
+import Layout from "../../components/Layout";
 import Head from "next/head";
-import handlerQuery from "../../../lib/db";
+import handlerQuery from "../../lib/db";
 import Link from "next/link";
-import { Modal, IsiModalSuccess, IsiModalFailed } from "../../../components/TambahSupplierComp";
+import { Modal, IsiModalSuccess, IsiModalFailed } from "../../components/TambahUserComp";
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -14,9 +14,9 @@ export default function DataSupplier({ hasil }) {
   async function changeStatus(id, toActive) {
     try {
       if (toActive === true) {
-        await axios.patch("/api/UpdateStatusSupplier", { id, status: 1 });
+        await axios.patch("/api/UpdateStatusUser", { id, status: 1 });
       } else if (toActive === false) {
-        await axios.patch("/api/UpdateStatusSupplier", { id, status: 0 });
+        await axios.patch("/api/UpdateStatusUser", { id, status: 0 });
       }
       setUpdateStatus(true);
     } catch (e) {
@@ -30,7 +30,7 @@ export default function DataSupplier({ hasil }) {
     semuaAkun = hasil.map((x, index) => {
       return (
         <tr
-          key={x.id_supplier}
+          key={x.idUser}
           style={{
             fontWeight: "bold",
             backgroundColor: x.status === 0 && "red",
@@ -38,21 +38,19 @@ export default function DataSupplier({ hasil }) {
           }}
         >
           <td>{index + 1}</td>
-          <td>{x.nama_supplier}</td>
-          <td>{x.kode_supplier}</td>
-          <td>{x.alamat}</td>
-          <td>{x.nomor_hp}</td>
+          <td>{x.username}</td>
+          <td>{x.role.toUpperCase()}</td>
           <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
           <td>
-            <Link href={`DataSupplier/Edit/${x.id_supplier}`} className="button is-success is-small">
+            <Link href={`PengaturanUser/Edit/${x.idUser}`} className="button is-success is-small">
               Edit
             </Link>
             {x.status === 1 ? (
-              <button className="button is-danger is-small" style={{ marginLeft: "5px" }} onClick={() => changeStatus(x.id_supplier, false)}>
+              <button className="button is-danger is-small" style={{ marginLeft: "5px" }} onClick={() => changeStatus(x.idUser, false)}>
                 Non-Aktifkan
               </button>
             ) : (
-              <button className="button is-primary is-small" style={{ marginLeft: "5px" }} onClick={() => changeStatus(x.id_supplier, true)}>
+              <button className="button is-primary is-small" style={{ marginLeft: "5px" }} onClick={() => changeStatus(x.idUser, true)}>
                 Aktifkan
               </button>
             )}
@@ -75,7 +73,7 @@ export default function DataSupplier({ hasil }) {
       </Head>
       <h1 className="title">Data Supplier</h1>
 
-      <Link className="button is-link" href="DataSupplier/TambahSupplier" style={{ marginBottom: "10px" }}>
+      <Link className="button is-link" href="PengaturanUser/Tambah" style={{ marginBottom: "10px" }}>
         Tambah
       </Link>
 
@@ -83,12 +81,11 @@ export default function DataSupplier({ hasil }) {
         <thead>
           <tr>
             <th>No</th>
-            <th>Nama</th>
             <th>Kode</th>
             <th>Alamat</th>
             <th>Telepon</th>
+            <th>Kota</th>
             <th>Status</th>
-            <th>Aksi</th>
           </tr>
         </thead>
         <tbody>{semuaAkun}</tbody>
@@ -100,7 +97,7 @@ export default function DataSupplier({ hasil }) {
               className="button is-primary"
               onClick={() => {
                 setShowModal(false);
-                router.push("/DataSupplier");
+                router.push("/PengaturanUser");
               }}
             >
               OK
@@ -112,7 +109,7 @@ export default function DataSupplier({ hasil }) {
               className="button is-danger"
               onClick={() => {
                 setShowModal(false);
-                router.push("/DataSupplier");
+                router.push("/PengaturanUser");
               }}
             >
               OK
@@ -125,7 +122,7 @@ export default function DataSupplier({ hasil }) {
 }
 
 export async function getServerSideProps() {
-  const query = "select nama_supplier, kode_supplier, alamat, nomor_hp, status from supplier";
+  const query = "select kode_supplier,nama_supplier,alamat,id_kota,no_hp,status from user";
   const values = [];
   try {
     const getData = await handlerQuery({ query, values });
