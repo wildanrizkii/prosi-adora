@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 25, 2023 at 02:34 PM
+-- Generation Time: May 25, 2023 at 03:42 PM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -1767,7 +1767,7 @@ CREATE TABLE `transaksi_pembelian` (
   `no_faktur` varchar(50) NOT NULL,
   `tanggal` date NOT NULL,
   `margin` float NOT NULL,
-  `id_user` int(11) NOT NULL,
+  `idUser` int(11) NOT NULL,
   `id_supplier` int(11) NOT NULL,
   `total` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -1784,7 +1784,7 @@ CREATE TABLE `transaksi_penjualan` (
   `total` float DEFAULT NULL,
   `biaya_racik` int(11) NOT NULL,
   `diskon` float NOT NULL,
-  `id_user` int(11) NOT NULL
+  `idUser` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -1796,7 +1796,7 @@ CREATE TABLE `transaksi_penjualan` (
 CREATE TABLE `transaksi_stok_opname` (
   `no_opname` varchar(50) NOT NULL,
   `tanggal` date NOT NULL,
-  `id_user` int(11) NOT NULL
+  `idUser` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -1806,12 +1806,20 @@ CREATE TABLE `transaksi_stok_opname` (
 --
 
 CREATE TABLE `user` (
-  `id_user` int(11) NOT NULL,
+  `idUser` int(11) NOT NULL,
   `username` varchar(15) NOT NULL,
   `password` varchar(15) NOT NULL,
   `role` varchar(10) NOT NULL,
-  `status` tinyint(1) NOT NULL
+  `status` tinyint(1) NOT NULL,
+  `salt` varchar(36) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`idUser`, `username`, `password`, `role`, `status`, `salt`) VALUES
+(1, 'budi123', 'budi123', 'pemilik', 1, '');
 
 --
 -- Indexes for dumped tables
@@ -1891,27 +1899,27 @@ ALTER TABLE `supplier`
 ALTER TABLE `transaksi_pembelian`
   ADD PRIMARY KEY (`no_faktur`),
   ADD KEY `fk_supplier_pembelian` (`id_supplier`),
-  ADD KEY `fk_user_pembelian` (`id_user`);
+  ADD KEY `fk_user_pembelian` (`idUser`);
 
 --
 -- Indexes for table `transaksi_penjualan`
 --
 ALTER TABLE `transaksi_penjualan`
   ADD PRIMARY KEY (`no_transaksi`),
-  ADD KEY `fk_user_penjualan` (`id_user`);
+  ADD KEY `fk_user_penjualan` (`idUser`);
 
 --
 -- Indexes for table `transaksi_stok_opname`
 --
 ALTER TABLE `transaksi_stok_opname`
   ADD PRIMARY KEY (`no_opname`),
-  ADD KEY `fk_user_opname` (`id_user`);
+  ADD KEY `fk_user_opname` (`idUser`);
 
 --
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
-  ADD PRIMARY KEY (`id_user`);
+  ADD PRIMARY KEY (`idUser`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -1969,7 +1977,7 @@ ALTER TABLE `supplier`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idUser` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
@@ -2012,20 +2020,20 @@ ALTER TABLE `supplier`
 -- Constraints for table `transaksi_pembelian`
 --
 ALTER TABLE `transaksi_pembelian`
-  ADD CONSTRAINT `fk_supplier_pembelian` FOREIGN KEY (`id_supplier`) REFERENCES `user` (`id_user`) ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_user_pembelian` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`) ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_supplier_pembelian` FOREIGN KEY (`id_supplier`) REFERENCES `user` (`idUser`) ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_user_pembelian` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`) ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `transaksi_penjualan`
 --
 ALTER TABLE `transaksi_penjualan`
-  ADD CONSTRAINT `fk_user_penjualan` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_user_penjualan` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `transaksi_stok_opname`
 --
 ALTER TABLE `transaksi_stok_opname`
-  ADD CONSTRAINT `fk_user_opname` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`);
+  ADD CONSTRAINT `fk_user_opname` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
