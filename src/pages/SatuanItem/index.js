@@ -39,7 +39,6 @@ export default function SatuanItem({ hasil }) {
         >
           <td>{index + 1}</td>
           <td>{x.nama}</td>
-          <td>{x.kode}</td>
           <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
           <td>
             <Link href={`SatuanItem/Edit/${x.id_satuan}`} className="button is-success is-small">
@@ -82,7 +81,6 @@ export default function SatuanItem({ hasil }) {
           <tr>
             <th>No</th>
             <th>Nama</th>
-            <th>Kode</th>
             <th>Status</th>
             <th>Aksi</th>
           </tr>
@@ -121,7 +119,7 @@ export default function SatuanItem({ hasil }) {
 }
 
 export async function getServerSideProps() {
-  const query = "select nama,kode,id_satuan,status from satuan";
+  const query = "select nama,id_satuan,status from satuan";
   const values = [];
   try {
     const getData = await handlerQuery({ query, values });

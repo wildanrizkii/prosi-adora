@@ -4,23 +4,16 @@ import { useReducer, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
-import { NamaSatuan, Kode, FieldButton, Namereducer, satuaninitValue, kodeReducer, kodeinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../components/TambahSatuanComp";
+import { NamaSatuan, FieldButton, Namereducer, satuaninitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../components/TambahSatuanComp";
 
 export default function TambahSatuan() {
   const [state, dispacth] = useReducer(Namereducer, satuaninitValue);
   const [namaSatuan, setNamaSatuan] = useState("");
-  const [kode, setKode] = useState("");
   const [isShow, setShow] = useState(false);
-  const [kodeState, dispacthKode] = useReducer(kodeReducer, kodeinitValue);
   const [isModalClosed, setModalClosed] = useState(true);
   const [isSubmitSuccess, setisSubmitSuccess] = useState(false);
   const [isShowRetype, setShowRetype] = useState(false);
-  const [kodeRetype, setKodeRetype] = useState("");
   const router = useRouter();
-  const isDisabled = state.warnaTextbox === "input is-success" && kode.length === 8 && kodeRetype === kode ? false : true;
-  const changeisShow = (e) => {
-    setShow(!isShow);
-  };
   const changeisShowRetype = (e) => {
     setShowRetype(!isShowRetype);
   };
@@ -64,29 +57,6 @@ export default function TambahSatuan() {
     }
   };
 
-  const onChangeKodeKota = async (e) => {
-    setKode(e.target.value);
-    dispacthKode({ type: "loading" });
-    if (e.target.value === "" || e.target.value.length > 15) {
-      setKode(e.target.value);
-      dispacthKode({ type: "not allowed" });
-      return;
-    }
-    try {
-      const response = await axios.post("/api/CheckKodeSatuan", {
-        sendNamaKode: e.target.value,
-        tujuan: "add",
-      });
-      if (response.data === "available") {
-        dispacthKode({ type: "available" });
-      } else if (response.data === "not available") {
-        dispacthKode({ type: "not available" });
-      }
-    } catch (e) {
-      dispacthKode({ type: "error" });
-    }
-  };
-
   // const onChangePassword = (e) => {
   //   if (e.target.value.length < 8 || e.target.value.length > 8) {
   //     dispacthPass({ type: "tidak boleh" });
@@ -96,16 +66,11 @@ export default function TambahSatuan() {
   //   setPassword(e.target.value);
   // };
 
-  const onChangeRetype = (e) => {
-    setKodeRetype(e.target.value);
-  };
-
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
       await axios.post("/api/TambahSatuanItem", {
         namaSatuan,
-        kode,
       });
       setisSubmitSuccess(true);
     } catch (e) {
@@ -117,10 +82,7 @@ export default function TambahSatuan() {
 
   const MenambahkanUserLagi = () => {
     dispacth({ type: "default" });
-    dispacthKode({ type: "default" });
     setNamaSatuan("");
-    setKode("");
-    setKodeRetype("");
     setShow(false);
     setShowRetype(false);
     setModalClosed();
@@ -128,19 +90,19 @@ export default function TambahSatuan() {
 
   const typeOfIcon2 = isShowRetype === false ? <EyeSlash onClick={changeisShowRetype} /> : <Eye onClick={changeisShowRetype} />;
 
-  const hasilRetype =
-    kodeRetype === kode && kode.length === 8 ? (
-      <p className="help is-success" style={{ fontSize: "15px" }}>
-        kode sudah sama!
-      </p>
-    ) : kode !== kodeRetype && kode.length === 8 ? (
-      <p className="help is-danger" style={{ fontSize: "15px" }}>
-        kode tidak sama!
-      </p>
-    ) : (
-      ""
-    );
-  const warnaTexboxtRetype = kodeRetype === kode && kode.length === 8 ? "input is-success" : kode !== kodeRetype && kode.length === 8 ? "input is-danger" : "input";
+  // const hasilRetype =
+  //   kodeRetype === kode && kode.length === 8 ? (
+  //     <p className="help is-success" style={{ fontSize: "15px" }}>
+  //       kode sudah sama!
+  //     </p>
+  //   ) : kode !== kodeRetype && kode.length === 8 ? (
+  //     <p className="help is-danger" style={{ fontSize: "15px" }}>
+  //       kode tidak sama!
+  //     </p>
+  //   ) : (
+  //     ""
+  //   );
+  // const warnaTexboxtRetype = kodeRetype === kode && kode.length === 8 ? "input is-success" : kode !== kodeRetype && kode.length === 8 ? "input is-danger" : "input";
 
   return (
     <>
@@ -150,7 +112,7 @@ export default function TambahSatuan() {
       <h1 className="title">Tambah Satuan Item</h1>
       <form onSubmit={onSubmit}>
         <NamaSatuan className={state.warnaTextbox} value={namaSatuan} onChange={onChangeNamaSatuan} icon={state.icon} hasil={state.hasil} />
-        <Kode className={kodeState.warnaTextbox} value={kode} onChange={onChangeKodeKota} icon={kodeState.icon} hasil={kodeState.hasil} />
+        {/* <Kode className={kodeState.warnaTextbox} value={kode} onChange={onChangeKodeKota} icon={kodeState.icon} hasil={kodeState.hasil} /> */}
         <FieldButton nama="Submit" />
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
