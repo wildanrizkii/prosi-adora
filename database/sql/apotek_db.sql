@@ -1,5 +1,5 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
@@ -1699,7 +1699,20 @@ CREATE TABLE `rak` (
 --
 
 INSERT INTO `rak` (`id_rak`, `nama_rak`, `status`) VALUES
-(1, 'A', 1);
+(1, 'R1', 1),
+(2, 'R2', 1),
+(3, 'R3', 1),
+(4, 'R4', 1),
+(5, 'R5', 1),
+(6, 'R6', 1),
+(7, 'R7', 1),
+(8, 'R8', 1),
+(9, 'R9', 1),
+(10, 'B1', 1),
+(11, 'B2', 1),
+(12, 'B3', 1),
+(13, 'B4', 1),
+(14, 'B5', 1);
 
 -- --------------------------------------------------------
 
@@ -1981,7 +1994,7 @@ ALTER TABLE `kota`
 -- AUTO_INCREMENT for table `rak`
 --
 ALTER TABLE `rak`
-  MODIFY `id_rak` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_rak` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `satuan`
