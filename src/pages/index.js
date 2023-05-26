@@ -2,12 +2,7 @@ import Script from "next/script";
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import {
-  Pembungkus,
-  Gambar,
-  Field,
-  Icon,
-} from "../../components/LoginComponents";
+import { Pembungkus, Gambar, Field, Icon } from "../../components/LoginComponents";
 import Head from "next/head";
 
 const Login = () => {
@@ -28,7 +23,7 @@ const Login = () => {
       });
       if (response.data !== "Maaf Username atau Password anda salah") {
         const data = response.data;
-        const sess = await axios.post("/api/get-session", {
+        const sess = await axios.post("/api/set-session", {
           username: data[0],
           role: data[1],
           idUser: data[2],
