@@ -1,10 +1,13 @@
 import { getSession } from "../../../lib/get-sessions";
 
 export default async function handler(req, res) {
-  if (req.method === "GET") {
+  if (req.method === "POST") {
+    const { username, role, idUser } = req.body;
     const session = await getSession(req, res);
-    const hasil = [session.username, session.role, session.idUser];
-    res.send(hasil);
+    session.username = username;
+    session.role = role;
+    session.idUser = idUser;
+    res.send("OK");
   }
 }
 
