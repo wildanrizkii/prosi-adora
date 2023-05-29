@@ -76,6 +76,28 @@ export const kodeinitValue = {
   icon: null,
 };
 
+export const alamatinitValue = {
+  warnaTextbox: "input",
+  hasil: (
+    <p className="help" style={{ fontSize: "15px" }}>
+      Silahkan masukan alamat!
+    </p>
+  ),
+  warnaTextbox: "input",
+  icon: null,
+};
+
+export const nomorinitValue = {
+  warnaTextbox: "input",
+  hasil: (
+    <p className="help" style={{ fontSize: "15px" }}>
+      Silahkan masukan nomor hp!
+    </p>
+  ),
+  warnaTextbox: "input",
+  icon: null,
+};
+
 export const Kodereducer = (state, action) => {
   if (action.type === "loading") {
     return {
@@ -132,6 +154,118 @@ export const Kodereducer = (state, action) => {
   }
 };
 
+export const Alamatreducer = (state, action) => {
+  if (action.type === "loading") {
+    return {
+      hasil: (
+        <p className="help is-info" style={{ fontSize: "15px" }}>
+          loading
+        </p>
+      ),
+      warnaTextbox: "input is-info",
+      icon: <FontAwesomeIcon icon="spinner" spin color="blue" />,
+    };
+  } else if (action.type === "available") {
+    return {
+      hasil: (
+        <p className="help is-success" style={{ fontSize: "15px" }}>
+          alamat tersedia
+        </p>
+      ),
+      warnaTextbox: "input is-success",
+      icon: <FontAwesomeIcon icon="check" color="green" />,
+    };
+  } else if (action.type === "not available") {
+    return {
+      hasil: (
+        <p className="help is-danger" style={{ fontSize: "15px" }}>
+          alamat sudah terpakai
+        </p>
+      ),
+      warnaTextbox: "input is-danger",
+      icon: <FontAwesomeIcon icon="times" color="red" />,
+    };
+  } else if (action.type === "not allowed") {
+    return {
+      hasil: (
+        <p className="help is-danger" style={{ fontSize: "15px" }}>
+          nama kode tidak memenuhi ketentuan
+        </p>
+      ),
+      warnaTextbox: "input is-danger",
+      icon: <FontAwesomeIcon icon="times" color="red" />,
+    };
+  } else if (action.type === "error") {
+    return {
+      hasil: (
+        <p className="help is-danger" style={{ fontSize: "15px" }}>
+          Terjadi masalah saat mengakses database
+        </p>
+      ),
+      warnaTextbox: "input is-danger",
+      icon: <FontAwesomeIcon icon="times" color="red" />,
+    };
+  } else if (action.type === "default") {
+    return alamatinitValue;
+  }
+};
+
+export const Nomorreducer = (state, action) => {
+  if (action.type === "loading") {
+    return {
+      hasil: (
+        <p className="help is-info" style={{ fontSize: "15px" }}>
+          loading
+        </p>
+      ),
+      warnaTextbox: "input is-info",
+      icon: <FontAwesomeIcon icon="spinner" spin color="blue" />,
+    };
+  } else if (action.type === "available") {
+    return {
+      hasil: (
+        <p className="help is-success" style={{ fontSize: "15px" }}>
+          nomor tersedia
+        </p>
+      ),
+      warnaTextbox: "input is-success",
+      icon: <FontAwesomeIcon icon="check" color="green" />,
+    };
+  } else if (action.type === "not available") {
+    return {
+      hasil: (
+        <p className="help is-danger" style={{ fontSize: "15px" }}>
+          nomor sudah terpakai
+        </p>
+      ),
+      warnaTextbox: "input is-danger",
+      icon: <FontAwesomeIcon icon="times" color="red" />,
+    };
+  } else if (action.type === "not allowed") {
+    return {
+      hasil: (
+        <p className="help is-danger" style={{ fontSize: "15px" }}>
+          nomor hp tidak memenuhi ketentuan
+        </p>
+      ),
+      warnaTextbox: "input is-danger",
+      icon: <FontAwesomeIcon icon="times" color="red" />,
+    };
+  } else if (action.type === "error") {
+    return {
+      hasil: (
+        <p className="help is-danger" style={{ fontSize: "15px" }}>
+          Terjadi masalah saat mengakses database
+        </p>
+      ),
+      warnaTextbox: "input is-danger",
+      icon: <FontAwesomeIcon icon="times" color="red" />,
+    };
+  } else if (action.type === "default") {
+    return nomorinitValue;
+  }
+};
+
 export function NamaSupplier({ className, value, onChange, icon, hasil }) {
   return (
     <div className="field">
@@ -171,7 +305,7 @@ export function Alamat({ className, value, onChange, icon, hasil }) {
       <div className="control has-icons-left has-icons-right">
         <input className={className} type="text" placeholder="Kode" value={value} onChange={onChange} />
         <span className="icon is-small is-left">
-          <i className="fas fa-quote-right" />
+          <i className="fas fa-address-card" />
         </span>
         <span className="icon is-small is-right">{icon}</span>
       </div>

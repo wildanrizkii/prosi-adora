@@ -2,9 +2,9 @@ import handlerQuery from "../../../lib/db";
 
 export default async function handler(req, res) {
   if (req.method === "PATCH") {
-    const { nama_supplier, kode_supplier, id } = req.body;
-    const query = "UPDATE supplier set nama_supplier=?, kode_supplier=? where id_supplier=?";
-    const values = [nama_supplier, kode_supplier, id];
+    const { nama_supplier, kode_supplier, alamat, no_hp, id } = req.body;
+    const query = "UPDATE supplier set nama_supplier=?, kode_supplier=?, alamat=?, no_hp=? where id_supplier=?";
+    const values = [nama_supplier, kode_supplier, alamat, no_hp, id];
 
     try {
       const hasil = await handlerQuery({ query, values });

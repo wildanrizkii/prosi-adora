@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Layout from "../../../../components/Layout";
 import handlerQuery from "../../../../lib/db";
-import { NamaSupplier, KodeSupplier, FieldButton, Namereducer, Kodereducer, supplierinitValue, kodeinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../../components/TambahSupplierComp";
+import { NamaSupplier, KodeSupplier, Alamat, NoHP, FieldButton, Namereducer, Kodereducer, Alamatreducer, Nomorreducer, supplierinitValue, kodeinitValue, alamatinitValue, nomorinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../../components/TambahSupplierComp";
 import { useRouter } from "next/router";
 import { useState, useReducer } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,10 +9,14 @@ import axios from "axios";
 export default function Edit({ hasil }) {
   const [state, dispacth] = useReducer(Namereducer, supplierinitValue);
   const [kodeState, dispacthKode] = useReducer(Kodereducer, kodeinitValue);
+  const [alamatState, dispacthAlamat] = useReducer(Alamatreducer, alamatinitValue);
+  const [nomorState, dispacthNomor] = useReducer(Nomorreducer, nomorinitValue);
   const [namaSupplier, setNamaSupplier] = useState(hasil[0].nama_supplier);
   const [kodeSupplier, setKodeSupplier] = useState(hasil[0].kode_supplier);
-  console.log(hasil[0].kode_supplier);
+  const [alamatSupplier, setAlamatSupplier] = useState(hasil[0].alamat);
+  const [nomorSupplier, setNomorSupplier] = useState(hasil[0].no_hp);
   // console.log(hasil[0].nama_supplier);
+  // console.log(hasil[0].kode_supplier);
   const [isShow, setShow] = useState(false);
   const [isModalClosed, setModalClosed] = useState(true);
   const [isSubmitSuccess, setisSubmitSuccess] = useState(false);
@@ -85,11 +89,62 @@ export default function Edit({ hasil }) {
     }
   };
 
+  const onChangeAlamatSupplier = async (e) => {
+    setAlamatSupplier(e.target.value);
+    dispacthAlamat({ type: "loading" });
+    if (e.target.value === "" || e.target.value.length > 15) {
+      setAlamatSupplier(e.target.value);
+      dispacthAlamat({ type: "not allowed" });
+      return;
+    }
+    try {
+      const response = await axios.post("/api/CheckAlamatSupplier", {
+        sendNamaAlamat: e.target.value,
+        tujuan: "edit",
+        id: router.query.id,
+      });
+      if (response.data === "available") {
+        dispacthAlamat({ type: "available" });
+      } else if (response.data === "not available") {
+        dispacthAlamat({ type: "not available" });
+      }
+    } catch (e) {
+      dispacthAlamat({ type: "error" });
+    }
+  };
+
+  const onChangeNomorSupplier = async (e) => {
+    setNomorSupplier(e.target.value);
+    dispacthNomor({ type: "loading" });
+    if (e.target.value === "" || e.target.value.length > 15) {
+      setNomorSupplier(e.target.value);
+      dispacthNomor({ type: "not allowed" });
+      return;
+    }
+    try {
+      const response = await axios.post("/api/CheckNomorSupplier", {
+        sendNomorHP: e.target.value,
+        tujuan: "edit",
+        id: router.query.id,
+      });
+      if (response.data === "available") {
+        dispacthNomor({ type: "available" });
+      } else if (response.data === "not available") {
+        dispacthNomor({ type: "not available" });
+      }
+    } catch (e) {
+      dispacthNomor({ type: "error" });
+    }
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
       await axios.patch("/api/EditSupplier", {
         namaSupplier,
+        kodeSupplier,
+        alamatSupplier,
+        nomorSupplier,
         id: router.query.id,
       });
       setisSubmitSuccess(true);
@@ -136,6 +191,8 @@ export default function Edit({ hasil }) {
       <form onSubmit={onSubmit}>
         <NamaSupplier className={state.warnaTextbox} value={namaSupplier} onChange={onChangeNamaSupplier} icon={state.icon} hasil={state.hasil} />
         <KodeSupplier className={kodeState.warnaTextbox} value={kodeSupplier} onChange={onChangeKodeSupplier} icon={kodeState.icon} hasil={kodeState.hasil} />
+        <Alamat className={alamatState.warnaTextbox} value={alamatSupplier} onChange={onChangeAlamatSupplier} icon={alamatState.icon} hasil={alamatState.hasil} />
+        <NoHP className={nomorState.warnaTextbox} value={nomorSupplier} onChange={onChangeNomorSupplier} icon={nomorState.icon} hasil={nomorState.hasil} />
         <FieldButton nama="Submit" />
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
@@ -166,7 +223,7 @@ export default function Edit({ hasil }) {
 }
 
 export async function getServerSideProps(context) {
-  const query = "SELECT nama_supplier, status FROM supplier WHERE id_supplier=?";
+  const query = "SELECT nama_supplier, kode_supplier, alamat, no_hp, status FROM supplier WHERE id_supplier=?";
   const values = [context.query.id];
   try {
     const getData = await handlerQuery({ query, values });
