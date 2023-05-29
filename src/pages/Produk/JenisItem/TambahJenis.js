@@ -1,10 +1,18 @@
 import Head from "next/head";
-import Layout from "../../../components/Layout";
+import Layout from "../../../../components/Layout";
 import { useReducer, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
-import { NamaJenis, FieldButton, Namereducer, jenisinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../components/TambahJenisComp";
+import {
+  NamaJenis,
+  FieldButton,
+  Namereducer,
+  jenisinitValue,
+  Modal,
+  IsiModalSuccess,
+  IsiModalFailed,
+} from "../../../../components/TambahJenisComp";
 
 export default function TambahJenis() {
   const [state, dispacth] = useReducer(Namereducer, jenisinitValue);
@@ -22,10 +30,24 @@ export default function TambahJenis() {
     setShowRetype(!isShowRetype);
   };
   const Eye = ({ onClick }) => {
-    return <FontAwesomeIcon icon="eye" onClick={onClick} pointerEvents="all" cursor="pointer" />;
+    return (
+      <FontAwesomeIcon
+        icon="eye"
+        onClick={onClick}
+        pointerEvents="all"
+        cursor="pointer"
+      />
+    );
   };
   const EyeSlash = ({ onClick }) => {
-    return <FontAwesomeIcon icon="eye-slash" onClick={onClick} pointerEvents="all" cursor="pointer" />;
+    return (
+      <FontAwesomeIcon
+        icon="eye-slash"
+        onClick={onClick}
+        pointerEvents="all"
+        cursor="pointer"
+      />
+    );
   };
 
   // const eyeSlash = (
@@ -92,7 +114,12 @@ export default function TambahJenis() {
     setModalClosed();
   };
 
-  const typeOfIcon2 = isShowRetype === false ? <EyeSlash onClick={changeisShowRetype} /> : <Eye onClick={changeisShowRetype} />;
+  const typeOfIcon2 =
+    isShowRetype === false ? (
+      <EyeSlash onClick={changeisShowRetype} />
+    ) : (
+      <Eye onClick={changeisShowRetype} />
+    );
 
   // const hasilRetype =
   //   kodeRetype === kode && kode.length === 8 ? (
@@ -115,17 +142,30 @@ export default function TambahJenis() {
       </Head>
       <h1 className="title">Tambah Jenis Item</h1>
       <form onSubmit={onSubmit}>
-        <NamaJenis className={state.warnaTextbox} value={namaJenis} onChange={onChangeNamaJenis} icon={state.icon} hasil={state.hasil} />
+        <NamaJenis
+          className={state.warnaTextbox}
+          value={namaJenis}
+          onChange={onChangeNamaJenis}
+          icon={state.icon}
+          hasil={state.hasil}
+        />
         {/* <Kode className={kodeState.warnaTextbox} value={kode} onChange={onChangeKodeKota} icon={kodeState.icon} hasil={kodeState.hasil} /> */}
         <FieldButton nama="Submit" />
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
         {isSubmitSuccess === true ? (
           <IsiModalSuccess pesan="Berhasil Menambahkan Jenis Item">
-            <button className="button is-primary" onClick={MenambahkanUserLagi} style={{ marginRight: "10px" }}>
+            <button
+              className="button is-primary"
+              onClick={MenambahkanUserLagi}
+              style={{ marginRight: "10px" }}
+            >
               Lanjutkan Menambah jenis item
             </button>
-            <button className="button is-primary" onClick={() => router.push("/JenisItem")}>
+            <button
+              className="button is-primary"
+              onClick={() => router.push("/Produk/JenisItem")}
+            >
               Kembali Ke halaman jenis item
             </button>
           </IsiModalSuccess>
@@ -139,7 +179,10 @@ export default function TambahJenis() {
               </>
             }
           >
-            <button className="button is-danger" onClick={() => setModalClosed(true)}>
+            <button
+              className="button is-danger"
+              onClick={() => setModalClosed(true)}
+            >
               OK
             </button>
           </IsiModalFailed>

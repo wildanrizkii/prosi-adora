@@ -1,7 +1,15 @@
 import Head from "next/head";
-import Layout from "../../../../components/Layout";
-import handlerQuery from "../../../../lib/db";
-import { NamaJenis, FieldButton, Namereducer, jenisinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../../components/TambahJenisComp";
+import Layout from "../../../../../components/Layout";
+import handlerQuery from "../../../../../lib/db";
+import {
+  NamaJenis,
+  FieldButton,
+  Namereducer,
+  jenisinitValue,
+  Modal,
+  IsiModalSuccess,
+  IsiModalFailed,
+} from "../../../../../components/TambahJenisComp";
 import { useRouter } from "next/router";
 import { useState, useReducer } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -25,13 +33,32 @@ export default function Edit({ hasil }) {
     setShowRetype(!isShowRetype);
   };
   const Eye = ({ onClick }) => {
-    return <FontAwesomeIcon icon="eye" onClick={onClick} pointerEvents="all" cursor="pointer" />;
+    return (
+      <FontAwesomeIcon
+        icon="eye"
+        onClick={onClick}
+        pointerEvents="all"
+        cursor="pointer"
+      />
+    );
   };
   const EyeSlash = ({ onClick }) => {
-    return <FontAwesomeIcon icon="eye-slash" onClick={onClick} pointerEvents="all" cursor="pointer" />;
+    return (
+      <FontAwesomeIcon
+        icon="eye-slash"
+        onClick={onClick}
+        pointerEvents="all"
+        cursor="pointer"
+      />
+    );
   };
 
-  const typeOfIcon = isShow === false ? <EyeSlash onClick={changeisShow} /> : <Eye onClick={changeisShow} />;
+  const typeOfIcon =
+    isShow === false ? (
+      <EyeSlash onClick={changeisShow} />
+    ) : (
+      <Eye onClick={changeisShow} />
+    );
 
   const onChangeNamaJenis = async (e) => {
     setNamaJenis(e.target.value);
@@ -83,7 +110,12 @@ export default function Edit({ hasil }) {
   //   setRole("pemilik");
   //   setModalClosed();
   // };
-  const typeOfIcon2 = isShowRetype === false ? <EyeSlash onClick={changeisShowRetype} /> : <Eye onClick={changeisShowRetype} />;
+  const typeOfIcon2 =
+    isShowRetype === false ? (
+      <EyeSlash onClick={changeisShowRetype} />
+    ) : (
+      <Eye onClick={changeisShowRetype} />
+    );
 
   // const hasilRetype =
   //   kodeRetype === kode && kode.length === 8 ? (
@@ -105,14 +137,23 @@ export default function Edit({ hasil }) {
       </Head>
       <h1 className="title">Edit Jenis Item</h1>
       <form onSubmit={onSubmit}>
-        <NamaJenis className={state.warnaTextbox} value={namaJenis} onChange={onChangeNamaJenis} icon={state.icon} hasil={state.hasil} />
+        <NamaJenis
+          className={state.warnaTextbox}
+          value={namaJenis}
+          onChange={onChangeNamaJenis}
+          icon={state.icon}
+          hasil={state.hasil}
+        />
         {/* <Kode className={kodeState.warnaTextbox} value={kode} onChange={onChangeKodeKota} icon={kodeState.icon} hasil={kodeState.hasil} /> */}
         <FieldButton nama="Submit" />
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
         {isSubmitSuccess === true ? (
           <IsiModalSuccess pesan="Berhasil Mengupdate Jenis Item">
-            <button className="button is-primary" onClick={() => router.push("/JenisItem")}>
+            <button
+              className="button is-primary"
+              onClick={() => router.push("/Produk/JenisItem")}
+            >
               OK
             </button>
           </IsiModalSuccess>
@@ -126,7 +167,10 @@ export default function Edit({ hasil }) {
               </>
             }
           >
-            <button className="button is-danger" onClick={() => setModalClosed(true)}>
+            <button
+              className="button is-danger"
+              onClick={() => setModalClosed(true)}
+            >
               OK
             </button>
           </IsiModalFailed>

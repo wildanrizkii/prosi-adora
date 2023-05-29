@@ -1,10 +1,18 @@
 import Head from "next/head";
-import Layout from "../../../components/Layout";
+import Layout from "../../../../components/Layout";
 import { useReducer, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
-import { NamaSatuan, FieldButton, Namereducer, satuaninitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../components/TambahSatuanComp";
+import {
+  NamaSatuan,
+  FieldButton,
+  Namereducer,
+  satuaninitValue,
+  Modal,
+  IsiModalSuccess,
+  IsiModalFailed,
+} from "../../../../components/TambahSatuanComp";
 
 export default function TambahSatuan() {
   const [state, dispacth] = useReducer(Namereducer, satuaninitValue);
@@ -18,10 +26,24 @@ export default function TambahSatuan() {
     setShowRetype(!isShowRetype);
   };
   const Eye = ({ onClick }) => {
-    return <FontAwesomeIcon icon="eye" onClick={onClick} pointerEvents="all" cursor="pointer" />;
+    return (
+      <FontAwesomeIcon
+        icon="eye"
+        onClick={onClick}
+        pointerEvents="all"
+        cursor="pointer"
+      />
+    );
   };
   const EyeSlash = ({ onClick }) => {
-    return <FontAwesomeIcon icon="eye-slash" onClick={onClick} pointerEvents="all" cursor="pointer" />;
+    return (
+      <FontAwesomeIcon
+        icon="eye-slash"
+        onClick={onClick}
+        pointerEvents="all"
+        cursor="pointer"
+      />
+    );
   };
 
   // const eyeSlash = (
@@ -88,7 +110,12 @@ export default function TambahSatuan() {
     setModalClosed();
   };
 
-  const typeOfIcon2 = isShowRetype === false ? <EyeSlash onClick={changeisShowRetype} /> : <Eye onClick={changeisShowRetype} />;
+  const typeOfIcon2 =
+    isShowRetype === false ? (
+      <EyeSlash onClick={changeisShowRetype} />
+    ) : (
+      <Eye onClick={changeisShowRetype} />
+    );
 
   // const hasilRetype =
   //   kodeRetype === kode && kode.length === 8 ? (
@@ -111,17 +138,30 @@ export default function TambahSatuan() {
       </Head>
       <h1 className="title">Tambah Satuan Item</h1>
       <form onSubmit={onSubmit}>
-        <NamaSatuan className={state.warnaTextbox} value={namaSatuan} onChange={onChangeNamaSatuan} icon={state.icon} hasil={state.hasil} />
+        <NamaSatuan
+          className={state.warnaTextbox}
+          value={namaSatuan}
+          onChange={onChangeNamaSatuan}
+          icon={state.icon}
+          hasil={state.hasil}
+        />
         {/* <Kode className={kodeState.warnaTextbox} value={kode} onChange={onChangeKodeKota} icon={kodeState.icon} hasil={kodeState.hasil} /> */}
         <FieldButton nama="Submit" />
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
         {isSubmitSuccess === true ? (
           <IsiModalSuccess pesan="Berhasil Menambahkan Satuan Item">
-            <button className="button is-primary" onClick={MenambahkanUserLagi} style={{ marginRight: "10px" }}>
+            <button
+              className="button is-primary"
+              onClick={MenambahkanUserLagi}
+              style={{ marginRight: "10px" }}
+            >
               Lanjutkan Menambah satuan item
             </button>
-            <button className="button is-primary" onClick={() => router.push("/SatuanItem")}>
+            <button
+              className="button is-primary"
+              onClick={() => router.push("/Produk/SatuanItem")}
+            >
               Kembali Ke halaman satuan item
             </button>
           </IsiModalSuccess>
@@ -135,7 +175,10 @@ export default function TambahSatuan() {
               </>
             }
           >
-            <button className="button is-danger" onClick={() => setModalClosed(true)}>
+            <button
+              className="button is-danger"
+              onClick={() => setModalClosed(true)}
+            >
               OK
             </button>
           </IsiModalFailed>
