@@ -4,13 +4,13 @@ export function ImageOfAdora() {
   return (
     <li>
       <figure className="image is-64x64" style={{ marginLeft: 60 }}>
-        <img src="/Logo ADORA.jpg" alt="Logo Apotik Adora" />
+        <img src="/image/Logo ADORA.jpg" alt="Logo Apotik Adora" />
       </figure>
     </li>
   );
 }
 
-export function Menu({ nama, clickedMenu, onClick }) {
+export function Menu({ nama, clickedMenu, onClick, atas }) {
   const router = useRouter();
   const nameStyle =
     clickedMenu === nama ? (
@@ -20,7 +20,11 @@ export function Menu({ nama, clickedMenu, onClick }) {
     );
 
   function handleClick() {
-    router.replace("/" + nama.replaceAll(" ", ""));
+    if (atas !== undefined) {
+      router.push("/" + atas + "/" + nama.replaceAll(" ", ""));
+    } else {
+      router.push("/" + nama.replaceAll(" ", ""));
+    }
   }
   return (
     <li style={{ marginBottom: 10, marginLeft: 10 }}>
@@ -35,7 +39,7 @@ export function MenuWithDropdown({ nama, clickedMenu, dropdown }) {
     setIsDropdownOpen(!isDropdownOpen);
   };
   const pemetaanDropdown = dropdown.map((x) => {
-    return <Menu nama={x} key={x} clickedMenu={clickedMenu}></Menu>;
+    return <Menu nama={x} key={x} clickedMenu={clickedMenu} atas={nama}></Menu>;
   });
   return (
     <li style={{ marginBottom: 10, marginLeft: 10 }}>
