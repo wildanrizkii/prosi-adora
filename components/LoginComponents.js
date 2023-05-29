@@ -9,7 +9,7 @@ export function Pembungkus({ children }) {
 }
 
 export function Gambar() {
-  return <img src="/Logo ADORA.jpg" alt="Logo Apotek Adora" />;
+  return <img src="/image/Logo ADORA.jpg" alt="Logo Apotek Adora" />;
 }
 
 export function Field({ children }) {

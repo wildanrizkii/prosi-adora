@@ -1,103 +1,23 @@
-import Script from "next/script";
-import { useState } from "react";
-import axios from "axios";
-import { useRouter } from "next/router";
-import { Pembungkus, Gambar, Field, Icon } from "../../components/LoginComponents";
 import Head from "next/head";
+import { signIn } from "next-auth/react";
 
-const Login = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [hasil, setHasil] = useState("");
-  const [kelas, setKelas] = useState("button is-success is-fullwidth");
-  const [disable, setDisabled] = useState(false);
-  const router = useRouter();
-  const checkUsernameAndPassword = async (e) => {
-    e.preventDefault();
-    setDisabled(true);
-    setKelas(kelas + " is-loading");
-    const Data = { x: username, y: password };
-    try {
-      const response = await axios.post("/api/Auth", JSON.stringify(Data), {
-        headers: { "Content-Type": "application/json" },
-      });
-      if (response.data !== "Maaf Username atau Password anda salah") {
-        const data = response.data;
-        const sess = await axios.post("/api/set-session", {
-          username: data[0],
-          role: data[1],
-          idUser: data[2],
-        });
-        router.push("/Dashboard");
-      } else {
-        setHasil(response.data);
-      }
-    } catch (e) {
-      setHasil(e.response.data);
-    } finally {
-      setDisabled(false);
-      setKelas("button is-success is-fullwidth");
-    }
-  };
-
+export default function Index() {
   return (
     <>
       <Head>
-        <title>Login</title>
+        <title>SI Adora</title>
       </Head>
-      <Pembungkus>
-        <Gambar />
-        <form onSubmit={checkUsernameAndPassword}>
-          {/* field username */}
-          <Field>
-            <input
-              className="input is-normal is-success"
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => {
-                setUsername(e.target.value);
-              }}
-              placeholder="username"
-              required
-              disabled={disable}
-            />
-            <Icon kelas="fa-user" />
-          </Field>
-          {/* password */}
-          <Field>
-            <input
-              className="input is-normal is-success"
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-              placeholder="password"
-              required
-              disabled={disable}
-              maxLength="8"
-              minLength="8"
-            />
-            <Icon kelas="fa-lock" />
-          </Field>
-          {/* field button */}
-          <div className="field">
-            <button type="submit" className={kelas}>
-              LOGIN
+      <section className="hero is-success is-fullheight">
+        <div className="hero-body">
+          <div className="container has-text-centered">
+            <p className="title">Sistem Informasi</p>
+            <p className="subtitle">Apotek Adora</p>
+            <button className="button" onClick={() => signIn()}>
+              Masuk
             </button>
           </div>
-          {/* hasil */}
-          <div className="field">
-            <p id="hasil" className="help is-danger">
-              {hasil}
-            </p>
-          </div>
-        </form>
-      </Pembungkus>
+        </div>
+      </section>
     </>
   );
-};
-
-export default Login;
+}
