@@ -4,6 +4,7 @@ import axios from "axios";
 export const authOptions = {
   session: {
     strategy: "jwt",
+    maxAge: 1800,
   },
   providers: [
     CredentialsProvider.default({
@@ -44,10 +45,6 @@ export const authOptions = {
       },
     }),
   ],
-
-  jwt: {
-    maxAge: 86400,
-  },
 
   callbacks: {
     async session({ session, token }) {
