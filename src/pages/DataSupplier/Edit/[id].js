@@ -15,7 +15,6 @@ export default function Edit({ hasil }) {
   const [kodeSupplier, setKodeSupplier] = useState(hasil[0].kode_supplier);
   const [alamatSupplier, setAlamatSupplier] = useState(hasil[0].alamat);
   const [nomorSupplier, setNomorSupplier] = useState(hasil[0].no_hp);
-  const [kotaSupplier, setKotaSupplier] = useState(hasil[0].id_kota);
   console.log(hasil[0].nama_supplier);
   console.log(hasil[0].kode_supplier);
   console.log(hasil[0].alamat);
@@ -226,7 +225,7 @@ export default function Edit({ hasil }) {
 }
 
 export async function getServerSideProps(context) {
-  const query = "select supplier.id_supplier, supplier.kode_supplier, supplier.nama_supplier, supplier.alamat, supplier.no_hp, kota.kode_kota, status from supplier JOIN kota ON kota.id_kota = supplier.id_kota"
+  const query = "select supplier.id_supplier AS id_supplier, supplier.kode_supplier AS kode_supplier, supplier.nama_supplier AS nama_supplier, supplier.alamat AS alamat, supplier.no_hp AS no_hp, kota.kode_kota AS kode_kota, supplier.status from supplier JOIN kota ON kota.id_kota = supplier.id_kota";
   // const query = "SELECT nama_supplier, kode_supplier, alamat, no_hp, id_kota, status FROM supplier WHERE id_supplier=?";
   const values = [context.query.id];
   try {
