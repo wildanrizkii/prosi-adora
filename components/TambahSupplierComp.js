@@ -98,6 +98,17 @@ export const nomorinitValue = {
   icon: null,
 };
 
+export const kotainitValue = {
+  warnaTextbox: "input",
+  hasil: (
+    <p className="help" style={{ fontSize: "15px" }}>
+      Silahkan pilih Kota!
+    </p>
+  ),
+  warnaTextbox: "input",
+  icon: null,
+};
+
 export const Kodereducer = (state, action) => {
   if (action.type === "loading") {
     return {
@@ -150,7 +161,7 @@ export const Kodereducer = (state, action) => {
       icon: <FontAwesomeIcon icon="times" color="red" />,
     };
   } else if (action.type === "default") {
-    return kodeinitValue;
+    return kotainitValue;
   }
 };
 
@@ -266,6 +277,62 @@ export const Nomorreducer = (state, action) => {
   }
 };
 
+export const Kotareducer = (state, action) => {
+  if (action.type === "loading") {
+    return {
+      hasil: (
+        <p className="help is-info" style={{ fontSize: "15px" }}>
+          loading
+        </p>
+      ),
+      warnaTextbox: "input is-info",
+      icon: <FontAwesomeIcon icon="spinner" spin color="blue" />,
+    };
+  } else if (action.type === "available") {
+    return {
+      hasil: (
+        <p className="help is-success" style={{ fontSize: "15px" }}>
+          Kota tersedia
+        </p>
+      ),
+      warnaTextbox: "input is-success",
+      icon: <FontAwesomeIcon icon="check" color="green" />,
+    };
+  } else if (action.type === "not available") {
+    return {
+      hasil: (
+        <p className="help is-danger" style={{ fontSize: "15px" }}>
+          nomor sudah terpakai
+        </p>
+      ),
+      warnaTextbox: "input is-danger",
+      icon: <FontAwesomeIcon icon="times" color="red" />,
+    };
+  } else if (action.type === "not allowed") {
+    return {
+      hasil: (
+        <p className="help is-danger" style={{ fontSize: "15px" }}>
+          nomor hp tidak memenuhi ketentuan
+        </p>
+      ),
+      warnaTextbox: "input is-danger",
+      icon: <FontAwesomeIcon icon="times" color="red" />,
+    };
+  } else if (action.type === "error") {
+    return {
+      hasil: (
+        <p className="help is-danger" style={{ fontSize: "15px" }}>
+          Terjadi masalah saat mengakses database
+        </p>
+      ),
+      warnaTextbox: "input is-danger",
+      icon: <FontAwesomeIcon icon="times" color="red" />,
+    };
+  } else if (action.type === "default") {
+    return nomorinitValue;
+  }
+};
+
 export function NamaSupplier({ className, value, onChange, icon, hasil }) {
   return (
     <div className="field">
@@ -287,7 +354,7 @@ export function KodeSupplier({ className, value, onChange, icon, hasil }) {
     <div className="field">
       <label className="label">Kode</label>
       <div className="control has-icons-left has-icons-right">
-        <input className={className} type="text" placeholder="Kode" value={value} onChange={onChange} />
+        <input className={className} type="text" placeholder="Kode Supplier" value={value} onChange={onChange} />
         <span className="icon is-small is-left">
           <i className="fas fa-quote-right" />
         </span>
@@ -303,7 +370,7 @@ export function Alamat({ className, value, onChange, icon, hasil }) {
     <div className="field">
       <label className="label">Alamat</label>
       <div className="control has-icons-left has-icons-right">
-        <input className={className} type="text" placeholder="Kode" value={value} onChange={onChange} />
+        <input className={className} type="text" placeholder="Alamat" value={value} onChange={onChange} />
         <span className="icon is-small is-left">
           <i className="fas fa-address-card" />
         </span>
@@ -319,9 +386,25 @@ export function NoHP({ className, value, onChange, icon, hasil }) {
     <div className="field">
       <label className="label">Nomor HP</label>
       <div className="control has-icons-left has-icons-right">
-        <input className={className} type="text" placeholder="Kode" value={value} onChange={onChange} />
+        <input className={className} type="text" placeholder="Nomor HP" value={value} onChange={onChange} />
         <span className="icon is-small is-left">
-          <i className="fas fa-quote-right" />
+          <i className="fas fa-phone fa-flip-horizontal" />
+        </span>
+        <span className="icon is-small is-right">{icon}</span>
+      </div>
+      {hasil}
+    </div>
+  );
+}
+
+export function Kota({ className, value, onChange, icon, hasil }) {
+  return (
+    <div className="field">
+      <label className="label">Nomor HP</label>
+      <div className="control has-icons-left has-icons-right">
+        <select className={className} type="text" placeholder="Nomor HP" value={value} onChange={onChange} />
+        <span className="icon is-small is-left">
+          <i className="fas fa-phone fa-flip-horizontal" />
         </span>
         <span className="icon is-small is-right">{icon}</span>
       </div>

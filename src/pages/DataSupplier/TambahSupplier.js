@@ -4,11 +4,17 @@ import { useReducer, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
-import { NamaSupplier, FieldButton, Namereducer, supplierinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../components/TambahSupplierComp";
+import { NamaSupplier, KodeSupplier, Alamat, NoHP, FieldButton, Namereducer, Kodereducer, Alamatreducer, Nomorreducer, supplierinitValue, kodeinitValue, alamatinitValue, nomorinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../components/TambahSupplierComp";
 
 export default function TambahSupplier() {
   const [state, dispacth] = useReducer(Namereducer, supplierinitValue);
+  const [kodeState, dispacthKode] = useReducer(Kodereducer, kodeinitValue);
+  const [alamatState, dispacthAlamat] = useReducer(Alamatreducer, alamatinitValue);
+  const [nomorState, dispacthNomor] = useReducer(Nomorreducer, nomorinitValue);
   const [namaSupplier, setNamaSupplier] = useState("");
+  const [kodeSupplier, setKodeSupplier] = useState("");
+  const [alamatSupplier, setAlamatSupplier] = useState("");
+  const [nomorSupplier, setNomorSupplier] = useState("");
   const [isShow, setShow] = useState(false);
   const [isModalClosed, setModalClosed] = useState(true);
   const [isSubmitSuccess, setisSubmitSuccess] = useState(false);
@@ -57,6 +63,78 @@ export default function TambahSupplier() {
     }
   };
 
+  const onChangeKodeSupplier = async (e) => {
+    setKodeSupplier(e.target.value);
+    dispacthKode({ type: "loading" });
+    if (e.target.value === "" || e.target.value.length > 15) {
+      setKodeSupplier(e.target.value);
+      dispacthKode({ type: "not allowed" });
+      return;
+    }
+    try {
+      const response = await axios.post("/api/CheckKodeSupplier", {
+        sendNamaKode: e.target.value,
+        tujuan: "edit",
+        id: router.query.id,
+      });
+      if (response.data === "available") {
+        dispacthKode({ type: "available" });
+      } else if (response.data === "not available") {
+        dispacthKode({ type: "not available" });
+      }
+    } catch (e) {
+      dispacthKode({ type: "error" });
+    }
+  };
+
+  const onChangeAlamatSupplier = async (e) => {
+    setAlamatSupplier(e.target.value);
+    dispacthAlamat({ type: "loading" });
+    if (e.target.value === "" || e.target.value.length > 15) {
+      setAlamatSupplier(e.target.value);
+      dispacthAlamat({ type: "not allowed" });
+      return;
+    }
+    try {
+      const response = await axios.post("/api/CheckAlamatSupplier", {
+        sendNamaAlamat: e.target.value,
+        tujuan: "edit",
+        id: router.query.id,
+      });
+      if (response.data === "available") {
+        dispacthAlamat({ type: "available" });
+      } else if (response.data === "not available") {
+        dispacthAlamat({ type: "not available" });
+      }
+    } catch (e) {
+      dispacthAlamat({ type: "error" });
+    }
+  };
+
+  const onChangeNomorSupplier = async (e) => {
+    setNomorSupplier(e.target.value);
+    dispacthNomor({ type: "loading" });
+    if (e.target.value === "" || e.target.value.length > 15) {
+      setNomorSupplier(e.target.value);
+      dispacthNomor({ type: "not allowed" });
+      return;
+    }
+    try {
+      const response = await axios.post("/api/CheckNomorHPSupplier", {
+        sendNomorHP: e.target.value,
+        tujuan: "edit",
+        id: router.query.id,
+      });
+      if (response.data === "available") {
+        dispacthNomor({ type: "available" });
+      } else if (response.data === "not available") {
+        dispacthNomor({ type: "not available" });
+      }
+    } catch (e) {
+      dispacthNomor({ type: "error" });
+    }
+  };
+
   // const onChangePassword = (e) => {
   //   if (e.target.value.length < 8 || e.target.value.length > 8) {
   //     dispacthPass({ type: "tidak boleh" });
@@ -71,6 +149,10 @@ export default function TambahSupplier() {
     try {
       await axios.post("/api/TambahSupplier", {
         namaSupplier,
+        kodeSupplier,
+        alamatSupplier,
+        nomorSupplier,
+        kodeSupplier,
       });
       setisSubmitSuccess(true);
     } catch (e) {
@@ -112,7 +194,9 @@ export default function TambahSupplier() {
       <h1 className="title">Tambah Supplier</h1>
       <form onSubmit={onSubmit}>
         <NamaSupplier className={state.warnaTextbox} value={namaSupplier} onChange={onChangeNamaSupplier} icon={state.icon} hasil={state.hasil} />
-
+        <KodeSupplier className={kodeState.warnaTextbox} value={kodeSupplier} onChange={onChangeKodeSupplier} icon={kodeState.icon} hasil={kodeState.hasil} />
+        <Alamat className={alamatState.warnaTextbox} value={alamatSupplier} onChange={onChangeAlamatSupplier} icon={alamatState.icon} hasil={alamatState.hasil} />
+        <NoHP className={nomorState.warnaTextbox} value={nomorSupplier} onChange={onChangeNomorSupplier} icon={nomorState.icon} hasil={nomorState.hasil} />
         <FieldButton nama="Submit" />
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
