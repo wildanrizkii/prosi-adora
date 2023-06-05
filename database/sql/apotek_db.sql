@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 25, 2023 at 05:25 PM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.2.0
+-- Generation Time: May 25, 2023 at 03:42 PM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.1.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -34,7 +34,7 @@ CREATE TABLE `detail_transaksi_pembelian` (
   `subtotal` float NOT NULL,
   `harga_per_satuan` float NOT NULL,
   `no_detail_pembelian` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -50,7 +50,7 @@ CREATE TABLE `detail_transaksi_penjualan` (
   `subtotal` float NOT NULL,
   `harga_per_satuan` float NOT NULL,
   `no_detail_penjualan` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -65,7 +65,7 @@ CREATE TABLE `detail_transaksi_stok_opname` (
   `stok_sistem` int(11) NOT NULL,
   `selisih` int(11) NOT NULL,
   `id_item` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -79,7 +79,7 @@ CREATE TABLE `history_harga_jual` (
   `tgl_awal` date DEFAULT NULL,
   `tgl_akhir` date DEFAULT NULL,
   `id_item` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -97,7 +97,7 @@ CREATE TABLE `item` (
   `id_satuan` int(11) NOT NULL,
   `id_jenis_item` int(11) NOT NULL,
   `id_supplier` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `item`
@@ -1626,7 +1626,7 @@ CREATE TABLE `jenis` (
   `id_jenis` int(11) NOT NULL,
   `nama` varchar(15) NOT NULL,
   `status` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `jenis`
@@ -1647,7 +1647,7 @@ CREATE TABLE `kota` (
   `nama_kota` varchar(15) NOT NULL,
   `kode_kota` varchar(5) NOT NULL,
   `status` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `kota`
@@ -1692,7 +1692,7 @@ CREATE TABLE `rak` (
   `id_rak` int(11) NOT NULL,
   `nama_rak` varchar(15) NOT NULL,
   `status` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `rak`
@@ -1724,7 +1724,7 @@ CREATE TABLE `satuan` (
   `id_satuan` int(11) NOT NULL,
   `nama` varchar(15) NOT NULL,
   `status` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `satuan`
@@ -1750,18 +1750,6 @@ INSERT INTO `satuan` (`id_satuan`, `nama`, `status`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sessions`
---
-
-CREATE TABLE `sessions` (
-  `session_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `expires` int(11) UNSIGNED NOT NULL,
-  `data` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `supplier`
 --
 
@@ -1773,7 +1761,7 @@ CREATE TABLE `supplier` (
   `id_kota` int(11) NOT NULL,
   `no_hp` int(11) NOT NULL,
   `status` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `supplier`
@@ -1795,7 +1783,7 @@ CREATE TABLE `transaksi_pembelian` (
   `idUser` int(11) NOT NULL,
   `id_supplier` int(11) NOT NULL,
   `total` float NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -1810,7 +1798,7 @@ CREATE TABLE `transaksi_penjualan` (
   `biaya_racik` int(11) NOT NULL,
   `diskon` float NOT NULL,
   `idUser` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -1822,7 +1810,7 @@ CREATE TABLE `transaksi_stok_opname` (
   `no_opname` varchar(50) NOT NULL,
   `tanggal` date NOT NULL,
   `idUser` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -1833,22 +1821,18 @@ CREATE TABLE `transaksi_stok_opname` (
 CREATE TABLE `user` (
   `idUser` int(11) NOT NULL,
   `username` varchar(15) NOT NULL,
-  `password` varchar(64) NOT NULL,
+  `password` varchar(15) NOT NULL,
   `role` varchar(10) NOT NULL,
   `status` tinyint(1) NOT NULL,
   `salt` varchar(36) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `user`
 --
 
 INSERT INTO `user` (`idUser`, `username`, `password`, `role`, `status`, `salt`) VALUES
-(2, 'budi1234', 'f56d755b6870a994e7aa8ae6440833ea33ac5ec70d2fd917d4bf66320dacda3c', 'pemilik', 1, 'c35087f5-c39e-46c2-aa70-ff9031c5eaee'),
-(3, 'doni1234', '3e75aa6da7d28c492bad74e6bbae3b0ac763e80b1ad08b70dcb20e68bfa4a952', 'kasir', 1, '6abf0733-7ebb-4f34-927e-3f4910989921'),
-(4, 'tini1234', '5c2e5fe672e35eba3cdfbde474064e7f84c75a9dc4da55fc4d6f675c41cc191c', 'ttk', 1, '1d065bc2-1f74-40eb-9a87-58cb847a20b6'),
-(5, 'putri1234', '76a0837f82373f40d7a0b959d1adb86d9d8acbfcee9f515847aad6164c4a1d3d', 'ttk', 1, 'c412dec3-3601-414e-99e7-4237c8b94574'),
-(6, 'fani1234', '8a435aedf793b26538d49c24bf97714ca9f7c12681b841b4807536f6f41654d5', 'ttk', 1, '5ed8528a-360d-4ee4-9309-931219b624a1');
+(1, 'budi123', 'budi123', 'pemilik', 1, '');
 
 --
 -- Indexes for dumped tables
@@ -1914,12 +1898,6 @@ ALTER TABLE `rak`
 --
 ALTER TABLE `satuan`
   ADD PRIMARY KEY (`id_satuan`);
-
---
--- Indexes for table `sessions`
---
-ALTER TABLE `sessions`
-  ADD PRIMARY KEY (`session_id`);
 
 --
 -- Indexes for table `supplier`
@@ -2012,7 +1990,7 @@ ALTER TABLE `supplier`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `idUser` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `idUser` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
