@@ -1,25 +1,36 @@
 import Head from "next/head";
-import Layout from "../../../components/Layout";
-import { useReducer, useState } from "react";
-import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Layout from "../../../../../components/Layout";
+import handlerQuery from "../../../../../lib/db";
+import { NamaSupplier, KodeSupplier, Alamat, NoHP, FieldButton, Namereducer, Kodereducer, Alamatreducer, Nomorreducer, supplierinitValue, kodeinitValue, alamatinitValue, nomorinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../../../components/TambahSupplierComp";
 import { useRouter } from "next/router";
-import { NamaSupplier, KodeSupplier, Alamat, NoHP, FieldButton, Namereducer, Kodereducer, Alamatreducer, Nomorreducer, supplierinitValue, kodeinitValue, alamatinitValue, nomorinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../components/TambahSupplierComp";
-
-export default function TambahSupplier() {
+import { useState, useReducer } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
+export default function Edit({ hasil }) {
   const [state, dispacth] = useReducer(Namereducer, supplierinitValue);
   const [kodeState, dispacthKode] = useReducer(Kodereducer, kodeinitValue);
   const [alamatState, dispacthAlamat] = useReducer(Alamatreducer, alamatinitValue);
   const [nomorState, dispacthNomor] = useReducer(Nomorreducer, nomorinitValue);
-  const [namaSupplier, setNamaSupplier] = useState("");
-  const [kodeSupplier, setKodeSupplier] = useState("");
-  const [alamatSupplier, setAlamatSupplier] = useState("");
-  const [nomorSupplier, setNomorSupplier] = useState("");
+  const [namaSupplier, setNamaSupplier] = useState(hasil[0].nama_supplier);
+  const [kodeSupplier, setKodeSupplier] = useState(hasil[0].kode_supplier);
+  const [alamatSupplier, setAlamatSupplier] = useState(hasil[0].alamat);
+  const [nomorSupplier, setNomorSupplier] = useState(hasil[0].no_hp);
+  // console.log(hasil[0].nama_supplier);
+  // console.log(hasil[0].kode_supplier);
+  // console.log(hasil[0].alamat);
+  // console.log(hasil[0].no_hp);
   const [isShow, setShow] = useState(false);
   const [isModalClosed, setModalClosed] = useState(true);
   const [isSubmitSuccess, setisSubmitSuccess] = useState(false);
   const [isShowRetype, setShowRetype] = useState(false);
   const router = useRouter();
+  const isDisabled =
+    ((state.warnaTextbox === "input is-success" || state.warnaTextbox === "input") && kodeState.length === 8 && kodeRetype === kode) || state.warnaTextbox === "input is-success" || (state.warnaTextbox === "input" && kodeState.length === 0)
+      ? false
+      : true;
+  const changeisShow = (e) => {
+    setShow(!isShow);
+  };
   const changeisShowRetype = (e) => {
     setShowRetype(!isShowRetype);
   };
@@ -30,15 +41,7 @@ export default function TambahSupplier() {
     return <FontAwesomeIcon icon="eye-slash" onClick={onClick} pointerEvents="all" cursor="pointer" />;
   };
 
-  // const eyeSlash = (
-  //   <FontAwesomeIcon
-  //     icon="eye-slash"
-  //     onClick={changeisShow}
-  //     pointerEvents="all"
-  //     cursor="pointer"
-  //   />
-  // );
-  // const typeOfIcon = isShow === false ? <EyeSlash onClick={changeisShow} /> : <Eye onClick={changeisShow} />;
+  const typeOfIcon = isShow === false ? <EyeSlash onClick={changeisShow} /> : <Eye onClick={changeisShow} />;
 
   const onChangeNamaSupplier = async (e) => {
     setNamaSupplier(e.target.value);
@@ -51,7 +54,8 @@ export default function TambahSupplier() {
     try {
       const response = await axios.post("/api/CheckSupplier", {
         sendNamaSupplier: e.target.value,
-        tujuan: "add",
+        tujuan: "edit",
+        id: router.query.id,
       });
       if (response.data === "available") {
         dispacth({ type: "available" });
@@ -120,7 +124,7 @@ export default function TambahSupplier() {
       return;
     }
     try {
-      const response = await axios.post("/api/CheckNomorHPSupplier", {
+      const response = await axios.post("/api/CheckNomorSupplier", {
         sendNomorHP: e.target.value,
         tujuan: "edit",
         id: router.query.id,
@@ -135,24 +139,15 @@ export default function TambahSupplier() {
     }
   };
 
-  // const onChangePassword = (e) => {
-  //   if (e.target.value.length < 8 || e.target.value.length > 8) {
-  //     dispacthPass({ type: "tidak boleh" });
-  //   } else {
-  //     dispacthPass({ type: "boleh" });
-  //   }
-  //   setPassword(e.target.value);
-  // };
-
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("/api/TambahSupplier", {
+      await axios.patch("/api/EditSupplier", {
         namaSupplier,
         kodeSupplier,
         alamatSupplier,
         nomorSupplier,
-        kodeSupplier,
+        id: router.query.id,
       });
       setisSubmitSuccess(true);
     } catch (e) {
@@ -162,14 +157,17 @@ export default function TambahSupplier() {
     }
   };
 
-  const MenambahkanSupplierLagi = () => {
-    dispacth({ type: "default" });
-    setNamaSupplier("");
-    setShow(false);
-    setShowRetype(false);
-    setModalClosed();
-  };
-
+  //   const onChangeRole = (e) => {
+  //     setRole(e.target.value);
+  //   };
+  // const MenambahkanUserLagi = () => {
+  //   dispacth({ type: "default" });
+  //   dispacthPass({ type: "default" });
+  //   setUsername("");
+  //   setPassword("");
+  //   setRole("pemilik");
+  //   setModalClosed();
+  // };
   const typeOfIcon2 = isShowRetype === false ? <EyeSlash onClick={changeisShowRetype} /> : <Eye onClick={changeisShowRetype} />;
 
   // const hasilRetype =
@@ -189,9 +187,9 @@ export default function TambahSupplier() {
   return (
     <>
       <Head>
-        <title>Tambah Supplier</title>
+        <title>Edit Data Supplier</title>
       </Head>
-      <h1 className="title">Tambah Supplier</h1>
+      <h1 className="title">Edit Data Supplier</h1>
       <form onSubmit={onSubmit}>
         <NamaSupplier className={state.warnaTextbox} value={namaSupplier} onChange={onChangeNamaSupplier} icon={state.icon} hasil={state.hasil} />
         <KodeSupplier className={kodeState.warnaTextbox} value={kodeSupplier} onChange={onChangeKodeSupplier} icon={kodeState.icon} hasil={kodeState.hasil} />
@@ -201,12 +199,9 @@ export default function TambahSupplier() {
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
         {isSubmitSuccess === true ? (
-          <IsiModalSuccess pesan="Berhasil Menambahkan Data Supplier">
-            <button className="button is-primary" onClick={MenambahkanSupplierLagi} style={{ marginRight: "10px" }}>
-              Lanjutkan Menambah Supplier
-            </button>
-            <button className="button is-primary" onClick={() => router.push("/DataSupplier")}>
-              Kembali Ke halaman Data Supplier
+          <IsiModalSuccess pesan="Berhasil Mengupdate Data Supplier">
+            <button className="button is-primary" onClick={() => router.push("/Supplier/DataSupplier")}>
+              OK
             </button>
           </IsiModalSuccess>
         ) : (
@@ -228,6 +223,31 @@ export default function TambahSupplier() {
     </>
   );
 }
-TambahSupplier.getLayout = function getLayout(page) {
+
+export async function getServerSideProps(context) {
+  const query = "select id_supplier, kode_supplier, nama_supplier," + 
+  "alamat, no_hp, kode_kota, supplier.status from supplier JOIN kota ON kota.id_kota = supplier.id_kota " +
+  "WHERE id_supplier =?";
+  // const query = "SELECT nama_supplier, kode_supplier, alamat, no_hp, id_kota, status FROM supplier WHERE id_supplier=?";
+  const values = [context.query.id];
+  try {
+    const getData = await handlerQuery({ query, values });
+    const hasil = JSON.parse(JSON.stringify(getData));
+
+    return {
+      props: {
+        hasil,
+      },
+    };
+  } catch (e) {
+    return {
+      props: {
+        hasil: e.message,
+      },
+    };
+  }
+}
+
+Edit.getLayout = function getLayout(page) {
   return <Layout clicked="Data Supplier">{page}</Layout>;
 };
