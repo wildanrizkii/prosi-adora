@@ -15,10 +15,10 @@ export default function Edit({ hasil }) {
   const [kodeSupplier, setKodeSupplier] = useState(hasil[0].kode_supplier);
   const [alamatSupplier, setAlamatSupplier] = useState(hasil[0].alamat);
   const [nomorSupplier, setNomorSupplier] = useState(hasil[0].no_hp);
-  console.log(hasil[0].nama_supplier);
-  console.log(hasil[0].kode_supplier);
-  console.log(hasil[0].alamat);
-  console.log(hasil[0].no_hp);
+  // console.log(hasil[0].nama_supplier);
+  // console.log(hasil[0].kode_supplier);
+  // console.log(hasil[0].alamat);
+  // console.log(hasil[0].no_hp);
   const [isShow, setShow] = useState(false);
   const [isModalClosed, setModalClosed] = useState(true);
   const [isSubmitSuccess, setisSubmitSuccess] = useState(false);
