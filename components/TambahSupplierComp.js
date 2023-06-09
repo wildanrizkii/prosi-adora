@@ -338,7 +338,13 @@ export function NamaSupplier({ className, value, onChange, icon, hasil }) {
     <div className="field">
       <label className="label">Nama Supplier</label>
       <div className="control has-icons-left has-icons-right">
-        <input className={className} type="text" placeholder="Nama Supplier" value={value} onChange={onChange} />
+        <input
+          className={className}
+          type="text"
+          placeholder="Nama Supplier"
+          value={value}
+          onChange={onChange}
+        />
         <span className="icon is-small is-left">
           <i className="fas fa-vials" />
         </span>
@@ -354,7 +360,13 @@ export function KodeSupplier({ className, value, onChange, icon, hasil }) {
     <div className="field">
       <label className="label">Kode</label>
       <div className="control has-icons-left has-icons-right">
-        <input className={className} type="text" placeholder="Kode Supplier" value={value} onChange={onChange} />
+        <input
+          className={className}
+          type="text"
+          placeholder="Kode Supplier"
+          value={value}
+          onChange={onChange}
+        />
         <span className="icon is-small is-left">
           <i className="fas fa-quote-right" />
         </span>
@@ -370,7 +382,13 @@ export function Alamat({ className, value, onChange, icon, hasil }) {
     <div className="field">
       <label className="label">Alamat</label>
       <div className="control has-icons-left has-icons-right">
-        <input className={className} type="text" placeholder="Alamat" value={value} onChange={onChange} />
+        <input
+          className={className}
+          type="text"
+          placeholder="Alamat"
+          value={value}
+          onChange={onChange}
+        />
         <span className="icon is-small is-left">
           <i className="fas fa-address-card" />
         </span>
@@ -386,7 +404,13 @@ export function NoHP({ className, value, onChange, icon, hasil }) {
     <div className="field">
       <label className="label">Nomor HP</label>
       <div className="control has-icons-left has-icons-right">
-        <input className={className} type="text" placeholder="Nomor HP" value={value} onChange={onChange} />
+        <input
+          className={className}
+          type="text"
+          placeholder="Nomor HP"
+          value={value}
+          onChange={onChange}
+        />
         <span className="icon is-small is-left">
           <i className="fas fa-phone fa-flip-horizontal" />
         </span>
@@ -397,16 +421,25 @@ export function NoHP({ className, value, onChange, icon, hasil }) {
   );
 }
 
-export function Kota({ className, value, onChange, icon, hasil }) {
+export function Kota({ className, value, onChange, hasil, arrKota }) {
+  const opsi = arrKota.map((element, idx) => {
+    return <option value={element.id_kota}>{element.nama_kota}</option>;
+  });
+
   return (
     <div className="field">
-      <label className="label">Nomor HP</label>
-      <div className="control has-icons-left has-icons-right">
-        <select className={className} type="text" placeholder="Nomor HP" value={value} onChange={onChange} />
-        <span className="icon is-small is-left">
-          <i className="fas fa-phone fa-flip-horizontal" />
-        </span>
-        <span className="icon is-small is-right">{icon}</span>
+      <label className="label">Kota</label>
+      <div className="control">
+        <div className="select">
+          <select
+            className={className}
+            type="text"
+            value={value}
+            onChange={onChange}
+          >
+            {opsi}
+          </select>
+        </div>
       </div>
       {hasil}
     </div>
@@ -454,7 +487,10 @@ export function Modal({ children, className = "" }) {
 export function IsiModalSuccess({ pesan, children }) {
   return (
     <article className="message">
-      <div className="message-body" style={{ fontSize: "25px", textAlign: "center", color: "green" }}>
+      <div
+        className="message-body"
+        style={{ fontSize: "25px", textAlign: "center", color: "green" }}
+      >
         {pesan}
       </div>
       <div style={{ textAlign: "center", padding: "10px" }}>{children}</div>
@@ -465,7 +501,10 @@ export function IsiModalSuccess({ pesan, children }) {
 export function IsiModalFailed({ pesan, children }) {
   return (
     <article className="message">
-      <div className="message-body" style={{ fontSize: "25px", textAlign: "center", color: "red" }}>
+      <div
+        className="message-body"
+        style={{ fontSize: "25px", textAlign: "center", color: "red" }}
+      >
         {pesan}
       </div>
       <div style={{ textAlign: "center", padding: "10px" }}>{children}</div>

@@ -9,16 +9,18 @@ import {
   IsiModalFailed,
 } from "../../../../../components/AllComponent";
 import { useRouter } from "next/router";
-import { useState, useReducer } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-export default function Edit({ hasil, DaftarKota }) {
+
+export default function Edit({ hasil, rak, satuan, jenis }) {
   const [field, setField] = useState({
-    "Kode Supplier": hasil[0].kode_supplier,
-    "Nama Supplier": hasil[0].nama_supplier,
-    Alamat: hasil[0].alamat,
-    Kota: hasil[0].id_kota,
-    "No HP": hasil[0].no_hp,
+    Nama: hasil[0].nama,
+    Stok: hasil[0].stok,
+    "Stok Minimum": hasil[0].stok_min,
+    Rak: hasil[0].id_rak,
+    Satuan: hasil[0].id_satuan,
+    Jenis: hasil[0].id_jenis_item,
   });
   const [modal, setModal] = useState({
     pesan: undefined,
@@ -26,23 +28,24 @@ export default function Edit({ hasil, DaftarKota }) {
     isModalClosed: true,
   });
   const Router = useRouter();
-  const onChangeKodeSupplier = async (Kode) => {
-    const res = await axios.post("/api/CheckKodeSupp", {
-      kode_supplier: Kode,
-      id_supplier: Router.query.id,
+  const onChangeNamaItem = async (Nama) => {
+    const res = await axios.post("/api/CheckNamaItem", {
+      NamaItem: Nama,
+      IdItem: Router.query.id,
     });
     return res.data;
   };
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.patch("/api/EditSupplier", {
-        Kode_Supplier: field["Kode Supplier"],
-        Nama_Supplier: field["Nama Supplier"],
-        Alamat: field.Alamat,
-        Kota: field.Kota,
-        No_HP: field["No HP"],
-        Id_Supplier: Router.query.id,
+      const res = await axios.patch("/api/EditItem", {
+        Nama: field.Nama,
+        Stok: field.Stok,
+        Stok_Minimum: field["Stok Minimum"],
+        Rak: field.Rak,
+        Satuan: field.Satuan,
+        Jenis: field.Jenis,
+        IdItem: Router.query.id,
       });
       console.log(res.data);
       setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
@@ -57,56 +60,63 @@ export default function Edit({ hasil, DaftarKota }) {
   return (
     <>
       <Head>
-        <title>Edit Supplier</title>
+        <title>Edit Item</title>
       </Head>
-      <h1 className="title">Edit Supplier</h1>
+      <h1 className="title">Edit Item</h1>
 
       <form onSubmit={onSubmit}>
         <Field
-          nama="Kode Supplier"
+          nama="Nama"
           WarnaTextbox="input"
-          value={field["Kode Supplier"]}
+          value={field.Nama}
           onChange={setField}
           field={field}
           IconLeft="fas fa-tags"
-          maxLength="5"
-          fungsiCheck={onChangeKodeSupplier}
+          maxLength="15"
+          fungsiCheck={onChangeNamaItem}
         />
         <Field
-          nama="Nama Supplier"
+          nama="Stok"
           WarnaTextbox="input"
-          value={field["Nama Supplier"]}
+          value={field.Stok}
           onChange={setField}
           field={field}
           IconLeft="fas fa-signature"
           maxLength="15"
+          type="number"
         />
         <Field
-          nama="Alamat"
+          nama="Stok Minimum"
           WarnaTextbox="input"
-          value={field["Alamat"]}
+          value={field["Stok Minimum"]}
           onChange={setField}
           field={field}
           IconLeft="fas fa-map-marked-alt"
-          maxLength="50"
+          type="number"
         />
         <Dropdown
-          nama="Kota"
-          value={field.Kota}
+          nama="Rak"
+          value={field.Rak}
           onChange={setField}
           field={field}
-          arr={DaftarKota}
-          mappingElement={["id_kota", "kode_kota"]}
+          arr={rak}
+          mappingElement={["id_rak", "nama_rak"]}
         />
-
-        <Field
-          nama="No HP"
-          WarnaTextbox="input"
-          value={field["No HP"]}
+        <Dropdown
+          nama="Satuan"
+          value={field.Satuan}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-phone"
-          maxLength="11"
+          arr={satuan}
+          mappingElement={["id_satuan", "nama"]}
+        />
+        <Dropdown
+          nama="Jenis"
+          value={field.Jenis}
+          onChange={setField}
+          field={field}
+          arr={jenis}
+          mappingElement={["id_jenis", "nama"]}
         />
 
         <button className="button is-link">Submit</button>
@@ -116,7 +126,7 @@ export default function Edit({ hasil, DaftarKota }) {
           <IsiModalSuccess pesan={modal.pesan}>
             <button
               className="button is-success"
-              onClick={() => Router.push("/Supplier/DataSupplier")}
+              onClick={() => Router.push("/Produk/DaftarItem")}
             >
               OK
             </button>
@@ -140,33 +150,44 @@ export default function Edit({ hasil, DaftarKota }) {
 
 export async function getServerSideProps(context) {
   const query =
-    "select kode_supplier, nama_supplier," +
-    "alamat, no_hp, id_kota from supplier where id_supplier=?";
+    "select nama,stok,stok_min,id_rak,id_satuan,id_jenis_item " +
+    "from item where id_item=?";
   const values = [context.query.id];
 
-  const query2 = "select id_kota,kode_kota from kota";
+  const queryRak = "select id_rak,nama_rak from rak";
+  const querySatuan = "select id_satuan,nama from satuan";
+  const queryJenis = "select id_jenis,nama from jenis";
 
   try {
     const getData = await handlerQuery({ query, values });
     const hasil = JSON.parse(JSON.stringify(getData));
-    const getData2 = await handlerQuery({ query: query2, values: [] });
-    const DaftarKota = JSON.parse(JSON.stringify(getData2));
+    const getRak = await handlerQuery({ query: queryRak, values: [] });
+    const rak = JSON.parse(JSON.stringify(getRak));
+    const getSatuan = await handlerQuery({ query: querySatuan, values: [] });
+    const satuan = JSON.parse(JSON.stringify(getSatuan));
+    const getJenis = await handlerQuery({ query: queryJenis, values: [] });
+    const jenis = JSON.parse(JSON.stringify(getJenis));
+
     return {
       props: {
         hasil,
-        DaftarKota,
+        rak,
+        satuan,
+        jenis,
       },
     };
   } catch (e) {
     return {
       props: {
         hasil: e.message,
-        DaftarKota: [{ id_kota: "", kode_kota: "" }],
+        rak: [{ id_rak: "", nama_rak: "" }],
+        satuan: [{ id_satuan: "", nama: "" }],
+        jenis: [{ id_jenis: "", nama: "" }],
       },
     };
   }
 }
 
 Edit.getLayout = function getLayout(page) {
-  return <Layout clicked="Data Supplier">{page}</Layout>;
+  return <Layout clicked="Daftar Item">{page}</Layout>;
 };

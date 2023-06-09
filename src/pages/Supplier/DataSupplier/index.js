@@ -2,7 +2,11 @@ import Layout from "../../../../components/Layout";
 import Head from "next/head";
 import handlerQuery from "../../../../lib/db";
 import Link from "next/link";
-import { Modal, IsiModalSuccess, IsiModalFailed } from "../../../../components/TambahSupplierComp";
+import {
+  Modal,
+  IsiModalSuccess,
+  IsiModalFailed,
+} from "../../../../components/TambahSupplierComp";
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -45,15 +49,26 @@ export default function DataSupplier({ hasil }) {
           <td>{x.kode_kota}</td>
           <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
           <td>
-            <Link href={`DataSupplier/Edit/${x.id_supplier}`} className="button is-success is-small">
+            <Link
+              href={`DataSupplier/Edit/${x.id_supplier}`}
+              className="button is-success is-small"
+            >
               Edit
             </Link>
             {x.status === 1 ? (
-              <button className="button is-danger is-small" style={{ marginLeft: "5px" }} onClick={() => changeStatus(x.id_supplier, false)}>
+              <button
+                className="button is-danger is-small"
+                style={{ marginLeft: "5px" }}
+                onClick={() => changeStatus(x.id_supplier, false)}
+              >
                 Non-Aktifkan
               </button>
             ) : (
-              <button className="button is-primary is-small" style={{ marginLeft: "5px" }} onClick={() => changeStatus(x.id_supplier, true)}>
+              <button
+                className="button is-primary is-small"
+                style={{ marginLeft: "5px" }}
+                onClick={() => changeStatus(x.id_supplier, true)}
+              >
                 Aktifkan
               </button>
             )}
@@ -76,7 +91,11 @@ export default function DataSupplier({ hasil }) {
       </Head>
       <h1 className="title">Data Supplier</h1>
 
-      <Link className="button is-link" href="DataSupplier/TambahSupplier" style={{ marginBottom: "10px" }}>
+      <Link
+        className="button is-link"
+        href="DataSupplier/TambahSupplier"
+        style={{ marginBottom: "10px" }}
+      >
         Tambah
       </Link>
 
@@ -128,7 +147,8 @@ export default function DataSupplier({ hasil }) {
 
 export async function getServerSideProps() {
   // const query = "select id_supplier, kode_supplier, nama_supplier, alamat, no_hp, id_kota, status from supplier";
-  const query = "select supplier.id_supplier AS id_supplier, supplier.kode_supplier AS kode_supplier, supplier.nama_supplier AS nama_supplier, supplier.alamat AS alamat, supplier.no_hp AS no_hp, kota.kode_kota AS kode_kota, supplier.status from supplier JOIN kota ON kota.id_kota = supplier.id_kota";
+  const query =
+    "select supplier.id_supplier AS id_supplier, supplier.kode_supplier AS kode_supplier, supplier.nama_supplier AS nama_supplier, supplier.alamat AS alamat, supplier.no_hp AS no_hp, kota.kode_kota AS kode_kota, supplier.status from supplier JOIN kota ON kota.id_kota = supplier.id_kota ";
   const values = [];
   try {
     const getData = await handlerQuery({ query, values });
