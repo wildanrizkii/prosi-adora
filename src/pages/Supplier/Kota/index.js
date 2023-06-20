@@ -42,8 +42,7 @@ export default function Kota({ hasil }) {
           }}
         >
           <td>{index + 1}</td>
-          <td>{x.nama_kota}</td>
-          <td>{x.kode_kota}</td>
+          <td>{x.tipe + " " + x.nama_kota}</td>
           <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
           <td>
             <Link
@@ -101,7 +100,6 @@ export default function Kota({ hasil }) {
           <tr>
             <th>No</th>
             <th>Nama</th>
-            <th>Kode</th>
             <th>Status</th>
             <th>Aksi</th>
           </tr>
@@ -140,7 +138,7 @@ export default function Kota({ hasil }) {
 }
 
 export async function getServerSideProps() {
-  const query = "select nama_kota,kode_kota,id_kota,status from kota";
+  const query = "select nama_kota,tipe,id_kota,status from kota";
   const values = [];
   try {
     const getData = await handlerQuery({ query, values });

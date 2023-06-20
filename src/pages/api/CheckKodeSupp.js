@@ -19,7 +19,7 @@ export default async function handler(req, res) {
       if (hasil.length === 0) {
         res.status(200).send("BISA");
       } else {
-        res.status(200).send("TIDAK");
+        res.status(200).send("TIDAK BISA");
       }
     } catch (e) {
       res.status(500).send(e.message);

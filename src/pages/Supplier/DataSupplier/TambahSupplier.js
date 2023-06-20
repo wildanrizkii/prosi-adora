@@ -20,14 +20,20 @@ export default function TambahSupplier({ DaftarKota }) {
     Alamat: "",
     Kota: DaftarKota[0].id_kota,
     "No HP": "",
+    "Kode Supplier Checked": false,
   });
   const [modal, setModal] = useState({
     pesan: undefined,
     isSuccess: true,
     isModalClosed: true,
   });
+
+  const submit = field["Kode Supplier Checked"] === true;
   const Router = useRouter();
   const onChangeKodeSupplier = async (Kode) => {
+    if (Kode === "") {
+      return "TIDAK BOLEH";
+    }
     const res = await axios.post("/api/CheckKodeSupp", {
       kode_supplier: Kode,
     });
@@ -45,7 +51,6 @@ export default function TambahSupplier({ DaftarKota }) {
       });
       setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
     } catch (e) {
-      console.log(e);
       setModal({
         pesan: e.response.data,
         isSuccess: false,
@@ -63,30 +68,27 @@ export default function TambahSupplier({ DaftarKota }) {
       <form onSubmit={onSubmit}>
         <Field
           nama="Kode Supplier"
-          WarnaTextbox="input"
           value={field["Kode Supplier"]}
           onChange={setField}
-          field={field}
           IconLeft="fas fa-tags"
+          field={field}
           maxLength="5"
           fungsiCheck={onChangeKodeSupplier}
         />
         <Field
           nama="Nama Supplier"
-          WarnaTextbox="input"
           value={field["Nama Supplier"]}
           onChange={setField}
-          field={field}
           IconLeft="fas fa-signature"
+          field={field}
           maxLength="15"
         />
         <Field
           nama="Alamat"
-          WarnaTextbox="input"
           value={field["Alamat"]}
           onChange={setField}
-          field={field}
           IconLeft="fas fa-map-marked-alt"
+          field={field}
           maxLength="50"
         />
         <Dropdown
@@ -95,7 +97,7 @@ export default function TambahSupplier({ DaftarKota }) {
           onChange={setField}
           field={field}
           arr={DaftarKota}
-          mappingElement={["id_kota", "kode_kota"]}
+          mappingElement={["id_kota", "nama_kota"]}
         />
 
         <Field
@@ -105,18 +107,27 @@ export default function TambahSupplier({ DaftarKota }) {
           onChange={setField}
           field={field}
           IconLeft="fas fa-phone"
-          maxLength="11"
+          maxLength="13"
         />
-        <button className="button is-link">Submit</button>
+        <button className="button is-link" disabled={!submit}>
+          Submit
+        </button>
       </form>
       <Modal show={modal.isModalClosed === false && "is-active"}>
         {modal.isSuccess === true ? (
           <IsiModalSuccess pesan={modal.pesan}>
             <button
               className="button is-success"
+              onClick={() => Router.reload()}
+              style={{ marginRight: "20px" }}
+            >
+              Lanjutkan Menambahkan Supplier
+            </button>
+            <button
+              className="button is-success"
               onClick={() => Router.push("/Supplier/DataSupplier")}
             >
-              OK
+              Kembali Ke Data Supplier
             </button>
           </IsiModalSuccess>
         ) : (
@@ -137,11 +148,16 @@ export default function TambahSupplier({ DaftarKota }) {
 }
 
 export async function getServerSideProps() {
-  const query = "select id_kota,kode_kota from kota";
+  const query = "select id_kota,nama_kota,tipe from kota order by nama_kota";
 
   try {
     const getData = await handlerQuery({ query, values: [] });
     const DaftarKota = JSON.parse(JSON.stringify(getData));
+    for (let item in DaftarKota) {
+      DaftarKota[item].nama_kota =
+        DaftarKota[item].tipe + " " + DaftarKota[item].nama_kota;
+    }
+
     return {
       props: {
         DaftarKota,

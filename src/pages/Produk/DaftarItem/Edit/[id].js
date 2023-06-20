@@ -21,14 +21,20 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
     Rak: hasil[0].id_rak,
     Satuan: hasil[0].id_satuan,
     Jenis: hasil[0].id_jenis_item,
+    "Nama Checked": true,
   });
   const [modal, setModal] = useState({
     pesan: undefined,
     isSuccess: true,
     isModalClosed: true,
   });
+  const submit = field["Nama Checked"] === true;
+
   const Router = useRouter();
   const onChangeNamaItem = async (Nama) => {
+    if (Nama === "") {
+      return "TIDAK BOLEH";
+    }
     const res = await axios.post("/api/CheckNamaItem", {
       NamaItem: Nama,
       IdItem: Router.query.id,
@@ -67,27 +73,23 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
       <form onSubmit={onSubmit}>
         <Field
           nama="Nama"
-          WarnaTextbox="input"
           value={field.Nama}
           onChange={setField}
           field={field}
           IconLeft="fas fa-tags"
-          maxLength="15"
+          maxLength="50"
           fungsiCheck={onChangeNamaItem}
         />
         <Field
           nama="Stok"
-          WarnaTextbox="input"
           value={field.Stok}
           onChange={setField}
           field={field}
           IconLeft="fas fa-signature"
-          maxLength="15"
           type="number"
         />
         <Field
           nama="Stok Minimum"
-          WarnaTextbox="input"
           value={field["Stok Minimum"]}
           onChange={setField}
           field={field}
@@ -119,14 +121,16 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
           mappingElement={["id_jenis", "nama"]}
         />
 
-        <button className="button is-link">Submit</button>
+        <button className="button is-link" disabled={!submit}>
+          Submit
+        </button>
       </form>
       <Modal show={modal.isModalClosed === false && "is-active"}>
         {modal.isSuccess === true ? (
           <IsiModalSuccess pesan={modal.pesan}>
             <button
               className="button is-success"
-              onClick={() => Router.push("/Produk/DaftarItem")}
+              onClick={() => Router.push("/Produk/DaftarItem?p=1")}
             >
               OK
             </button>

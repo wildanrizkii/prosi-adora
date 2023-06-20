@@ -46,7 +46,7 @@ export default function DataSupplier({ hasil }) {
           <td>{x.nama_supplier}</td>
           <td>{x.alamat}</td>
           <td>{x.no_hp}</td>
-          <td>{x.kode_kota}</td>
+          <td>{x.tipe_kota + " " + x.nama_kota}</td>
           <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
           <td>
             <Link
@@ -148,7 +148,7 @@ export default function DataSupplier({ hasil }) {
 export async function getServerSideProps() {
   // const query = "select id_supplier, kode_supplier, nama_supplier, alamat, no_hp, id_kota, status from supplier";
   const query =
-    "select supplier.id_supplier AS id_supplier, supplier.kode_supplier AS kode_supplier, supplier.nama_supplier AS nama_supplier, supplier.alamat AS alamat, supplier.no_hp AS no_hp, kota.kode_kota AS kode_kota, supplier.status from supplier JOIN kota ON kota.id_kota = supplier.id_kota ";
+    "select supplier.id_supplier , supplier.kode_supplier , supplier.nama_supplier , supplier.alamat , supplier.no_hp , kota.nama_kota AS nama_kota,kota.tipe as tipe_kota, supplier.status from supplier INNER JOIN kota ON kota.id_kota = supplier.id_kota ";
   const values = [];
   try {
     const getData = await handlerQuery({ query, values });

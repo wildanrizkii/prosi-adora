@@ -13,20 +13,28 @@ import { useState, useReducer } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 export default function Edit({ hasil, DaftarKota }) {
+  console.log(DaftarKota);
   const [field, setField] = useState({
     "Kode Supplier": hasil[0].kode_supplier,
     "Nama Supplier": hasil[0].nama_supplier,
     Alamat: hasil[0].alamat,
     Kota: hasil[0].id_kota,
     "No HP": hasil[0].no_hp,
+    "Kode Supplier Checked": true,
   });
   const [modal, setModal] = useState({
     pesan: undefined,
     isSuccess: true,
     isModalClosed: true,
   });
+
+  const submit = field["Kode Supplier Checked"] === true;
+
   const Router = useRouter();
   const onChangeKodeSupplier = async (Kode) => {
+    if (Kode === "") {
+      return "TIDAK BOLEH";
+    }
     const res = await axios.post("/api/CheckKodeSupp", {
       kode_supplier: Kode,
       id_supplier: Router.query.id,
@@ -64,30 +72,27 @@ export default function Edit({ hasil, DaftarKota }) {
       <form onSubmit={onSubmit}>
         <Field
           nama="Kode Supplier"
-          WarnaTextbox="input"
           value={field["Kode Supplier"]}
           onChange={setField}
-          field={field}
           IconLeft="fas fa-tags"
+          field={field}
           maxLength="5"
           fungsiCheck={onChangeKodeSupplier}
         />
         <Field
           nama="Nama Supplier"
-          WarnaTextbox="input"
           value={field["Nama Supplier"]}
           onChange={setField}
-          field={field}
           IconLeft="fas fa-signature"
+          field={field}
           maxLength="15"
         />
         <Field
           nama="Alamat"
-          WarnaTextbox="input"
           value={field["Alamat"]}
           onChange={setField}
-          field={field}
           IconLeft="fas fa-map-marked-alt"
+          field={field}
           maxLength="50"
         />
         <Dropdown
@@ -96,7 +101,7 @@ export default function Edit({ hasil, DaftarKota }) {
           onChange={setField}
           field={field}
           arr={DaftarKota}
-          mappingElement={["id_kota", "kode_kota"]}
+          mappingElement={["id_kota", "nama_kota"]}
         />
 
         <Field
@@ -106,10 +111,12 @@ export default function Edit({ hasil, DaftarKota }) {
           onChange={setField}
           field={field}
           IconLeft="fas fa-phone"
-          maxLength="11"
+          maxLength="13"
         />
 
-        <button className="button is-link">Submit</button>
+        <button className="button is-link" disabled={!submit}>
+          Submit
+        </button>
       </form>
       <Modal show={modal.isModalClosed === false && "is-active"}>
         {modal.isSuccess === true ? (
@@ -140,17 +147,24 @@ export default function Edit({ hasil, DaftarKota }) {
 
 export async function getServerSideProps(context) {
   const query =
-    "select kode_supplier, nama_supplier," +
-    "alamat, no_hp, id_kota from supplier where id_supplier=?";
+    "select kode_supplier as kode_supplier, nama_supplier,alamat, no_hp, id_kota " +
+    "from supplier where id_supplier=?";
   const values = [context.query.id];
 
-  const query2 = "select id_kota,kode_kota from kota";
+  const query2 = "select id_kota,nama_kota,tipe from kota order by nama_kota";
 
   try {
     const getData = await handlerQuery({ query, values });
     const hasil = JSON.parse(JSON.stringify(getData));
+
     const getData2 = await handlerQuery({ query: query2, values: [] });
     const DaftarKota = JSON.parse(JSON.stringify(getData2));
+
+    for (let item in DaftarKota) {
+      DaftarKota[item].nama_kota =
+        DaftarKota[item].tipe + " " + DaftarKota[item].nama_kota;
+    }
+
     return {
       props: {
         hasil,
