@@ -21,15 +21,9 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
 
   const [filter, setFilter] = useState({
     Search: router.query.Search,
-    Jenis: router.query.Jenis !== undefined ? router.query.Jenis : "-",
-    Satuan: router.query.Satuan !== undefined ? router.query.Satuan : "-",
+    Jenis: router.query.Jenis !== undefined ? router.query.Jenis : "SEMUA",
+    Satuan: router.query.Satuan !== undefined ? router.query.Satuan : "SEMUA",
   });
-
-  const ClickCoba = async () => {
-    const url = new URLSearchParams(router.asPath.split("?")[1]);
-    url.set("p", 200);
-    console.log(url.toString());
-  };
 
   const changeSearch = async (e) => {
     setFilter({ ...filter, Search: e.target.value });
@@ -52,7 +46,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
-    if (e.target.value !== "-") {
+    if (e.target.value !== "SEMUA") {
       hrefBelakang.set("Jenis", e.target.value);
     } else {
       hrefBelakang.delete("Jenis");
@@ -65,7 +59,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
-    if (e.target.value !== "-") {
+    if (e.target.value !== "SEMUA") {
       hrefBelakang.set("Satuan", e.target.value);
     } else {
       hrefBelakang.delete("Satuan");
@@ -152,15 +146,6 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
       </Head>
       <h1 className="title">Daftar Item</h1>
 
-      {/* <Dropdown
-        nama="Jenis"
-        value={filter.Jenis}
-        onChange={setFilter}
-        arr={jenis}
-        field={filter}
-        mappingElement={["id_jenis", "nama"]}
-        placeholder="--Filter Jenis--"
-      /> */}
       <div className="field">
         <label className="label">Jenis</label>
         <div className="control">
@@ -203,7 +188,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
         placeholder="--Filter Satuan--"
       /> */}
       <div className="field">
-        <label className="label">Search</label>
+        <label className="label">Search by Name</label>
         <div className="control has-icons-left has-icons-right">
           <input
             className="input"
@@ -345,10 +330,10 @@ export async function getServerSideProps(context) {
     const jumlah = JSON.parse(JSON.stringify(getJumlah));
     const getJenis = await handlerQuery({ query: queryJenis, values: [] });
     const jenis = JSON.parse(JSON.stringify(getJenis));
-    jenis.push({ id_jenis: "-", nama: "-" });
+    jenis.unshift({ id_jenis: "SEMUA", nama: "SEMUA" });
     const getSatuan = await handlerQuery({ query: querySatuan, values: [] });
     const satuan = JSON.parse(JSON.stringify(getSatuan));
-    satuan.push({ id_satuan: "-", nama: "-" });
+    satuan.unshift({ id_satuan: "SEMUA", nama: "SEMUA" });
 
     return {
       props: {

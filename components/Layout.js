@@ -8,49 +8,60 @@ import { redirect, useRouter } from "next/navigation";
 const Layout = ({ children, clicked }) => {
   const clickedMenu = clicked;
   const dropdownProduk = [
-    "Daftar Item?p=1",
-    "Jenis Item",
-    "Satuan Item",
-    "Rak",
+    { nama: "Daftar Item?p=1", icon: "fas fa-pills" },
+    { nama: "Jenis Item", icon: "fas fa-money-bill-wave" },
+    { nama: "Satuan Item", icon: "fas fa-prescription-bottle" },
+    { nama: "Rak", icon: "fas fa-list-ol" },
   ];
   const dropdownTransaksi = [
-    "Transaksi Stok Opname",
-    "Transaksi Pembelian",
-    "Transaksi Penjualan",
+    { nama: "Transaksi Stok Opname", icon: "fas fa-file-invoice-dollar" },
+    { nama: "Transaksi Pembelian", icon: "fas fa-file-invoice-dollar" },
+    { nama: "Transaksi Penjualan", icon: "fas fa-file-invoice-dollar" },
   ];
   const dropdownLaporan = [
-    "Laporan Penjualan",
-    "Laporan Pembelian",
-    "Laporan Item Terlaris",
+    { nama: "Laporan Penjualan", icon: "far fa-file-alt" },
+    { nama: "Laporan Pembelian", icon: "far fa-file-alt" },
+    { nama: "Laporan Item Terlaris", icon: "far fa-file-alt" },
   ];
-  const dropdownSupplier = ["Data Supplier", "Kota"];
+  const dropdownSupplier = [
+    { nama: "Data Supplier", icon: "fas fa-address-book" },
+    { nama: "Kota", icon: "fas fa-city" },
+  ];
 
   const { data: session, status } = useSession({ required: true });
   const Router = useRouter();
 
   const AksesPemilik = (
     <>
-      <Menu clickedMenu={clickedMenu} nama="Dashboard" />
-      <Menu clickedMenu={clickedMenu} nama="Kasir" />
+      <Menu
+        clickedMenu={clickedMenu}
+        nama="Dashboard"
+        icon="fas fa-chart-line"
+      />
+      <Menu clickedMenu={clickedMenu} nama="Kasir" icon="fas fa-receipt" />
       <MenuWithDropdown
         clickedMenu={clickedMenu}
         dropdown={dropdownSupplier}
         nama="Supplier"
+        icon="fas fa-user-tie"
       />
       <MenuWithDropdown
         clickedMenu={clickedMenu}
         nama="Transaksi"
         dropdown={dropdownTransaksi}
+        icon="fas fa-receipt"
       />
       <MenuWithDropdown
         clickedMenu={clickedMenu}
         nama="Produk"
         dropdown={dropdownProduk}
+        icon="fas fa-box"
       />
       <MenuWithDropdown
         clickedMenu={clickedMenu}
         nama="Laporan"
         dropdown={dropdownLaporan}
+        icon="fas fa-clipboard-list"
       />
     </>
   );
@@ -60,15 +71,19 @@ const Layout = ({ children, clicked }) => {
         clickedMenu={clickedMenu}
         dropdown={dropdownSupplier}
         nama="Supplier"
+        icon="fas fa-user-tie"
       />
       <MenuWithDropdown
         clickedMenu={clickedMenu}
         nama="Transaksi"
         dropdown={dropdownTransaksi}
+        icon="fas fa-receipt"
       />
     </>
   );
-  const AksesKasir = <Menu clickedMenu={clickedMenu} nama="Kasir" />;
+  const AksesKasir = (
+    <Menu clickedMenu={clickedMenu} nama="Kasir" icon="fas fa-receipt" />
+  );
 
   return (
     <>
@@ -124,13 +139,18 @@ const Layout = ({ children, clicked }) => {
                 <ul className="menu-list">
                   {status === "authenticated" &&
                     session.user.role === "pemilik" && (
-                      <Menu clickedMenu={clickedMenu} nama="Pengaturan User" />
+                      <Menu
+                        clickedMenu={clickedMenu}
+                        nama="Pengaturan User"
+                        icon="fas fa-users-cog"
+                      />
                     )}
 
                   <Menu
                     clickedMenu={clickedMenu}
                     nama="Log Out"
                     onClick={signOut}
+                    icon="fas fa-sign-out-alt"
                   />
                 </ul>
               </aside>

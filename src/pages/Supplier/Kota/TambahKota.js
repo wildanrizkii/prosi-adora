@@ -15,8 +15,8 @@ import {
 export default function TambahKota() {
   let [tipe, setTipe] = useState("KAB.");
   const [field, setField] = useState({
-    "Nama Kota": "",
-    "Nama Kota Checked": false,
+    "Nama Kota atau Kab": "",
+    "Nama Kota atau Kab Checked": false,
   });
   const [modal, setModal] = useState({
     pesan: undefined,
@@ -24,7 +24,7 @@ export default function TambahKota() {
     isModalClosed: true,
   });
 
-  const submit = field["Nama Kota Checked"] === true;
+  const submit = field["Nama Kota atau Kab Checked"] === true;
 
   const Router = useRouter();
 
@@ -43,7 +43,7 @@ export default function TambahKota() {
     e.preventDefault();
     try {
       const res = await axios.post("/api/TambahKota", {
-        namaKota: field["Nama Kota"],
+        namaKota: field["Nama Kota atau Kab"],
         tipe: tipe,
       });
       setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
@@ -87,8 +87,8 @@ export default function TambahKota() {
         </div>
 
         <FieldKhusus
-          nama="Nama Kota"
-          value={field["Nama Kota"]}
+          nama="Nama Kota atau Kab"
+          value={field["Nama Kota atau Kab"]}
           onChange={setField}
           field={field}
           IconLeft="fas fa-city"

@@ -15,15 +15,15 @@ import axios from "axios";
 export default function Edit({ hasil }) {
   let [tipe, setTipe] = useState(hasil[0].tipe);
   const [field, setField] = useState({
-    "Nama Kota": hasil[0].nama_kota,
-    "Nama Kota Checked": true,
+    "Nama Kota atau Kab": hasil[0].nama_kota,
+    "Nama Kota atau Kab Checked": true,
   });
   const [modal, setModal] = useState({
     pesan: undefined,
     isSuccess: true,
     isModalClosed: true,
   });
-  const submit = field["Nama Kota Checked"] === true;
+  const submit = field["Nama Kota atau Kab Checked"] === true;
   const Router = useRouter();
   const onChangeNamaKota = async (Nama) => {
     if (Nama === "") {
@@ -41,7 +41,7 @@ export default function Edit({ hasil }) {
     e.preventDefault();
     try {
       const res = await axios.patch("/api/EditKota", {
-        namaKota: field["Nama Kota"],
+        namaKota: field["Nama Kota atau Kab"],
         id: Router.query.id,
         tipe: tipe,
       });
@@ -88,8 +88,8 @@ export default function Edit({ hasil }) {
         </div>
 
         <FieldKhusus
-          nama="Nama Kota"
-          value={field["Nama Kota"]}
+          nama="Nama Kota atau Kab"
+          value={field["Nama Kota atau Kab"]}
           onChange={setField}
           field={field}
           IconLeft="fas fa-city"

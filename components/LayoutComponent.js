@@ -10,7 +10,7 @@ export function ImageOfAdora() {
   );
 }
 
-export function Menu({ nama, clickedMenu, onClick, atas }) {
+export function Menu({ nama, clickedMenu, onClick, atas, icon }) {
   const router = useRouter();
   const nameStyle =
     clickedMenu === nama.split("?")[0] ? (
@@ -28,22 +28,37 @@ export function Menu({ nama, clickedMenu, onClick, atas }) {
   }
   return (
     <li style={{ marginBottom: 10, marginLeft: 10 }}>
-      <a onClick={onClick ? onClick : handleClick}>{nameStyle}</a>
+      <a onClick={onClick ? onClick : handleClick}>
+        <i className={icon} style={{ marginRight: "5px" }} />
+        {nameStyle}
+      </a>
     </li>
   );
 }
 
-export function MenuWithDropdown({ nama, clickedMenu, dropdown }) {
+export function MenuWithDropdown({ nama, clickedMenu, dropdown, icon }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const ClickHandler = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
   const pemetaanDropdown = dropdown.map((x) => {
-    return <Menu nama={x} key={x} clickedMenu={clickedMenu} atas={nama}></Menu>;
+    console.log(x.icon);
+    return (
+      <Menu
+        nama={x.nama}
+        key={x.nama}
+        clickedMenu={clickedMenu}
+        atas={nama}
+        icon={x.icon}
+      ></Menu>
+    );
   });
   return (
     <li style={{ marginBottom: 10, marginLeft: 10 }}>
-      <a onClick={ClickHandler}>{nama}</a>
+      <a onClick={ClickHandler}>
+        <i className={icon} style={{ marginRight: "5px" }} />
+        {nama}
+      </a>
 
       {isDropdownOpen && <ul>{pemetaanDropdown}</ul>}
     </li>
