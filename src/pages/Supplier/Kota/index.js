@@ -12,9 +12,14 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 export default function Kota({ hasil }) {
   let semuaAkun;
+  const router = useRouter();
   const [isUpdateStatusSuccess, setUpdateStatus] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const router = useRouter();
+  const [filter, setFilter] = useState({
+    Search: router.query.Search,
+    Tipe: router.query.Tipe !== undefined ? router.query.Tipe : "KAB. DAN KOTA",
+  });
+
   async function changeStatus(id, toActive) {
     try {
       if (toActive === true) {
@@ -29,6 +34,33 @@ export default function Kota({ hasil }) {
       setShowModal(true);
     }
   }
+  const changeSearch = (e) => {
+    setFilter({ ...filter, Search: e.target.value });
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    if (e.target.value !== "") {
+      hrefBelakang.set("Search", e.target.value);
+    } else {
+      hrefBelakang.delete("Search");
+    }
+
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const onChangeTipe = (e) => {
+    setFilter({ ...filter, Tipe: e.target.value });
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    if (e.target.value !== "KAB. DAN KOTA") {
+      hrefBelakang.set("Tipe", e.target.value);
+    } else {
+      hrefBelakang.delete("Tipe");
+    }
+
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
 
   try {
     semuaAkun = hasil.map((x, index) => {
@@ -87,6 +119,34 @@ export default function Kota({ hasil }) {
       </Head>
       <h1 className="title">Kota</h1>
 
+      <div className="field">
+        <label className="label">KAB/KOTA</label>
+        <div className="control">
+          <div className="select">
+            <select onChange={onChangeTipe} value={filter.Tipe}>
+              <option value="KAB. DAN KOTA">KAB. DAN KOTA</option>
+              <option value="KAB.">KAB.</option>
+              <option value="KOTA">KOTA</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div className="field">
+        <label className="label">Search by Name</label>
+        <div className="control has-icons-left has-icons-right">
+          <input
+            className="input"
+            type="text"
+            value={filter.Search}
+            onChange={changeSearch}
+            maxLength="100"
+            required
+          />
+          <span className="icon is-small is-left">
+            <i className="fas fa-search"></i>
+          </span>
+        </div>
+      </div>
       <Link
         className="button is-link"
         href="Kota/TambahKota"
@@ -137,9 +197,32 @@ export default function Kota({ hasil }) {
   );
 }
 
-export async function getServerSideProps() {
-  const query = "select nama_kota,tipe,id_kota,status from kota";
+export async function getServerSideProps(context) {
+  let query = "select nama_kota,tipe,id_kota,status from kota";
+
+  const { Search, Tipe } = context.query;
+  if (Search !== undefined || Tipe !== undefined) {
+    query = query + " where ";
+    if (Search !== undefined) {
+      query = query + "nama_kota like ?";
+    }
+    if (Tipe !== undefined) {
+      if (Search === undefined) {
+        query = query + " tipe=?";
+      } else {
+        query = query + " and tipe=?";
+      }
+    }
+  }
+
+  query = query + " order by id_kota";
   const values = [];
+  if (Search !== undefined) {
+    values.push("%" + Search + "%");
+  }
+  if (Tipe !== undefined) {
+    values.push(Tipe);
+  }
   try {
     const getData = await handlerQuery({ query, values });
     const hasil = JSON.parse(JSON.stringify(getData));
