@@ -7,9 +7,22 @@ import { NextResponse } from "next/server";
 import { redirect, useRouter } from "next/navigation";
 const Layout = ({ children, clicked }) => {
   const clickedMenu = clicked;
-  const dropdownProduk = ["Daftar Item", "Jenis Item", "Satuan Item", "Rak"];
-  const dropdownTransaksi = ["Transaksi Stok Opname", "Transaksi Pembelian", "Transaksi Penjualan"];
-  const dropdownLaporan = ["Laporan Penjualan", "Laporan Pembelian", "Laporan Item Terlaris"];
+  const dropdownProduk = [
+    "Daftar Item?p=1",
+    "Jenis Item",
+    "Satuan Item",
+    "Rak",
+  ];
+  const dropdownTransaksi = [
+    "Transaksi Stok Opname",
+    "Transaksi Pembelian",
+    "Transaksi Penjualan",
+  ];
+  const dropdownLaporan = [
+    "Laporan Penjualan",
+    "Laporan Pembelian",
+    "Laporan Item Terlaris",
+  ];
   const dropdownSupplier = ["Data Supplier", "Kota"];
 
   const { data: session, status } = useSession({ required: true });
@@ -19,16 +32,40 @@ const Layout = ({ children, clicked }) => {
     <>
       <Menu clickedMenu={clickedMenu} nama="Dashboard" />
       <Menu clickedMenu={clickedMenu} nama="Kasir" />
-      <MenuWithDropdown clickedMenu={clickedMenu} dropdown={dropdownSupplier} nama="Supplier" />
-      <MenuWithDropdown clickedMenu={clickedMenu} nama="Transaksi" dropdown={dropdownTransaksi} />
-      <MenuWithDropdown clickedMenu={clickedMenu} nama="Produk" dropdown={dropdownProduk} />
-      <MenuWithDropdown clickedMenu={clickedMenu} nama="Laporan" dropdown={dropdownLaporan} />
+      <MenuWithDropdown
+        clickedMenu={clickedMenu}
+        dropdown={dropdownSupplier}
+        nama="Supplier"
+      />
+      <MenuWithDropdown
+        clickedMenu={clickedMenu}
+        nama="Transaksi"
+        dropdown={dropdownTransaksi}
+      />
+      <MenuWithDropdown
+        clickedMenu={clickedMenu}
+        nama="Produk"
+        dropdown={dropdownProduk}
+      />
+      <MenuWithDropdown
+        clickedMenu={clickedMenu}
+        nama="Laporan"
+        dropdown={dropdownLaporan}
+      />
     </>
   );
   const AksesTTK = (
     <>
-      <MenuWithDropdown clickedMenu={clickedMenu} dropdown={dropdownSupplier} nama="Supplier" />
-      <MenuWithDropdown clickedMenu={clickedMenu} nama="Transaksi" dropdown={dropdownTransaksi} />
+      <MenuWithDropdown
+        clickedMenu={clickedMenu}
+        dropdown={dropdownSupplier}
+        nama="Supplier"
+      />
+      <MenuWithDropdown
+        clickedMenu={clickedMenu}
+        nama="Transaksi"
+        dropdown={dropdownTransaksi}
+      />
     </>
   );
   const AksesKasir = <Menu clickedMenu={clickedMenu} nama="Kasir" />;
@@ -76,15 +113,25 @@ const Layout = ({ children, clicked }) => {
           <div
             className="columns"
             style={{
-              marginTop: status === "authenticated" && session.user.role === "pemilik" ? 60 : 110,
+              marginTop:
+                status === "authenticated" && session.user.role === "pemilik"
+                  ? 60
+                  : 110,
             }}
           >
             <div className="column">
               <aside className="menu">
                 <ul className="menu-list">
-                  {status === "authenticated" && session.user.role === "pemilik" && <Menu clickedMenu={clickedMenu} nama="Pengaturan User" />}
+                  {status === "authenticated" &&
+                    session.user.role === "pemilik" && (
+                      <Menu clickedMenu={clickedMenu} nama="Pengaturan User" />
+                    )}
 
-                  <Menu clickedMenu={clickedMenu} nama="Log Out" onClick={signOut} />
+                  <Menu
+                    clickedMenu={clickedMenu}
+                    nama="Log Out"
+                    onClick={signOut}
+                  />
                 </ul>
               </aside>
             </div>

@@ -13,10 +13,10 @@ export function ImageOfAdora() {
 export function Menu({ nama, clickedMenu, onClick, atas }) {
   const router = useRouter();
   const nameStyle =
-    clickedMenu === nama ? (
-      <span style={{ color: "green" }}>{nama}</span>
+    clickedMenu === nama.split("?")[0] ? (
+      <span style={{ color: "green" }}>{nama.split("?")[0]}</span>
     ) : (
-      nama
+      nama.split("?")[0]
     );
 
   function handleClick() {
