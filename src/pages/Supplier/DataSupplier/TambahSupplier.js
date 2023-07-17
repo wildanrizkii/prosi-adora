@@ -1,8 +1,7 @@
 import Head from "next/head";
 import Layout from "../../../../components/Layout";
-import { useReducer, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
 import {
   Field,
@@ -32,7 +31,7 @@ export default function TambahSupplier({ DaftarKota }) {
   const Router = useRouter();
   const onChangeKodeSupplier = async (Kode) => {
     if (Kode === "") {
-      return "TIDAK BOLEH";
+      return "default";
     }
     const res = await axios.post("/api/CheckKodeSupp", {
       kode_supplier: Kode,
@@ -81,7 +80,7 @@ export default function TambahSupplier({ DaftarKota }) {
           onChange={setField}
           IconLeft="fas fa-signature"
           field={field}
-          maxLength="15"
+          maxLength="20"
         />
         <Field
           nama="Alamat"
@@ -89,7 +88,7 @@ export default function TambahSupplier({ DaftarKota }) {
           onChange={setField}
           IconLeft="fas fa-map-marked-alt"
           field={field}
-          maxLength="50"
+          maxLength="100"
         />
         <Dropdown
           nama="Kota"
@@ -102,7 +101,6 @@ export default function TambahSupplier({ DaftarKota }) {
 
         <Field
           nama="No HP"
-          WarnaTextbox="input"
           value={field["No HP"]}
           onChange={setField}
           field={field}
@@ -134,9 +132,7 @@ export default function TambahSupplier({ DaftarKota }) {
           <IsiModalFailed pesan={modal.pesan}>
             <button
               className="button is-danger"
-              onClick={() => {
-                setModal({ ...modal, isModalClosed: true });
-              }}
+              onClick={() => setModal({ ...modal, isModalClosed: true })}
             >
               OK
             </button>
@@ -148,7 +144,8 @@ export default function TambahSupplier({ DaftarKota }) {
 }
 
 export async function getServerSideProps() {
-  const query = "select id_kota,nama_kota,tipe from kota order by nama_kota";
+  const query =
+    "select id_kota,nama_kota,tipe from kota where status!=0 order by nama_kota";
 
   try {
     const getData = await handlerQuery({ query, values: [] });
@@ -166,7 +163,7 @@ export async function getServerSideProps() {
   } catch (e) {
     return {
       props: {
-        DaftarKota: [{ id_kota: "", kode_kota: "" }],
+        DaftarKota: [{ id_kota: "", nama_kota: "", tipe: "" }],
       },
     };
   }

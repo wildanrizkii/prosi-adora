@@ -1,7 +1,7 @@
 import { ImageOfAdora, Menu, MenuWithDropdown } from "./LayoutComponent";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-const Layout = ({ children, clicked }) => {
+const LayoutLama = ({ children, clicked }) => {
   const clickedMenu = clicked;
   const dropdownProduk = [
     { nama: "Daftar Item?p=1", icon: "fas fa-capsules" },
@@ -80,12 +80,11 @@ const Layout = ({ children, clicked }) => {
   const AksesKasir = (
     <Menu clickedMenu={clickedMenu} nama="Kasir" icon="fas fa-receipt" />
   );
-
   return (
     <>
-      <div className="columns" style={{ marginTop: "0" }}>
-        <div className="column is-2" style={{ height: "100vh" }}>
-          <aside className="menu" style={{ height: "73vh", overflow: "auto" }}>
+      <div className="columns">
+        <div className="column is-2">
+          <aside className="menu" style={{ height: 500, overflow: "auto" }}>
             <ul className="menu-list">
               <ImageOfAdora />
               {status === "authenticated" && session.user.role === "pemilik"
@@ -97,44 +96,65 @@ const Layout = ({ children, clicked }) => {
                 : null}
             </ul>
           </aside>
-
-          <aside
-            className="menu"
+          {/* 60 */}
+          <div
+            className="columns"
             style={{
-              height: "24vh",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-end",
+              marginTop:
+                status === "authenticated" && session.user.role === "pemilik"
+                  ? 60
+                  : 110,
             }}
           >
-            <ul className="menu-list">
-              {status === "authenticated" &&
-                session.user.role === "pemilik" && (
+            <div className="column">
+              <aside className="menu">
+                <ul className="menu-list">
+                  {status === "authenticated" &&
+                    session.user.role === "pemilik" && (
+                      <Menu
+                        clickedMenu={clickedMenu}
+                        nama="Pengaturan User"
+                        icon="fas fa-users-cog"
+                      />
+                    )}
+
                   <Menu
                     clickedMenu={clickedMenu}
-                    nama="Pengaturan User"
-                    icon="fas fa-users-cog"
+                    nama="Log Out"
+                    onClick={signOut}
+                    icon="fas fa-sign-out-alt"
                   />
-                )}
-
-              <Menu
-                clickedMenu={clickedMenu}
-                nama="Log Out"
-                onClick={signOut}
-                icon="fas fa-sign-out-alt"
-              />
-            </ul>
-          </aside>
+                </ul>
+              </aside>
+            </div>
+          </div>
         </div>
         <div
           className="column"
           style={{
+            padding: "100px",
             backgroundColor: "#f3f3f3",
-            height: "100vh",
-            padding: "13vh",
             overflowY: "auto",
+            height: 688,
           }}
         >
+          {/* pilihan profile 2 */}
+          {/* <span
+            style={{
+              textAlign: "right",
+              fontWeight: "bold",
+              borderStyle: "solid",
+              borderRadius: "20px",
+              float: "right",
+              padding: "5px",
+              backgroundColor: "white",
+            }}
+          >
+            <i className="fas fa-user" style={{ marginRight: "5px" }} />
+            {status === "authenticated" && session.user.username}
+          </span> */}
+          {/* pilihan profile 2 */}
+          {/* pilihan profile 1 */}
           <div
             className="container"
             style={{ display: "flex", justifyContent: "end" }}
@@ -175,6 +195,7 @@ const Layout = ({ children, clicked }) => {
               </div>
             </div>
           </div>
+          {/* pilihan profile 1 */}
           {children}
         </div>
       </div>
@@ -182,5 +203,4 @@ const Layout = ({ children, clicked }) => {
   );
 };
 
-export default Layout;
-// 688
+export default LayoutLama;

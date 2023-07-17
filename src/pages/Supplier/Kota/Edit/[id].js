@@ -6,11 +6,10 @@ import {
   Modal,
   IsiModalFailed,
   IsiModalSuccess,
-  Dropdown,
 } from "../../../../../components/AllComponent";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
+
 import axios from "axios";
 export default function Edit({ hasil }) {
   let [tipe, setTipe] = useState(hasil[0].tipe);
@@ -27,7 +26,7 @@ export default function Edit({ hasil }) {
   const Router = useRouter();
   const onChangeNamaKota = async (Nama) => {
     if (Nama === "") {
-      return "TIDAK BOLEH";
+      return "default";
     }
     const res = await axios.post("/api/CheckKota", {
       sendNamaKota: Nama,
@@ -93,7 +92,7 @@ export default function Edit({ hasil }) {
           onChange={setField}
           field={field}
           IconLeft="fas fa-city"
-          maxLength="15"
+          maxLength="50"
           fungsiCheck={onChangeNamaKota}
           id="a"
         />
@@ -151,5 +150,3 @@ export async function getServerSideProps(context) {
 Edit.getLayout = function getLayout(page) {
   return <Layout clicked="Kota">{page}</Layout>;
 };
-
-//tes komen

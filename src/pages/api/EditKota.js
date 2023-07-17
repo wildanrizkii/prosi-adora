@@ -13,9 +13,9 @@ export default async function handler(req, res) {
 
     try {
       const hasil = await handlerQuery({ query, values });
-      res.status(200).send("Berhasil mengupdate Kota");
+      res.status(200).send("BERHASIL MENGUPDATE KOTA");
     } catch (e) {
-      res.status(500).send("Gagal mengupdate Kota");
+      res.status(500).send("GAGAL MENGUPDATE KOTA");
     }
   }
 }

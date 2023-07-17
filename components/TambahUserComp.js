@@ -109,6 +109,7 @@ export function Username({ className, value, onChange, icon, hasil }) {
           placeholder="Username"
           value={value}
           onChange={onChange}
+          maxLength="15"
         />
         <span className="icon is-small is-left">
           <i className="fas fa-user" />

@@ -8,9 +8,9 @@ export default async function handler(req, res) {
 
     try {
       const hasil = await handlerQuery({ query, values });
-      res.status(200).send("Berhasil mengupdate jenis");
+      res.status(200).send("BERHASIL MENGUPDATE JENIS ITEM");
     } catch (e) {
-      res.status(500).send(e.message);
+      res.status(500).send("GAGAL MENGUPDATE JENIS ITEM");
     }
   }
 }

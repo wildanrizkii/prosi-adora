@@ -3,6 +3,10 @@ import handlerQuery from "../../../lib/db";
 export default async function handler(req, res) {
   if (req.method === "POST") {
     const { sendNamaKota, tujuan, tipe } = req.body;
+    console.log("");
+    console.log(sendNamaKota);
+    console.log(tujuan);
+    console.log(tipe);
     if (tujuan === "add") {
       const query = "select nama_kota from kota where nama_kota=? and tipe=?";
       const values = [sendNamaKota, tipe];

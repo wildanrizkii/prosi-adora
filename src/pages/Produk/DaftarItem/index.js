@@ -6,17 +6,20 @@ import {
   Modal,
   IsiModalFailed,
   IsiModalSuccess,
-  Dropdown,
   Pagination,
-  Field,
 } from "../../../../components/AllComponent";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
 export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
   let semuaAkun;
-  const [isUpdateStatusSuccess, setUpdateStatus] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+
+  const [modal, setModal] = useState({
+    pesan: undefined,
+    isSuccess: true,
+    isModalClosed: true,
+  });
+
   const router = useRouter();
 
   const [filter, setFilter] = useState({
@@ -46,7 +49,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
-    if (e.target.value !== "SEMUA") {
+    if (e.target.value !== "") {
       hrefBelakang.set("Jenis", e.target.value);
     } else {
       hrefBelakang.delete("Jenis");
@@ -59,7 +62,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
-    if (e.target.value !== "SEMUA") {
+    if (e.target.value !== "") {
       hrefBelakang.set("Satuan", e.target.value);
     } else {
       hrefBelakang.delete("Satuan");
@@ -70,16 +73,19 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
 
   async function changeStatus(id, toActive) {
     try {
+      let res;
       if (toActive === true) {
-        await axios.patch("/api/UpdateStatusItem", { id, status: 1 });
+        res = await axios.patch("/api/UpdateStatusItem", { id, status: 1 });
       } else if (toActive === false) {
-        await axios.patch("/api/UpdateStatusItem", { id, status: 0 });
+        res = await axios.patch("/api/UpdateStatusItem", { id, status: 0 });
       }
-      setUpdateStatus(true);
+      setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
     } catch (e) {
-      setUpdateStatus(false);
-    } finally {
-      setShowModal(true);
+      setModal({
+        pesan: e.response.data,
+        isSuccess: false,
+        isModalClosed: false,
+      });
     }
   }
   let index = (parseInt(router.query.p) - 1) * 10;
@@ -178,15 +184,6 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
           </div>
         </div>
       </div>
-      {/* <Dropdown
-        nama="Satuan"
-        value={filter.Satuan}
-        onChange={setFilter}
-        arr={satuan}
-        field={filter}
-        mappingElement={["id_satuan", "nama"]}
-        placeholder="--Filter Satuan--"
-      /> */}
       <div className="field">
         <label className="label">Search by Name</label>
         <div className="control has-icons-left has-icons-right">
@@ -232,13 +229,13 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
         currentPage={router.query.p}
         jumlah={jumlah[0].jumlah}
       />
-      <Modal show={showModal === true && "is-active"}>
-        {isUpdateStatusSuccess === true ? (
-          <IsiModalSuccess pesan="Berhasil Mengubah Status">
+      <Modal show={modal.isModalClosed === false && "is-active"}>
+        {modal.isSuccess === true ? (
+          <IsiModalSuccess pesan={modal.pesan}>
             <button
-              className="button is-primary"
+              className="button is-success"
               onClick={() => {
-                setShowModal(false);
+                setModal({ ...modal, isModalClosed: true });
                 router.reload();
               }}
             >
@@ -246,11 +243,11 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
             </button>
           </IsiModalSuccess>
         ) : (
-          <IsiModalFailed pesan="Gagal mengubah status">
+          <IsiModalFailed pesan={modal.pesan}>
             <button
               className="button is-danger"
               onClick={() => {
-                setShowModal(false);
+                setModal({ ...modal, isModalClosed: true });
                 router.reload();
               }}
             >
@@ -319,10 +316,6 @@ export async function getServerSideProps(context) {
   const queryJenis = "select id_jenis,nama from jenis";
   const querySatuan = "select id_satuan,nama from satuan";
 
-  console.log("query :" + query);
-  console.log("query2 :" + query2);
-
-  console.log(values);
   try {
     const getData = await handlerQuery({ query, values });
     const hasil = JSON.parse(JSON.stringify(getData));
@@ -330,10 +323,10 @@ export async function getServerSideProps(context) {
     const jumlah = JSON.parse(JSON.stringify(getJumlah));
     const getJenis = await handlerQuery({ query: queryJenis, values: [] });
     const jenis = JSON.parse(JSON.stringify(getJenis));
-    jenis.unshift({ id_jenis: "SEMUA", nama: "SEMUA" });
+    jenis.unshift({ id_jenis: "", nama: "SEMUA" });
     const getSatuan = await handlerQuery({ query: querySatuan, values: [] });
     const satuan = JSON.parse(JSON.stringify(getSatuan));
-    satuan.unshift({ id_satuan: "SEMUA", nama: "SEMUA" });
+    satuan.unshift({ id_satuan: "", nama: "SEMUA" });
 
     return {
       props: {

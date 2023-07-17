@@ -1,74 +1,64 @@
 import Head from "next/head";
 import Layout from "../../../../../components/Layout";
 import handlerQuery from "../../../../../lib/db";
-import { NamaRak, FieldButton, Namereducer, rakinitValue, Modal, IsiModalSuccess, IsiModalFailed } from "../../../../../components/TambahRakComp";
+
 import { useRouter } from "next/router";
-import { useState, useReducer } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
 import axios from "axios";
+
+import {
+  Field,
+  Modal,
+  IsiModalFailed,
+  IsiModalSuccess,
+} from "../../../../../components/AllComponent";
 export default function Edit({ hasil }) {
-  const [state, dispacth] = useReducer(Namereducer, rakinitValue);
-  const [namaRak, setNamaRak] = useState(hasil[0].nama_rak);
-  const [isShow, setShow] = useState(false);
-  const [isModalClosed, setModalClosed] = useState(true);
-  const [isSubmitSuccess, setisSubmitSuccess] = useState(false);
-  const [isShowRetype, setShowRetype] = useState(false);
+  const [field, setField] = useState({
+    "Nama Rak": hasil[0].nama_rak,
+    "Nama Rak Checked": true,
+  });
+  const [modal, setModal] = useState({
+    pesan: undefined,
+    isSuccess: true,
+    isModalClosed: true,
+  });
+
+  const submit = field["Nama Rak Checked"] === true;
+
   const router = useRouter();
-  const changeisShow = (e) => {
-    setShow(!isShow);
-  };
-  const changeisShowRetype = (e) => {
-    setShowRetype(!isShowRetype);
-  };
-  const Eye = ({ onClick }) => {
-    return <FontAwesomeIcon icon="eye" onClick={onClick} pointerEvents="all" cursor="pointer" />;
-  };
-  const EyeSlash = ({ onClick }) => {
-    return <FontAwesomeIcon icon="eye-slash" onClick={onClick} pointerEvents="all" cursor="pointer" />;
-  };
 
-  const typeOfIcon = isShow === false ? <EyeSlash onClick={changeisShow} /> : <Eye onClick={changeisShow} />;
-
-  const onChangeNamaRak = async (e) => {
-    setNamaRak(e.target.value);
-    dispacth({ type: "loading" });
-    if (e.target.value === "" || e.target.value.length > 15) {
-      setNamaRak(e.target.value);
-      dispacth({ type: "not allowed" });
-      return;
+  const onChangeNamaRak = async (Nama) => {
+    if (Nama === "") {
+      return "default";
     }
-    try {
-      const response = await axios.post("/api/CheckRak", {
-        sendNamaRak: e.target.value,
-        tujuan: "edit",
-        id: router.query.id,
-      });
-      if (response.data === "available") {
-        dispacth({ type: "available" });
-      } else if (response.data === "not available") {
-        dispacth({ type: "not available" });
-      }
-    } catch (e) {
-      dispacth({ type: "error" });
-    }
+    const res = await axios.post("/api/CheckRak", {
+      sendNamaRak: Nama,
+      tujuan: "edit",
+      id: router.query.id,
+    });
+    return res.data;
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch("/api/EditRak", {
-        namaRak,
+      const res = await axios.patch("/api/EditRak", {
+        namaRak: field["Nama Rak"],
         id: router.query.id,
       });
-      setisSubmitSuccess(true);
+      setModal({
+        pesan: res.data,
+        isSuccess: true,
+        isModalClosed: false,
+      });
     } catch (e) {
-      setisSubmitSuccess(false);
-    } finally {
-      setModalClosed(false);
+      setModal({
+        pesan: e.response.data,
+        isSuccess: false,
+        isModalClosed: false,
+      });
     }
   };
-
-  const typeOfIcon2 = isShowRetype === false ? <EyeSlash onClick={changeisShowRetype} /> : <Eye onClick={changeisShowRetype} />;
 
   return (
     <>
@@ -77,28 +67,36 @@ export default function Edit({ hasil }) {
       </Head>
       <h1 className="title">Edit Rak</h1>
       <form onSubmit={onSubmit}>
-        <NamaRak className={state.warnaTextbox} value={namaRak} onChange={onChangeNamaRak} icon={state.icon} hasil={state.hasil} />
-        {/* <Kode className={kodeState.warnaTextbox} value={kode} onChange={onChangeKodeKota} icon={kodeState.icon} hasil={kodeState.hasil} /> */}
-        <FieldButton nama="Submit" />
+        <Field
+          nama="Nama Rak"
+          value={field["Nama Rak"]}
+          onChange={setField}
+          field={field}
+          IconLeft="fas fa-cubes"
+          maxLength="15"
+          fungsiCheck={onChangeNamaRak}
+        />
+
+        <button className="button is-link" disabled={!submit}>
+          Submit
+        </button>
       </form>
-      <Modal className={isModalClosed === false && "is-active"}>
-        {isSubmitSuccess === true ? (
-          <IsiModalSuccess pesan="Berhasil Mengupdate Rak">
-            <button className="button is-primary" onClick={() => router.push("/Produk/Rak")}>
+      <Modal show={modal.isModalClosed === false && "is-active"}>
+        {modal.isSuccess === true ? (
+          <IsiModalSuccess pesan={modal.pesan}>
+            <button
+              className="button is-success"
+              onClick={() => router.push("/Produk/Rak")}
+            >
               OK
             </button>
           </IsiModalSuccess>
         ) : (
-          <IsiModalFailed
-            pesan={
-              <>
-                Tidak berhasil menambahkan rak
-                <br />
-                Silahkan Coba Lagi!
-              </>
-            }
-          >
-            <button className="button is-danger" onClick={() => setModalClosed(true)}>
+          <IsiModalFailed pesan={modal.pesan}>
+            <button
+              className="button is-danger"
+              onClick={() => setModal({ ...modal, isModalClosed: true })}
+            >
               OK
             </button>
           </IsiModalFailed>
@@ -109,7 +107,7 @@ export default function Edit({ hasil }) {
 }
 
 export async function getServerSideProps(context) {
-  const query = "select nama_rak,status from rak where id_rak=?";
+  const query = "select nama_rak from rak where id_rak=?";
   const values = [context.query.id];
   try {
     const getData = await handlerQuery({ query, values });

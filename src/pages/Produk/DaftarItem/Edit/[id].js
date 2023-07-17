@@ -10,13 +10,12 @@ import {
 } from "../../../../../components/AllComponent";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 
 export default function Edit({ hasil, rak, satuan, jenis }) {
   const [field, setField] = useState({
     Nama: hasil[0].nama,
-    Stok: hasil[0].stok,
+    // Stok: hasil[0].stok,
     "Stok Minimum": hasil[0].stok_min,
     Rak: hasil[0].id_rak,
     Satuan: hasil[0].id_satuan,
@@ -33,7 +32,7 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
   const Router = useRouter();
   const onChangeNamaItem = async (Nama) => {
     if (Nama === "") {
-      return "TIDAK BOLEH";
+      return "default";
     }
     const res = await axios.post("/api/CheckNamaItem", {
       NamaItem: Nama,
@@ -46,14 +45,13 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
     try {
       const res = await axios.patch("/api/EditItem", {
         Nama: field.Nama,
-        Stok: field.Stok,
+        // Stok: field.Stok,
         Stok_Minimum: field["Stok Minimum"],
         Rak: field.Rak,
         Satuan: field.Satuan,
         Jenis: field.Jenis,
         IdItem: Router.query.id,
       });
-      console.log(res.data);
       setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
     } catch (e) {
       setModal({
@@ -80,21 +78,23 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
           maxLength="50"
           fungsiCheck={onChangeNamaItem}
         />
-        <Field
+        {/* <Field
           nama="Stok"
           value={field.Stok}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-signature"
+          IconLeft="fas fa-truck-loading"
           type="number"
-        />
+          min="0"
+        /> */}
         <Field
           nama="Stok Minimum"
           value={field["Stok Minimum"]}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-map-marked-alt"
+          IconLeft="fas fa-chart-bar"
           type="number"
+          min="0"
         />
         <Dropdown
           nama="Rak"
@@ -154,7 +154,7 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
 
 export async function getServerSideProps(context) {
   const query =
-    "select nama,stok,stok_min,id_rak,id_satuan,id_jenis_item " +
+    "select nama,stok_min,id_rak,id_satuan,id_jenis_item " +
     "from item where id_item=?";
   const values = [context.query.id];
 

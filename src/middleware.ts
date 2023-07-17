@@ -25,19 +25,39 @@ export default withAuth(
       req.nextauth.token?.role !== "pemilik"
     ) {
       return NextResponse.rewrite(new URL("/NotAuthorized", req.url));
+    } else if (
+      req.nextUrl.pathname.startsWith("/login") &&
+      req.nextauth.token !== undefined
+    ) {
+      if (req.nextauth.token?.role === "pemilik") {
+        return NextResponse.redirect(new URL("/Dashboard", req.url));
+      } else if (req.nextauth.token?.role === "ttk") {
+        return NextResponse.redirect(
+          new URL("/Supplier/DataSupplier", req.url)
+        );
+      } else if (req.nextauth.token?.role === "kasir") {
+        return NextResponse.redirect(new URL("/Kasir", req.url));
+      }
     } else {
       return NextResponse.next();
     }
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
+      // authorized: ({ token }) => !!token,
+      authorized({ req, token }) {
+        // console.log(req.nextUrl.pathname);
+        if (req.nextUrl.pathname.startsWith("/login")) {
+          return true;
+        }
+        return !!token;
+      },
     },
   }
 );
 
 export const config = {
-  matcher: ["/((?!NotAuthorized|image|api|login).{1,})"],
+  matcher: ["/((?!NotAuthorized|image|api).{1,})"],
 };
 
 // import { NextResponse } from "next/server";

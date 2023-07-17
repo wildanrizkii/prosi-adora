@@ -2,31 +2,41 @@ import Layout from "../../../../components/Layout";
 import Head from "next/head";
 import handlerQuery from "../../../../lib/db";
 import Link from "next/link";
+
 import {
   Modal,
   IsiModalSuccess,
   IsiModalFailed,
-} from "../../../../components/TambahSupplierComp";
+} from "../../../../components/AllComponent";
+
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
 export default function DataSupplier({ hasil }) {
   let semuaAkun;
-  const [isUpdateStatusSuccess, setUpdateStatus] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+
+  const [modal, setModal] = useState({
+    pesan: undefined,
+    isSuccess: true,
+    isModalClosed: true,
+  });
+
   const router = useRouter();
   async function changeStatus(id, toActive) {
     try {
+      let res;
       if (toActive === true) {
-        await axios.patch("/api/UpdateStatusSupplier", { id, status: 1 });
+        res = await axios.patch("/api/UpdateStatusSupplier", { id, status: 1 });
       } else if (toActive === false) {
-        await axios.patch("/api/UpdateStatusSupplier", { id, status: 0 });
+        res = await axios.patch("/api/UpdateStatusSupplier", { id, status: 0 });
       }
-      setUpdateStatus(true);
+      setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
     } catch (e) {
-      setUpdateStatus(false);
-    } finally {
-      setShowModal(true);
+      setModal({
+        pesan: e.response.data,
+        isSuccess: false,
+        isModalClosed: false,
+      });
     }
   }
 
@@ -114,13 +124,13 @@ export default function DataSupplier({ hasil }) {
         </thead>
         <tbody>{semuaAkun}</tbody>
       </table>
-      <Modal className={showModal === true && "is-active"}>
-        {isUpdateStatusSuccess === true ? (
-          <IsiModalSuccess pesan="Berhasil Mengubah Status">
+      <Modal show={modal.isModalClosed === false && "is-active"}>
+        {modal.isSuccess === true ? (
+          <IsiModalSuccess pesan={modal.pesan}>
             <button
-              className="button is-primary"
+              className="button is-success"
               onClick={() => {
-                setShowModal(false);
+                setModal({ ...modal, isModalClosed: true });
                 router.push("/Supplier/DataSupplier");
               }}
             >
@@ -128,11 +138,11 @@ export default function DataSupplier({ hasil }) {
             </button>
           </IsiModalSuccess>
         ) : (
-          <IsiModalFailed pesan="Gagal mengubah status">
+          <IsiModalFailed pesan={modal.pesan}>
             <button
               className="button is-danger"
               onClick={() => {
-                setShowModal(false);
+                setModal({ ...modal, isModalClosed: true });
                 router.push("/Supplier/DataSupplier");
               }}
             >
@@ -146,14 +156,12 @@ export default function DataSupplier({ hasil }) {
 }
 
 export async function getServerSideProps() {
-  // const query = "select id_supplier, kode_supplier, nama_supplier, alamat, no_hp, id_kota, status from supplier";
   const query =
     "select supplier.id_supplier , supplier.kode_supplier , supplier.nama_supplier , supplier.alamat , supplier.no_hp , kota.nama_kota AS nama_kota,kota.tipe as tipe_kota, supplier.status from supplier INNER JOIN kota ON kota.id_kota = supplier.id_kota ";
   const values = [];
   try {
     const getData = await handlerQuery({ query, values });
     const hasil = JSON.parse(JSON.stringify(getData));
-    // console.log(hasil);
     return {
       props: {
         hasil,

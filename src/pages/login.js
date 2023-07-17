@@ -1,19 +1,16 @@
-import Script from "next/script";
 import { useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import {
+  Username,
+  FieldWithEye,
   Pembungkus,
   Gambar,
-  Field,
-  Icon,
-} from "../../components/LoginComponents";
-import Head from "next/head";
-import { useSession, signIn, signOut } from "next-auth/react";
+} from "../../components/AllComponent";
+import { useSession, signIn } from "next-auth/react";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [field, setField] = useState({ Username: "", Password: "" });
   const [hasil, setHasil] = useState("");
   const [kelas, setKelas] = useState("button is-success is-fullwidth");
   const [disable, setDisabled] = useState(false);
@@ -23,21 +20,16 @@ const Login = () => {
     e.preventDefault();
     setDisabled(true);
     setKelas(kelas + " is-loading");
-    const Data = { x: username, y: password };
-
     const res = await signIn("credentials", {
-      username,
-      password,
+      username: field.Username,
+      password: field.Password,
       redirect: false,
-      callbackUrl: "/Kasir",
     });
     console.log(res);
-    if (res.error === null) {
-      // router.replace("/Dashboard");
+    if (res.status === 200) {
       setDisabled(false);
       setKelas("button is-success is-fullwidth");
     } else {
-      console.log(res.error);
       setHasil(res.error);
       setDisabled(false);
       setKelas("button is-success is-fullwidth");
@@ -62,39 +54,27 @@ const Login = () => {
         <Gambar />
         <form onSubmit={checkUsernameAndPassword}>
           {/* field username */}
-          <Field>
-            <input
-              className="input is-normal is-success"
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => {
-                setUsername(e.target.value);
-              }}
-              placeholder="username"
-              required
-              disabled={disable}
-            />
-            <Icon kelas="fa-user" />
-          </Field>
+          <Username
+            nama="Username"
+            classInput="is-normal is-success"
+            placeholder="Username"
+            value={field.Username}
+            onChange={setField}
+            field={field}
+            maxLength="15"
+            disabled={disable}
+          />
           {/* password */}
-          <Field>
-            <input
-              className="input is-normal is-success"
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-              placeholder="password"
-              required
-              disabled={disable}
-              maxLength="8"
-              minLength="8"
-            />
-            <Icon kelas="fa-lock" />
-          </Field>
+          <FieldWithEye
+            nama="Password"
+            classInput="is-normal is-success"
+            placeholder="Password"
+            value={field.Password}
+            onChange={setField}
+            field={field}
+            maxLength="8"
+            disabled={disable}
+          />
           {/* field button */}
           <div className="field">
             <button type="submit" className={kelas}>

@@ -206,7 +206,7 @@ export default function Tambah() {
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
         {isSubmitSuccess === true ? (
-          <IsiModalSuccess pesan="Berhasil Menambahkan User">
+          <IsiModalSuccess pesan="BERHASIL MENAMBAHKAN USER">
             <button
               className="button is-primary"
               onClick={MenambahkanUserLagi}

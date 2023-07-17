@@ -8,11 +8,9 @@ export default async function handler(req, res) {
 
     try {
       const hasil = await handlerQuery({ query, values });
-      console.log("VALUES");
-      console.log(values);
-      res.status(200).send("Berhasil menambahkan Supplier");
+      res.status(200).send("BERHASIL MENAMBAHKAN DATA SUPPLIER");
     } catch (e) {
-      res.status(500).send(e.message);
+      res.status(500).send("GAGAL MENAMBAHKAN DATA SUPPLIER");
     }
   }
 }

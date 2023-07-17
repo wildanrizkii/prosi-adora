@@ -1,7 +1,19 @@
 import Head from "next/head";
 import Layout from "../../../../components/Layout";
 import handlerQuery from "../../../../lib/db";
-import { Username, Password, Role, FieldButton, Usernamereducer, passwordReducer, userinitValue, passinitValue, Modal, IsiModalFailed, IsiModalSuccess } from "../../../../components/TambahUserComp";
+import {
+  Username,
+  Password,
+  Role,
+  FieldButton,
+  Usernamereducer,
+  passwordReducer,
+  userinitValue,
+  passinitValue,
+  Modal,
+  IsiModalFailed,
+  IsiModalSuccess,
+} from "../../../../components/TambahUserComp";
 import { useRouter } from "next/router";
 import { useState, useReducer } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,7 +31,10 @@ export default function Edit({ hasil }) {
   const [passRetype, setPassRetype] = useState("");
   const router = useRouter();
   const isDisabled =
-    ((state.warnaTextbox === "input is-success" || state.warnaTextbox === "input") && password.length === 8 && passRetype === password) ||
+    ((state.warnaTextbox === "input is-success" ||
+      state.warnaTextbox === "input") &&
+      password.length === 8 &&
+      passRetype === password) ||
     state.warnaTextbox === "input is-success" ||
     (state.warnaTextbox === "input" && password.length === 0)
       ? false
@@ -31,13 +46,32 @@ export default function Edit({ hasil }) {
     setShowRetype(!isShowRetype);
   };
   const Eye = ({ onClick }) => {
-    return <FontAwesomeIcon icon="eye" onClick={onClick} pointerEvents="all" cursor="pointer" />;
+    return (
+      <FontAwesomeIcon
+        icon="eye"
+        onClick={onClick}
+        pointerEvents="all"
+        cursor="pointer"
+      />
+    );
   };
   const EyeSlash = ({ onClick }) => {
-    return <FontAwesomeIcon icon="eye-slash" onClick={onClick} pointerEvents="all" cursor="pointer" />;
+    return (
+      <FontAwesomeIcon
+        icon="eye-slash"
+        onClick={onClick}
+        pointerEvents="all"
+        cursor="pointer"
+      />
+    );
   };
 
-  const typeOfIcon = isShow === false ? <EyeSlash onClick={changeisShow} /> : <Eye onClick={changeisShow} />;
+  const typeOfIcon =
+    isShow === false ? (
+      <EyeSlash onClick={changeisShow} />
+    ) : (
+      <Eye onClick={changeisShow} />
+    );
 
   const onChangeUsername = async (e) => {
     setUsername(e.target.value);
@@ -102,7 +136,12 @@ export default function Edit({ hasil }) {
   //   setRole("pemilik");
   //   setModalClosed();
   // };
-  const typeOfIcon2 = isShowRetype === false ? <EyeSlash onClick={changeisShowRetype} /> : <Eye onClick={changeisShowRetype} />;
+  const typeOfIcon2 =
+    isShowRetype === false ? (
+      <EyeSlash onClick={changeisShowRetype} />
+    ) : (
+      <Eye onClick={changeisShowRetype} />
+    );
 
   const hasilRetype =
     passRetype === password && password.length === 8 ? (
@@ -116,7 +155,12 @@ export default function Edit({ hasil }) {
     ) : (
       ""
     );
-  const warnaTexboxtRetype = passRetype === password && password.length === 8 ? "input is-success" : password !== passRetype && password.length === 8 ? "input is-danger" : "input";
+  const warnaTexboxtRetype =
+    passRetype === password && password.length === 8
+      ? "input is-success"
+      : password !== passRetype && password.length === 8
+      ? "input is-danger"
+      : "input";
   return (
     <>
       <Head>
@@ -124,9 +168,23 @@ export default function Edit({ hasil }) {
       </Head>
       <h1 className="title">Edit User</h1>
       <form onSubmit={onSubmit}>
-        <Username className={state.warnaTextbox} value={username} onChange={onChangeUsername} icon={state.icon} hasil={state.hasil} />
+        <Username
+          className={state.warnaTextbox}
+          value={username}
+          onChange={onChangeUsername}
+          icon={state.icon}
+          hasil={state.hasil}
+        />
         <Role onChange={onChangeRole} value={role} />
-        <Password className={passState.warnaTextbox} type={isShow === true ? "text" : "password"} value={password} onChange={onChangePassword} icon={typeOfIcon} hasil={passState.hasil} label="Password Pengganti" />
+        <Password
+          className={passState.warnaTextbox}
+          type={isShow === true ? "text" : "password"}
+          value={password}
+          onChange={onChangePassword}
+          icon={typeOfIcon}
+          hasil={passState.hasil}
+          label="Password Pengganti"
+        />
         <Password
           className={warnaTexboxtRetype}
           type={isShowRetype === true ? "text" : "password"}
@@ -135,28 +193,28 @@ export default function Edit({ hasil }) {
           icon={typeOfIcon2}
           hasil={hasilRetype}
           label="Retype-Password Pengganti"
-          disabled={passState.warnaTextbox === "input is-success" ? false : true}
+          disabled={
+            passState.warnaTextbox === "input is-success" ? false : true
+          }
         />
         <FieldButton nama="Submit" disabled={isDisabled} />
       </form>
       <Modal className={isModalClosed === false && "is-active"}>
         {isSubmitSuccess === true ? (
-          <IsiModalSuccess pesan="Berhasil Mengupdate User">
-            <button className="button is-primary" onClick={() => router.push("/PengaturanUser")}>
+          <IsiModalSuccess pesan="BERHASIL MENGUPDATE USER">
+            <button
+              className="button is-primary"
+              onClick={() => router.push("/PengaturanUser")}
+            >
               OK
             </button>
           </IsiModalSuccess>
         ) : (
-          <IsiModalFailed
-            pesan={
-              <>
-                Tidak berhasil menambahkan user
-                <br />
-                Silahkan Coba Lagi!
-              </>
-            }
-          >
-            <button className="button is-danger" onClick={() => setModalClosed(true)}>
+          <IsiModalFailed pesan={<>GAGAL MENGUPDATE USER</>}>
+            <button
+              className="button is-danger"
+              onClick={() => setModalClosed(true)}
+            >
               OK
             </button>
           </IsiModalFailed>

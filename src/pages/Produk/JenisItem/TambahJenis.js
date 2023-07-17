@@ -1,139 +1,59 @@
 import Head from "next/head";
 import Layout from "../../../../components/Layout";
-import { useReducer, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
+
 import {
-  NamaJenis,
-  FieldButton,
-  Namereducer,
-  jenisinitValue,
+  Field,
   Modal,
-  IsiModalSuccess,
   IsiModalFailed,
-} from "../../../../components/TambahJenisComp";
+  IsiModalSuccess,
+} from "../../../../components/AllComponent";
 
 export default function TambahJenis() {
-  const [state, dispacth] = useReducer(Namereducer, jenisinitValue);
-  const [namaJenis, setNamaJenis] = useState("");
-  const [isShow, setShow] = useState(false);
-  const [isModalClosed, setModalClosed] = useState(true);
-  const [isSubmitSuccess, setisSubmitSuccess] = useState(false);
-  const [isShowRetype, setShowRetype] = useState(false);
+  const [field, setField] = useState({
+    "Nama Jenis Item": "",
+    "Nama Jenis Item Checked": false,
+  });
+  const [modal, setModal] = useState({
+    pesan: undefined,
+    isSuccess: true,
+    isModalClosed: true,
+  });
+  const submit = field["Nama Jenis Item Checked"] === true;
   const router = useRouter();
-  // const isDisabled = state.warnaTextbox === "input is-success" && kode.length === 8 && kodeRetype === kode ? false : true;
-  const changeisShow = (e) => {
-    setShow(!isShow);
-  };
-  const changeisShowRetype = (e) => {
-    setShowRetype(!isShowRetype);
-  };
-  const Eye = ({ onClick }) => {
-    return (
-      <FontAwesomeIcon
-        icon="eye"
-        onClick={onClick}
-        pointerEvents="all"
-        cursor="pointer"
-      />
-    );
-  };
-  const EyeSlash = ({ onClick }) => {
-    return (
-      <FontAwesomeIcon
-        icon="eye-slash"
-        onClick={onClick}
-        pointerEvents="all"
-        cursor="pointer"
-      />
-    );
-  };
 
-  // const eyeSlash = (
-  //   <FontAwesomeIcon
-  //     icon="eye-slash"
-  //     onClick={changeisShow}
-  //     pointerEvents="all"
-  //     cursor="pointer"
-  //   />
-  // );
-  // const typeOfIcon = isShow === false ? <EyeSlash onClick={changeisShow} /> : <Eye onClick={changeisShow} />;
-
-  const onChangeNamaJenis = async (e) => {
-    setNamaJenis(e.target.value);
-    dispacth({ type: "loading" });
-    if (e.target.value === "" || e.target.value.length > 15) {
-      setNamaJenis(e.target.value);
-      dispacth({ type: "not allowed" });
-      return;
+  const onChangeNamaJenis = async (Nama) => {
+    if (Nama === "") {
+      return "default";
     }
-    try {
-      const response = await axios.post("/api/CheckJenis", {
-        sendNamaJenis: e.target.value,
-        tujuan: "add",
-      });
-      if (response.data === "available") {
-        dispacth({ type: "available" });
-      } else if (response.data === "not available") {
-        dispacth({ type: "not available" });
-      }
-    } catch (e) {
-      dispacth({ type: "error" });
-    }
+    const res = await axios.post("/api/CheckJenis", {
+      sendNamaJenis: Nama,
+      tujuan: "add",
+    });
+    return res.data;
   };
-
-  // const onChangePassword = (e) => {
-  //   if (e.target.value.length < 8 || e.target.value.length > 8) {
-  //     dispacthPass({ type: "tidak boleh" });
-  //   } else {
-  //     dispacthPass({ type: "boleh" });
-  //   }
-  //   setPassword(e.target.value);
-  // };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("/api/TambahJenisItem", {
-        namaJenis,
+      const res = await axios.post("/api/TambahJenisItem", {
+        namaJenis: field["Nama Jenis Item"],
       });
-      setisSubmitSuccess(true);
+      setModal({
+        pesan: res.data,
+        isSuccess: true,
+        isModalClosed: false,
+      });
     } catch (e) {
-      setisSubmitSuccess(false);
-    } finally {
-      setModalClosed(false);
+      setModal({
+        pesan: e.response.data,
+        isSuccess: false,
+        isModalClosed: false,
+      });
     }
   };
-
-  const MenambahkanUserLagi = () => {
-    dispacth({ type: "default" });
-    setNamaJenis("");
-    setShow(false);
-    setShowRetype(false);
-    setModalClosed();
-  };
-
-  const typeOfIcon2 =
-    isShowRetype === false ? (
-      <EyeSlash onClick={changeisShowRetype} />
-    ) : (
-      <Eye onClick={changeisShowRetype} />
-    );
-
-  // const hasilRetype =
-  //   kodeRetype === kode && kode.length === 8 ? (
-  //     <p className="help is-success" style={{ fontSize: "15px" }}>
-  //       kode sudah sama!
-  //     </p>
-  //   ) : kode !== kodeRetype && kode.length === 8 ? (
-  //     <p className="help is-danger" style={{ fontSize: "15px" }}>
-  //       kode tidak sama!
-  //     </p>
-  //   ) : (
-  //     ""
-  //   );
-  // const warnaTexboxtRetype = kodeRetype === kode && kode.length === 8 ? "input is-success" : kode !== kodeRetype && kode.length === 8 ? "input is-danger" : "input";
 
   return (
     <>
@@ -142,46 +62,42 @@ export default function TambahJenis() {
       </Head>
       <h1 className="title">Tambah Jenis Item</h1>
       <form onSubmit={onSubmit}>
-        <NamaJenis
-          className={state.warnaTextbox}
-          value={namaJenis}
-          onChange={onChangeNamaJenis}
-          icon={state.icon}
-          hasil={state.hasil}
+        <Field
+          nama="Nama Jenis Item"
+          value={field["Nama Jenis Item"]}
+          onChange={setField}
+          field={field}
+          IconLeft="fas fa-pills"
+          maxLength="15"
+          fungsiCheck={onChangeNamaJenis}
         />
-        {/* <Kode className={kodeState.warnaTextbox} value={kode} onChange={onChangeKodeKota} icon={kodeState.icon} hasil={kodeState.hasil} /> */}
-        <FieldButton nama="Submit" />
+
+        <button className="button is-link" disabled={!submit}>
+          Submit
+        </button>
       </form>
-      <Modal className={isModalClosed === false && "is-active"}>
-        {isSubmitSuccess === true ? (
-          <IsiModalSuccess pesan="Berhasil Menambahkan Jenis Item">
+      <Modal show={modal.isModalClosed === false && "is-active"}>
+        {modal.isSuccess === true ? (
+          <IsiModalSuccess pesan={modal.pesan}>
             <button
-              className="button is-primary"
-              onClick={MenambahkanUserLagi}
-              style={{ marginRight: "10px" }}
+              className="button is-success"
+              onClick={() => router.reload()}
+              style={{ marginRight: "20px" }}
             >
               Lanjutkan Menambah jenis item
             </button>
             <button
-              className="button is-primary"
+              className="button is-success"
               onClick={() => router.push("/Produk/JenisItem")}
             >
               Kembali Ke halaman jenis item
             </button>
           </IsiModalSuccess>
         ) : (
-          <IsiModalFailed
-            pesan={
-              <>
-                Tidak berhasil menambahkan jenis item
-                <br />
-                Silahkan Coba Lagi!
-              </>
-            }
-          >
+          <IsiModalFailed pesan={modal.pesan}>
             <button
               className="button is-danger"
-              onClick={() => setModalClosed(true)}
+              onClick={() => setModal({ ...modal, isModalClosed: true })}
             >
               OK
             </button>

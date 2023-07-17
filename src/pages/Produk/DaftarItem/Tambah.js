@@ -2,7 +2,6 @@ import Head from "next/head";
 import Layout from "../../../../components/Layout";
 import { useState } from "react";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
 import {
   Field,
@@ -16,7 +15,7 @@ import handlerQuery from "../../../../lib/db";
 export default function TambahItem({ rak, satuan, jenis }) {
   const [field, setField] = useState({
     Nama: "",
-    Stok: 0,
+    // Stok: 0,
     "Stok Minimum": 0,
     Rak: rak[0].id_rak,
     Satuan: satuan[0].id_satuan,
@@ -32,7 +31,7 @@ export default function TambahItem({ rak, satuan, jenis }) {
   const Router = useRouter();
   const onChangeNamaItem = async (Nama) => {
     if (Nama === "") {
-      return "TIDAK BOLEH";
+      return "default";
     }
     const res = await axios.post("/api/CheckNamaItem", {
       NamaItem: Nama,
@@ -44,7 +43,7 @@ export default function TambahItem({ rak, satuan, jenis }) {
     try {
       const res = await axios.post("/api/TambahItem", {
         Nama: field.Nama,
-        Stok: field.Stok,
+        // Stok: field.Stok,
         Stok_Minimum: field["Stok Minimum"],
         Rak: field.Rak,
         Satuan: field.Satuan,
@@ -81,21 +80,23 @@ export default function TambahItem({ rak, satuan, jenis }) {
           maxLength="50"
           fungsiCheck={onChangeNamaItem}
         />
-        <Field
+        {/* <Field
           nama="Stok"
           value={field.Stok}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-signature"
+          IconLeft="fas fa-truck-loading"
           type="number"
-        />
+          min="0"
+        /> */}
         <Field
           nama="Stok Minimum"
           value={field["Stok Minimum"]}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-map-marked-alt"
+          IconLeft="fas fa-chart-bar"
           type="number"
+          min="0"
         />
         <Dropdown
           nama="Rak"
@@ -164,9 +165,9 @@ TambahItem.getLayout = function getLayout(page) {
 };
 
 export async function getServerSideProps() {
-  const query1 = "select id_rak,nama_rak from rak";
-  const query2 = "select id_satuan,nama from satuan";
-  const query3 = "select id_jenis,nama from jenis";
+  const query1 = "select id_rak,nama_rak from rak where status!=0";
+  const query2 = "select id_satuan,nama from satuan where status!=0";
+  const query3 = "select id_jenis,nama from jenis where status!=0";
   try {
     const getRak = await handlerQuery({ query: query1, values: [] });
     const rak = JSON.parse(JSON.stringify(getRak));

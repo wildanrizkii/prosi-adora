@@ -18,7 +18,6 @@ export function Menu({ nama, clickedMenu, onClick, atas, icon }) {
     ) : (
       nama.split("?")[0]
     );
-
   function handleClick() {
     if (atas !== undefined) {
       router.push("/" + atas + "/" + nama.replaceAll(" ", ""));
@@ -42,7 +41,6 @@ export function MenuWithDropdown({ nama, clickedMenu, dropdown, icon }) {
     setIsDropdownOpen(!isDropdownOpen);
   };
   const pemetaanDropdown = dropdown.map((x) => {
-    console.log(x.icon);
     return (
       <Menu
         nama={x.nama}
