@@ -9,11 +9,10 @@ import {
   IsiModalFailed,
 } from "../../../../../components/AllComponent";
 import { useRouter } from "next/router";
-import { useState, useReducer } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
+
 import axios from "axios";
 export default function Edit({ hasil, DaftarKota }) {
-  console.log(DaftarKota);
   const [field, setField] = useState({
     "Kode Supplier": hasil[0].kode_supplier,
     "Nama Supplier": hasil[0].nama_supplier,
@@ -33,7 +32,7 @@ export default function Edit({ hasil, DaftarKota }) {
   const Router = useRouter();
   const onChangeKodeSupplier = async (Kode) => {
     if (Kode === "") {
-      return "TIDAK BOLEH";
+      return "default";
     }
     const res = await axios.post("/api/CheckKodeSupp", {
       kode_supplier: Kode,
@@ -52,7 +51,6 @@ export default function Edit({ hasil, DaftarKota }) {
         No_HP: field["No HP"],
         Id_Supplier: Router.query.id,
       });
-      console.log(res.data);
       setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
     } catch (e) {
       setModal({
@@ -85,7 +83,7 @@ export default function Edit({ hasil, DaftarKota }) {
           onChange={setField}
           IconLeft="fas fa-signature"
           field={field}
-          maxLength="15"
+          maxLength="20"
         />
         <Field
           nama="Alamat"
@@ -93,7 +91,7 @@ export default function Edit({ hasil, DaftarKota }) {
           onChange={setField}
           IconLeft="fas fa-map-marked-alt"
           field={field}
-          maxLength="50"
+          maxLength="100"
         />
         <Dropdown
           nama="Kota"
@@ -106,7 +104,6 @@ export default function Edit({ hasil, DaftarKota }) {
 
         <Field
           nama="No HP"
-          WarnaTextbox="input"
           value={field["No HP"]}
           onChange={setField}
           field={field}
@@ -132,9 +129,7 @@ export default function Edit({ hasil, DaftarKota }) {
           <IsiModalFailed pesan={modal.pesan}>
             <button
               className="button is-danger"
-              onClick={() => {
-                setModal({ ...modal, isModalClosed: true });
-              }}
+              onClick={() => setModal({ ...modal, isModalClosed: true })}
             >
               OK
             </button>
@@ -175,7 +170,7 @@ export async function getServerSideProps(context) {
     return {
       props: {
         hasil: e.message,
-        DaftarKota: [{ id_kota: "", kode_kota: "" }],
+        DaftarKota: [{ id_kota: "", nama_kota: "", tipe: "" }],
       },
     };
   }

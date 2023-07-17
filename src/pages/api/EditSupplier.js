@@ -17,9 +17,9 @@ export default async function handler(req, res) {
 
     try {
       const hasil = await handlerQuery({ query, values });
-      res.status(200).send("Berhasil mengupdate Data Supplier");
+      res.status(200).send("BERHASIL MENGUPDATE DATA SUPPLIER");
     } catch (e) {
-      res.status(500).send("Gagal Mengupdate Supplier");
+      res.status(500).send("GAGAL MENGUPDATE DATA SUPPLIER");
     }
   }
 }

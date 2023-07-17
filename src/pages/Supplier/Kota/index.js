@@ -2,19 +2,27 @@ import Layout from "../../../../components/Layout";
 import Head from "next/head";
 import handlerQuery from "../../../../lib/db";
 import Link from "next/link";
+
 import {
   Modal,
   IsiModalSuccess,
   IsiModalFailed,
-} from "../../../../components/TambahKotaComp";
+} from "../../../../components/AllComponent";
+
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
 export default function Kota({ hasil }) {
   let semuaAkun;
   const router = useRouter();
-  const [isUpdateStatusSuccess, setUpdateStatus] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  // const [isUpdateStatusSuccess, setUpdateStatus] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
+  const [modal, setModal] = useState({
+    pesan: undefined,
+    isSuccess: true,
+    isModalClosed: true,
+  });
+
   const [filter, setFilter] = useState({
     Search: router.query.Search,
     Tipe: router.query.Tipe !== undefined ? router.query.Tipe : "KAB. DAN KOTA",
@@ -22,16 +30,19 @@ export default function Kota({ hasil }) {
 
   async function changeStatus(id, toActive) {
     try {
+      let res;
       if (toActive === true) {
-        await axios.patch("/api/UpdateStatusKota", { id, status: 1 });
+        res = await axios.patch("/api/UpdateStatusKota", { id, status: 1 });
       } else if (toActive === false) {
-        await axios.patch("/api/UpdateStatusKota", { id, status: 0 });
+        res = await axios.patch("/api/UpdateStatusKota", { id, status: 0 });
       }
-      setUpdateStatus(true);
+      setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
     } catch (e) {
-      setUpdateStatus(false);
-    } finally {
-      setShowModal(true);
+      setModal({
+        pesan: e.response.data,
+        isSuccess: false,
+        isModalClosed: false,
+      });
     }
   }
   const changeSearch = (e) => {
@@ -166,26 +177,26 @@ export default function Kota({ hasil }) {
         </thead>
         <tbody>{semuaAkun}</tbody>
       </table>
-      <Modal className={showModal === true && "is-active"}>
-        {isUpdateStatusSuccess === true ? (
-          <IsiModalSuccess pesan="Berhasil Mengubah Status">
+      <Modal show={modal.isModalClosed === false && "is-active"}>
+        {modal.isSuccess === true ? (
+          <IsiModalSuccess pesan={modal.pesan}>
             <button
-              className="button is-primary"
+              className="button is-success"
               onClick={() => {
-                setShowModal(false);
-                router.push("/Supplier/Kota");
+                setModal({ ...modal, isModalClosed: true });
+                router.reload();
               }}
             >
               OK
             </button>
           </IsiModalSuccess>
         ) : (
-          <IsiModalFailed pesan="Gagal mengubah status">
+          <IsiModalFailed pesan={modal.pesan}>
             <button
               className="button is-danger"
               onClick={() => {
-                setShowModal(false);
-                router.push("/Supplier/Kota");
+                setModal({ ...modal, isModalClosed: true });
+                router.reload();
               }}
             >
               OK

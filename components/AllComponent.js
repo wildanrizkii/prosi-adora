@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { useRouter } from "next/router";
 export function Field({
   nama,
@@ -11,7 +11,14 @@ export function Field({
   field,
   maxLength,
   fungsiCheck,
+  min,
+  disabled,
 }) {
+  const initialState = {
+    warnaTextbox: "input",
+    hasil: undefined,
+    icon: undefined,
+  };
   function reducer(state, action) {
     if (action.type === "LOADING") {
       return {
@@ -64,15 +71,10 @@ export function Field({
         icon: <FontAwesomeIcon icon="times" color="red" />,
       };
     } else if (action.type === "default") {
-      return userinitValue;
+      return initialState;
     }
   }
 
-  const initialState = {
-    warnaTextbox: "input",
-    hasil: undefined,
-    icon: undefined,
-  };
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const onChangeValueWithFunc = async (e) => {
@@ -98,6 +100,13 @@ export function Field({
         });
       } else if (hasil === "TIDAK BOLEH") {
         dispatch({ type: "TIDAK BOLEH" });
+        onChange({
+          ...field,
+          [nama]: e.target.value,
+          [nama + " Checked"]: false,
+        });
+      } else if (hasil === "default") {
+        dispatch({ type: "default" });
         onChange({
           ...field,
           [nama]: e.target.value,
@@ -130,6 +139,8 @@ export function Field({
             fungsiCheck !== undefined ? onChangeValueWithFunc : onChangeValue
           }
           maxLength={maxLength}
+          min={min}
+          disabled={disabled}
           required
         />
         <span className="icon is-small is-left">
@@ -334,6 +345,11 @@ export function FieldKhusus({
   fungsiCheck,
   id,
 }) {
+  const initialState = {
+    warnaTextbox: "input",
+    hasil: undefined,
+    icon: undefined,
+  };
   function reducer(state, action) {
     if (action.type === "LOADING") {
       return {
@@ -386,15 +402,10 @@ export function FieldKhusus({
         icon: <FontAwesomeIcon icon="times" color="red" />,
       };
     } else if (action.type === "default") {
-      return userinitValue;
+      return initialState;
     }
   }
 
-  const initialState = {
-    warnaTextbox: "input",
-    hasil: undefined,
-    icon: undefined,
-  };
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const onChangeValueWithFunc = async (e) => {
@@ -420,6 +431,13 @@ export function FieldKhusus({
         });
       } else if (hasil === "TIDAK BOLEH") {
         dispatch({ type: "TIDAK BOLEH" });
+        onChange({
+          ...field,
+          [nama]: e.target.value,
+          [nama + " Checked"]: false,
+        });
+      } else if (hasil === "default") {
+        dispatch({ type: "default" });
         onChange({
           ...field,
           [nama]: e.target.value,
@@ -463,4 +481,120 @@ export function FieldKhusus({
       {state.hasil}
     </div>
   );
+}
+
+export function FieldWithEye({
+  nama,
+  classInput,
+  placeholder,
+  value,
+  onChange,
+  field,
+  maxLength,
+  disabled,
+}) {
+  const [isPass, setIsPass] = useState(true);
+
+  const onClick = () => {
+    setIsPass(!isPass);
+  };
+  const Eye = ({ onClick }) => {
+    return (
+      <FontAwesomeIcon
+        icon="eye"
+        onClick={onClick}
+        pointerEvents="all"
+        cursor="pointer"
+      />
+    );
+  };
+  const EyeSlash = ({ onClick }) => {
+    return (
+      <FontAwesomeIcon
+        icon="eye-slash"
+        onClick={onClick}
+        pointerEvents="all"
+        cursor="pointer"
+      />
+    );
+  };
+  const onChangeValue = (e) => {
+    onChange({ ...field, [nama]: e.target.value });
+  };
+
+  return (
+    <div className="field">
+      <div className="control has-icons-left has-icons-right">
+        <input
+          className={`input ${classInput}`}
+          type={isPass === true ? "password" : "text"}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChangeValue}
+          maxLength={maxLength}
+          disabled={disabled}
+          required
+        />
+        <span className="icon is-small is-left">
+          <i className="fas fa-lock"></i>
+        </span>
+        <span className="icon is-small is-right">
+          {isPass === true ? (
+            <Eye onClick={onClick} />
+          ) : (
+            <EyeSlash onClick={onClick} />
+          )}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+export function Username({
+  nama,
+  classInput,
+  placeholder,
+  value,
+  onChange,
+  field,
+  maxLength,
+  disabled,
+}) {
+  const onChangeValue = (e) => {
+    onChange({ ...field, [nama]: e.target.value });
+  };
+
+  return (
+    <div className="field">
+      <div className="control has-icons-left has-icons-right">
+        <input
+          className={`input ${classInput}`}
+          type="text"
+          placeholder={placeholder}
+          value={value}
+          onChange={onChangeValue}
+          maxLength={maxLength}
+          disabled={disabled}
+          required
+        />
+        <span className="icon is-small is-left">
+          <i className="fas fa-user"></i>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+export function Pembungkus({ children }) {
+  return (
+    <section className="container">
+      <div className="columns is-centered">
+        <div className="column is-one-fifth">{children}</div>
+      </div>
+    </section>
+  );
+}
+
+export function Gambar() {
+  return <img src="/image/Logo ADORA.jpg" alt="Logo Apotek Adora" />;
 }

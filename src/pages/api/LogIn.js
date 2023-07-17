@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     console.log("MASUK HANDLER");
     const { x, y } = JSON.parse(req.body);
     const query =
-      "select password,salt,role,idUser,username from user where username=?";
+      "select password,salt,role,idUser,username,status from user where username=?";
     const obj = {
       query: query,
       values: [x],
@@ -13,17 +13,21 @@ export default async function handler(req, res) {
     try {
       const hasil = await handlerQuery(obj);
       if (hasil.length === 1) {
-        const salt = hasil[0].salt;
-        const password = hasil[0].password;
-        const tryHash = sha256(salt + y);
-        if (tryHash === password) {
-          res.status(200).send({
-            data: [hasil[0].username, hasil[0].role, hasil[0].idUser],
-          });
+        if (hasil[0].status === 0) {
+          res.status(200).send({ data: "Maaf Akun Anda Non-Aktif" });
         } else {
-          res
-            .status(200)
-            .send({ data: "Maaf Username atau Password anda salah" });
+          const salt = hasil[0].salt;
+          const password = hasil[0].password;
+          const tryHash = sha256(salt + y);
+          if (tryHash === password) {
+            res.status(200).send({
+              data: [hasil[0].username, hasil[0].role, hasil[0].idUser],
+            });
+          } else {
+            res
+              .status(200)
+              .send({ data: "Maaf Username atau Password anda salah" });
+          }
         }
       } else {
         res

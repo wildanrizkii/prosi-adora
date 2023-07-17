@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import axios from "axios";
 export const authOptions = {
   session: {
     strategy: "jwt",
@@ -23,18 +22,18 @@ export const authOptions = {
           });
           const hasil = await res.json();
           const data = hasil.data;
+          console.log(hasil);
           if (
-            data != "Maaf Username atau Password anda salah" &&
-            data != "Terjadi masalah saat mengakses db"
+            typeof data !== "string"
+            // data != "Maaf Username atau Password anda salah" &&
+            // data != "Terjadi masalah saat mengakses db" &&
+            // data != "Maaf Akun Anda Non-Aktif"
           ) {
             const user = {
               username: data[0],
               role: data[1],
               idUser: data[2],
             };
-            console.log(
-              "HASIL USER" + user.idUser + " " + user.username + " " + user.role
-            );
             return user;
           } else {
             throw new Error(data);
@@ -53,9 +52,6 @@ export const authOptions = {
         role: token.role,
         idUser: token.idUser,
       };
-      // session.username = token.username;
-      // session.role = token.role;
-      // session.idUser = token.idUser;
       return session;
     },
     async jwt({ token, user }) {

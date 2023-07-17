@@ -1,8 +1,7 @@
 import Head from "next/head";
 import Layout from "../../../../components/Layout";
-import { useReducer, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
 
 import {
@@ -30,7 +29,7 @@ export default function TambahKota() {
 
   const onChangeNamaKota = async (Nama) => {
     if (Nama === "") {
-      return "TIDAK BOLEH";
+      return "default";
     }
     const res = await axios.post("/api/CheckKota", {
       sendNamaKota: Nama,
@@ -92,7 +91,7 @@ export default function TambahKota() {
           onChange={setField}
           field={field}
           IconLeft="fas fa-city"
-          maxLength="15"
+          maxLength="50"
           fungsiCheck={onChangeNamaKota}
           id="a"
         />
@@ -105,9 +104,16 @@ export default function TambahKota() {
           <IsiModalSuccess pesan={modal.pesan}>
             <button
               className="button is-success"
+              onClick={() => Router.reload()}
+              style={{ marginRight: "20px" }}
+            >
+              Lanjutkan Menambah Kota
+            </button>
+            <button
+              className="button is-success"
               onClick={() => Router.push("/Supplier/Kota")}
             >
-              OK
+              Kembali Ke Halaman Kota
             </button>
           </IsiModalSuccess>
         ) : (

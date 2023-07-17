@@ -7,9 +7,9 @@ export default async function handler(req, res) {
 
     try {
       const hasil = await handlerQuery({ query, values });
-      res.status(200).send("Berhasil menambahkan Kota");
+      res.status(200).send("BERHASIL MENAMBAHKAN KOTA");
     } catch (e) {
-      res.status(500).send(e.message);
+      res.status(500).send("GAGAL MENAMBAHKAN KOTA");
     }
   }
 }

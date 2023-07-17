@@ -2,27 +2,41 @@ import Layout from "../../../../components/Layout";
 import Head from "next/head";
 import handlerQuery from "../../../../lib/db";
 import Link from "next/link";
-import { Modal, IsiModalSuccess, IsiModalFailed } from "../../../../components/TambahRakComp";
+
+import {
+  Modal,
+  IsiModalFailed,
+  IsiModalSuccess,
+} from "../../../../components/AllComponent";
+
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
 export default function Rak({ hasil }) {
   let semuaAkun;
-  const [isUpdateStatusSuccess, setUpdateStatus] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+
+  const [modal, setModal] = useState({
+    pesan: undefined,
+    isSuccess: true,
+    isModalClosed: true,
+  });
+
   const router = useRouter();
   async function changeStatus(id, toActive) {
     try {
+      let res;
       if (toActive === true) {
-        await axios.patch("/api/UpdateStatusRak", { id, status: 1 });
+        res = await axios.patch("/api/UpdateStatusRak", { id, status: 1 });
       } else if (toActive === false) {
-        await axios.patch("/api/UpdateStatusRak", { id, status: 0 });
+        res = await axios.patch("/api/UpdateStatusRak", { id, status: 0 });
       }
-      setUpdateStatus(true);
+      setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
     } catch (e) {
-      setUpdateStatus(false);
-    } finally {
-      setShowModal(true);
+      setModal({
+        pesan: e.response.data,
+        isSuccess: false,
+        isModalClosed: false,
+      });
     }
   }
 
@@ -41,15 +55,26 @@ export default function Rak({ hasil }) {
           <td>{x.nama_rak}</td>
           <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
           <td>
-            <Link href={`Rak/Edit/${x.id_rak}`} className="button is-success is-small">
+            <Link
+              href={`Rak/Edit/${x.id_rak}`}
+              className="button is-success is-small"
+            >
               Edit
             </Link>
             {x.status === 1 ? (
-              <button className="button is-danger is-small" style={{ marginLeft: "5px" }} onClick={() => changeStatus(x.id_rak, false)}>
+              <button
+                className="button is-danger is-small"
+                style={{ marginLeft: "5px" }}
+                onClick={() => changeStatus(x.id_rak, false)}
+              >
                 Non-Aktifkan
               </button>
             ) : (
-              <button className="button is-primary is-small" style={{ marginLeft: "5px" }} onClick={() => changeStatus(x.id_rak, true)}>
+              <button
+                className="button is-primary is-small"
+                style={{ marginLeft: "5px" }}
+                onClick={() => changeStatus(x.id_rak, true)}
+              >
                 Aktifkan
               </button>
             )}
@@ -72,7 +97,11 @@ export default function Rak({ hasil }) {
       </Head>
       <h1 className="title">Rak</h1>
 
-      <Link className="button is-link" href="Rak/TambahRak" style={{ marginBottom: "10px" }}>
+      <Link
+        className="button is-link"
+        href="Rak/TambahRak"
+        style={{ marginBottom: "10px" }}
+      >
         Tambah
       </Link>
 
@@ -87,13 +116,13 @@ export default function Rak({ hasil }) {
         </thead>
         <tbody>{semuaAkun}</tbody>
       </table>
-      <Modal className={showModal === true && "is-active"}>
-        {isUpdateStatusSuccess === true ? (
-          <IsiModalSuccess pesan="Berhasil Mengubah Status">
+      <Modal show={modal.isModalClosed === false && "is-active"}>
+        {modal.isSuccess === true ? (
+          <IsiModalSuccess pesan={modal.pesan}>
             <button
-              className="button is-primary"
+              className="button is-success"
               onClick={() => {
-                setShowModal(false);
+                setModal({ ...modal, isModalClosed: true });
                 router.push("/Produk/Rak");
               }}
             >
@@ -101,11 +130,11 @@ export default function Rak({ hasil }) {
             </button>
           </IsiModalSuccess>
         ) : (
-          <IsiModalFailed pesan="Gagal mengubah status">
+          <IsiModalFailed pesan={modal.pesan}>
             <button
               className="button is-danger"
               onClick={() => {
-                setShowModal(false);
+                setModal({ ...modal, isModalClosed: true });
                 router.push("/Produk/Rak");
               }}
             >

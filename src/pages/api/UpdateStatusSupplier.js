@@ -8,11 +8,11 @@ export default async function handler(req, res) {
     try {
       const hasil = await handlerQuery({ query, values });
       if (hasil.affectedRows === 0) {
-        throw new Error("Data yang mau diupdate tidak ditemukan");
+        throw new Error("DATA YANG AKAN DIUPDATE TIDAK DITEMUKAN");
       }
-      res.status(200).send("Berhasil");
+      res.status(200).send("BERHASIL MENGUPDATE STATUS DATA SUPPLIER");
     } catch (e) {
-      res.status(500).send(e.message);
+      res.status(500).send("GAGAL MENGUPDATE STATUS DATA SUPPLIER");
     }
   }
 }
