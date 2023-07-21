@@ -87,9 +87,9 @@ export default function Edit({ hasil }) {
         tujuan: "edit",
         id: router.query.id,
       });
-      if (response.data === "available") {
+      if (response.data === "BISA") {
         dispacth({ type: "available" });
-      } else if (response.data === "not available") {
+      } else if (response.data === "TIDAK BISA") {
         dispacth({ type: "not available" });
       }
     } catch (e) {

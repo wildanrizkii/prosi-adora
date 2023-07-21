@@ -526,7 +526,7 @@ export function FieldWithEye({
     <div className="field">
       <div className="control has-icons-left has-icons-right">
         <input
-          className={`input ${classInput}`}
+          className={classInput}
           type={isPass === true ? "password" : "text"}
           placeholder={placeholder}
           value={value}
