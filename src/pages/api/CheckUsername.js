@@ -10,9 +10,9 @@ export default async function handler(req, res) {
       try {
         const hasil = await handlerQuery({ query, values });
         if (hasil.length === 0) {
-          res.status(200).send("available");
+          res.status(200).send("BISA");
         } else {
-          res.status(200).send("not available");
+          res.status(200).send("TIDAK BISA");
         }
       } catch (e) {
         res.status(500).send(e.message);
@@ -24,9 +24,9 @@ export default async function handler(req, res) {
       try {
         const hasil = await handlerQuery({ query, values });
         if (hasil.length === 0) {
-          res.status(200).send("available");
+          res.status(200).send("BISA");
         } else {
-          res.status(200).send("not available");
+          res.status(200).send("TIDAK BISA");
         }
       } catch (e) {
         res.status(500).send(e.message);

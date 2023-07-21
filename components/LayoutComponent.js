@@ -18,6 +18,7 @@ export function Menu({ nama, clickedMenu, onClick, atas, icon }) {
     ) : (
       nama.split("?")[0]
     );
+  const bgColor = clickedMenu === nama.split("?")[0] && "#f5f5f5";
   function handleClick() {
     if (atas !== undefined) {
       router.push("/" + atas + "/" + nama.replaceAll(" ", ""));
@@ -26,7 +27,7 @@ export function Menu({ nama, clickedMenu, onClick, atas, icon }) {
     }
   }
   return (
-    <li style={{ marginBottom: 10, marginLeft: 10 }}>
+    <li style={{ marginBottom: 10, marginLeft: 10, backgroundColor: bgColor }}>
       <a onClick={onClick ? onClick : handleClick}>
         <i className={icon} style={{ marginRight: "5px" }} />
         {nameStyle}

@@ -67,7 +67,7 @@ const Login = () => {
           {/* password */}
           <FieldWithEye
             nama="Password"
-            classInput="is-normal is-success"
+            classInput="input is-normal is-success"
             placeholder="Password"
             value={field.Password}
             onChange={setField}
