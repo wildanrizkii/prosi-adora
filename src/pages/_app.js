@@ -12,7 +12,6 @@ export default function App({
       {getLayout(
         <>
           <Script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" />
-
           <Component {...pageProps} />
         </>
       )}
