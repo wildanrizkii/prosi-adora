@@ -5,13 +5,14 @@ import handlerQuery from "../../../../lib/db";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { Pagination } from "../../../../components/AllComponent";
-import { DatePicker, ConfigProvider } from "antd";
-import { Modal } from "../../../../components/AllComponent";
-import axios from "axios";
 
+import { DatePicker, ConfigProvider } from "antd";
+import idID from "antd/locale/id_ID";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
-import locale from "antd/es/locale/id_ID";
+import { Modal } from "../../../../components/AllComponent";
+import axios from "axios";
+const { RangePicker } = DatePicker;
 export default function TransaksiPembelian({
   hasil,
   sum,
@@ -25,11 +26,11 @@ export default function TransaksiPembelian({
     User: router.query.User !== undefined ? router.query.User : "",
     Search: router.query.Search,
     Supplier: router.query.Supplier,
-    Awal: router.query.Awal !== undefined ? router.query.Awal : "",
-    Akhir: router.query.Akhir !== undefined ? router.query.Akhir : "",
+    Tanggal:
+      router.query.Awal !== undefined
+        ? [dayjs(router.query.Awal), dayjs(router.query.Akhir)]
+        : null,
   });
-
-  const { RangePicker } = DatePicker;
 
   const [isModalOpened, setModal] = useState(false);
   const [isiModal, setIsiModal] = useState("");
@@ -71,15 +72,11 @@ export default function TransaksiPembelian({
     }
   };
   const onChangeDate = (date, dateString) => {
+    setFilter({ ...filter, Tanggal: date });
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
     if (Array.isArray(date)) {
-      setFilter({
-        ...filter,
-        Awal: date[0],
-        Akhir: date[1],
-      });
       const tanggalinput1 = new Date(date[0]);
       const tanggalinput2 = new Date(date[1]);
       const tanggalOutput1 =
@@ -97,7 +94,6 @@ export default function TransaksiPembelian({
       hrefBelakang.set("Awal", tanggalOutput1);
       hrefBelakang.set("Akhir", tanggalOutput2);
     } else {
-      setFilter({ ...filter, Awal: null, Akhir: null });
       hrefBelakang.delete("Awal");
       hrefBelakang.delete("Akhir");
     }
@@ -300,12 +296,12 @@ export default function TransaksiPembelian({
 
       <div className="field">
         <label className="label">Tanggal</label>
-        <ConfigProvider locale={locale}>
+        <ConfigProvider locale={idID.default}>
           <RangePicker
             onChange={onChangeDate}
             size="large"
             format="DD-MM-YYYY"
-            value={[filter.Awal, filter.Akhir]}
+            value={filter.Tanggal}
           />
         </ConfigProvider>
       </div>
@@ -475,14 +471,6 @@ export async function getServerSideProps(context) {
 
   const queryUser = "select idUser,username from user";
   const querySupp = "select id_supplier,kode_supplier from supplier";
-
-  console.log("ini query\n" + query);
-  console.log();
-  console.log("ini queryTotal\n" + queryTotal);
-  console.log();
-  console.log("ini queryJumlah\n" + queryJumlah);
-  console.log();
-  console.log(values);
 
   try {
     const getData = await handlerQuery({ query, values });
