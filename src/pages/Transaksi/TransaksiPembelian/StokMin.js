@@ -16,20 +16,22 @@ export default function StokMin({ hasil }) {
             color: x.status === 0 && "white",
           }}
         >
-          <td>{index + 1}</td>
-          <td>{x.nama}</td>
-          <td>{x.stok}</td>
-          <td>{x.stok_min}</td>
-          <td>{x.nama_rak}</td>
-          <td>{x.nama_satuan}</td>
-          <td>{x.nama_jenis}</td>
+          <td className="is-vcentered">{index + 1}</td>
+          <td className="is-vcentered">{x.nama}</td>
+          <td className="is-vcentered">{x.stok}</td>
+          <td className="is-vcentered">{x.stok_min}</td>
+          <td className="is-vcentered">{x.nama_rak}</td>
+          <td className="is-vcentered">{x.nama_satuan}</td>
+          <td className="is-vcentered">{x.nama_jenis}</td>
         </tr>
       );
     });
   } catch (e) {
     semuaProduk = (
       <tr>
-        <td colSpan="7">{hasil}</td>
+        <td colSpan="7" className="is-vcentered">
+          {hasil}
+        </td>
       </tr>
     );
   }
@@ -39,16 +41,16 @@ export default function StokMin({ hasil }) {
         <title>Stok Minimum</title>
       </Head>
       <h1 className="title">Item yang di bawah Stok Minimum</h1>
-      <table className="table">
+      <table className="table has-text-centered">
         <thead>
           <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Stok</th>
-            <th>Stok Minimum</th>
-            <th>Rak</th>
-            <th>Satuan</th>
-            <th>Jenis</th>
+            <th className="has-text-centered is-vcentered">No</th>
+            <th className="has-text-centered is-vcentered">Nama</th>
+            <th className="has-text-centered is-vcentered">Stok</th>
+            <th className="has-text-centered is-vcentered">Stok Minimum</th>
+            <th className="has-text-centered is-vcentered">Rak</th>
+            <th className="has-text-centered is-vcentered">Satuan</th>
+            <th className="has-text-centered is-vcentered">Jenis</th>
           </tr>
         </thead>
         <tbody>{semuaProduk}</tbody>

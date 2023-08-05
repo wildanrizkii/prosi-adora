@@ -51,14 +51,16 @@ export default function DataSupplier({ hasil }) {
             color: x.status === 0 && "white",
           }}
         >
-          <td>{index + 1}</td>
-          <td>{x.kode_supplier}</td>
-          <td>{x.nama_supplier}</td>
-          <td>{x.alamat}</td>
-          <td>{x.no_hp}</td>
-          <td>{x.tipe_kota + " " + x.nama_kota}</td>
-          <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
-          <td>
+          <td className="is-vcentered">{index + 1}</td>
+          <td className="is-vcentered">{x.kode_supplier}</td>
+          <td className="is-vcentered">{x.nama_supplier}</td>
+          <td className="is-vcentered">{x.alamat}</td>
+          <td className="is-vcentered">{x.no_hp}</td>
+          <td className="is-vcentered">{x.tipe_kota + " " + x.nama_kota}</td>
+          <td className="is-vcentered">
+            {x.status === 1 ? "Aktif" : "Non-Aktif"}
+          </td>
+          <td className="is-vcentered">
             <Link
               href={`DataSupplier/Edit/${x.id_supplier}`}
               className="button is-success is-small"
@@ -89,7 +91,9 @@ export default function DataSupplier({ hasil }) {
   } catch (e) {
     semuaAkun = (
       <tr>
-        <td colSpan="4">{hasil}</td>
+        <td colSpan="4" className="is-vcentered">
+          {hasil}
+        </td>
       </tr>
     );
   }
@@ -109,17 +113,17 @@ export default function DataSupplier({ hasil }) {
         Tambah
       </Link>
 
-      <table className="table">
+      <table className="table has-text-centered">
         <thead>
           <tr>
-            <th>No</th>
-            <th>Kode</th>
-            <th>Nama</th>
-            <th>Alamat</th>
-            <th>Telepon</th>
-            <th>Kota</th>
-            <th>Status</th>
-            <th>Aksi</th>
+            <th className="has-text-centered is-vcentered">No</th>
+            <th className="has-text-centered is-vcentered">Kode</th>
+            <th className="has-text-centered is-vcentered">Nama</th>
+            <th className="has-text-centered is-vcentered">Alamat</th>
+            <th className="has-text-centered is-vcentered">Telepon</th>
+            <th className="has-text-centered is-vcentered">Kota</th>
+            <th className="has-text-centered is-vcentered">Status</th>
+            <th className="has-text-centered is-vcentered">Aksi</th>
           </tr>
         </thead>
         <tbody>{semuaAkun}</tbody>

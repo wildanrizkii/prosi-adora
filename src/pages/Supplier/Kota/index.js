@@ -84,10 +84,12 @@ export default function Kota({ hasil }) {
             color: x.status === 0 && "white",
           }}
         >
-          <td>{index + 1}</td>
-          <td>{x.tipe + " " + x.nama_kota}</td>
-          <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
-          <td>
+          <td className="is-vcentered">{index + 1}</td>
+          <td className="is-vcentered">{x.tipe + " " + x.nama_kota}</td>
+          <td className="is-vcentered">
+            {x.status === 1 ? "Aktif" : "Non-Aktif"}
+          </td>
+          <td className="is-vcentered">
             <Link
               href={`Kota/Edit/${x.id_kota}`}
               className="button is-success is-small"
@@ -118,7 +120,9 @@ export default function Kota({ hasil }) {
   } catch (e) {
     semuaAkun = (
       <tr>
-        <td colSpan="4">{hasil}</td>
+        <td colSpan="4" className="is-vcentered">
+          {hasil}
+        </td>
       </tr>
     );
   }
@@ -166,13 +170,13 @@ export default function Kota({ hasil }) {
         Tambah
       </Link>
 
-      <table className="table">
+      <table className="table has-text-centered">
         <thead>
           <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Status</th>
-            <th>Aksi</th>
+            <th className="has-text-centered is-vcentered">No</th>
+            <th className="has-text-centered is-vcentered">Nama</th>
+            <th className="has-text-centered is-vcentered">Status</th>
+            <th className="has-text-centered is-vcentered">Aksi</th>
           </tr>
         </thead>
         <tbody>{semuaAkun}</tbody>

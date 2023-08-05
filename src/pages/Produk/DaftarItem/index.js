@@ -101,15 +101,17 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
             color: x.status === 0 && "white",
           }}
         >
-          <td>{index}</td>
-          <td>{x.namaItem}</td>
-          <td>{x.stok}</td>
-          <td>{x.stok_min}</td>
-          <td>{x.namaRak}</td>
-          <td>{x.namaSatuan}</td>
-          <td>{x.namaJenis}</td>
-          <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
-          <td>
+          <td className="is-vcentered">{index}</td>
+          <td className="is-vcentered">{x.namaItem}</td>
+          <td className="is-vcentered">{x.stok}</td>
+          <td className="is-vcentered">{x.stok_min}</td>
+          <td className="is-vcentered">{x.namaRak}</td>
+          <td className="is-vcentered">{x.namaSatuan}</td>
+          <td className="is-vcentered">{x.namaJenis}</td>
+          <td className="is-vcentered">
+            {x.status === 1 ? "Aktif" : "Non-Aktif"}
+          </td>
+          <td className="is-vcentered">
             <Link
               href={`/Produk/DaftarItem/Edit/${x.id_item}`}
               className="button is-success is-small"
@@ -140,7 +142,9 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
   } catch (e) {
     semuaAkun = (
       <tr>
-        <td colSpan="4">{hasil}</td>
+        <td colSpan="4" className="is-vcentered">
+          {hasil}
+        </td>
       </tr>
     );
   }
@@ -208,18 +212,18 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
         Tambah
       </Link>
 
-      <table className="table">
+      <table className="table has-text-centered">
         <thead>
           <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Stok</th>
-            <th>Stok Min</th>
-            <th>Rak</th>
-            <th>Satuan</th>
-            <th>Jenis</th>
-            <th>Status</th>
-            <th>Aksi</th>
+            <th className="has-text-centered is-vcentered">No</th>
+            <th className="has-text-centered is-vcentered">Nama</th>
+            <th className="has-text-centered is-vcentered">Stok</th>
+            <th className="has-text-centered is-vcentered">Stok Min</th>
+            <th className="has-text-centered is-vcentered">Rak</th>
+            <th className="has-text-centered is-vcentered">Satuan</th>
+            <th className="has-text-centered is-vcentered">Jenis</th>
+            <th className="has-text-centered is-vcentered">Status</th>
+            <th className="has-text-centered is-vcentered">Aksi</th>
           </tr>
         </thead>
         <tbody>{semuaAkun}</tbody>

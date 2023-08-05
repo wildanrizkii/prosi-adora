@@ -51,11 +51,13 @@ export default function PengaturanUser({ hasil }) {
             color: x.status === 0 && "white",
           }}
         >
-          <td>{index + 1}</td>
-          <td>{x.username}</td>
-          <td>{x.role.toUpperCase()}</td>
-          <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
-          <td>
+          <td className="is-vcentered">{index + 1}</td>
+          <td className="is-vcentered">{x.username}</td>
+          <td className="is-vcentered">{x.role.toUpperCase()}</td>
+          <td className="is-vcentered">
+            {x.status === 1 ? "Aktif" : "Non-Aktif"}
+          </td>
+          <td className="is-vcentered">
             <Link
               href={`PengaturanUser/Edit/${x.idUser}`}
               className="button is-success is-small"
@@ -86,7 +88,9 @@ export default function PengaturanUser({ hasil }) {
   } catch (e) {
     semuaAkun = (
       <tr>
-        <td colSpan="4">{hasil}</td>
+        <td colSpan="4" className="is-vcentered">
+          {hasil}
+        </td>
       </tr>
     );
   }
@@ -106,14 +110,14 @@ export default function PengaturanUser({ hasil }) {
         Tambah
       </Link>
 
-      <table className="table">
+      <table className="table has-text-centered">
         <thead>
           <tr>
-            <th>No</th>
-            <th>Username</th>
-            <th>Akses</th>
-            <th>Status</th>
-            <th>Aksi</th>
+            <th className="has-text-centered is-vcentered">No</th>
+            <th className="has-text-centered is-vcentered">Username</th>
+            <th className="has-text-centered is-vcentered">Akses</th>
+            <th className="has-text-centered is-vcentered">Status</th>
+            <th className="has-text-centered is-vcentered">Aksi</th>
           </tr>
         </thead>
         <tbody>{semuaAkun}</tbody>

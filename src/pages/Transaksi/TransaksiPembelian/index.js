@@ -59,12 +59,13 @@ export default function TransaksiPembelian({
               fontWeight: "bold",
             }}
           >
-            <td>{index + 1}</td>
-            <td>{x.nama}</td>
-            <td>{x.jumlah}</td>
-            <td>{x.namaSatuan}</td>
-            <td>{x.harga_per_satuan}</td>
-            <td>{x.subtotal}</td>
+            <td className="is-vcentered">{index + 1}</td>
+            <td className="is-vcentered">{x.nama}</td>
+            <td className="is-vcentered">{x.jumlah}</td>
+            <td className="is-vcentered">{x.namaSatuan}</td>
+            <td className="is-vcentered">{x.harga_per_satuan}</td>
+            <td className="is-vcentered">{x.subtotal}</td>
+            <td className="is-vcentered">{x.margin}</td>
           </tr>
         );
       });
@@ -216,13 +217,12 @@ export default function TransaksiPembelian({
     semuaData = hasil.map((x, index) => {
       return (
         <tr key={x.no_faktur} style={{ fontWeight: "bold" }}>
-          <td>{index + 1}</td>
-          <td>{x.no_faktur}</td>
-          <td>{readableDate(x.tanggal)}</td>
-          <td>{x.margin}</td>
-          <td>{x.username}</td>
-          <td>{x.kode_supplier}</td>
-          <td>
+          <td className="is-vcentered">{index + 1}</td>
+          <td className="is-vcentered">{x.no_faktur}</td>
+          <td className="is-vcentered">{readableDate(x.tanggal)}</td>
+          <td className="is-vcentered">{x.username}</td>
+          <td className="is-vcentered">{x.kode_supplier}</td>
+          <td className="is-vcentered">
             <button
               className="button is-success"
               onClick={() => onClickDetail(x.no_faktur)}
@@ -230,14 +230,16 @@ export default function TransaksiPembelian({
               Detail
             </button>
           </td>
-          <td>{x.total}</td>
+          <td className="is-vcentered">{x.total}</td>
         </tr>
       );
     });
   } catch (e) {
     semuaData = (
       <tr>
-        <td colSpan="6">{hasil}</td>
+        <td colSpan="6" className="is-vcentered">
+          {hasil}
+        </td>
       </tr>
     );
   }
@@ -322,17 +324,16 @@ export default function TransaksiPembelian({
           </span>
         </div>
       </div>
-      <table className="table">
+      <table className="table has-text-centered">
         <thead>
           <tr>
-            <th>No</th>
-            <th>No Faktur</th>
-            <th>Tanggal</th>
-            <th>Margin</th>
-            <th>User</th>
-            <th>Supplier</th>
-            <th>Detail</th>
-            <th>Total</th>
+            <th className="has-text-centered is-vcentered">No</th>
+            <th className="has-text-centered is-vcentered">No Faktur</th>
+            <th className="has-text-centered is-vcentered">Tanggal</th>
+            <th className="has-text-centered is-vcentered">User</th>
+            <th className="has-text-centered is-vcentered">Supplier</th>
+            <th className="has-text-centered is-vcentered">Detail</th>
+            <th className="has-text-centered is-vcentered">Total</th>
           </tr>
         </thead>
         <tbody>{semuaData}</tbody>
@@ -359,20 +360,24 @@ export default function TransaksiPembelian({
             />
           </header>
           <section className="modal-card-body">
-            <table className="table">
+            <table className="table has-text-centered">
               <thead>
                 <tr>
-                  <th>No</th>
-                  <th>Nama Item</th>
-                  <th>Jumlah</th>
-                  <th>Satuan</th>
-                  <th>Harga Per Satuan</th>
-                  <th>Subtotal</th>
+                  <th className="has-text-centered is-vcentered">No</th>
+                  <th className="has-text-centered is-vcentered">Nama Item</th>
+                  <th className="has-text-centered is-vcentered">Jumlah</th>
+                  <th className="has-text-centered is-vcentered">Satuan</th>
+                  <th className="has-text-centered is-vcentered">
+                    Harga Per Satuan
+                  </th>
+                  <th className="has-text-centered is-vcentered">Subtotal</th>
+                  <th className="has-text-centered is-vcentered">Margin</th>
                 </tr>
               </thead>
               <tbody>{changeToHTML(isiModal)}</tbody>
             </table>
           </section>
+          <footer className="modal-card-foot"></footer>
         </div>
       </Modal>
     </>
@@ -381,7 +386,7 @@ export default function TransaksiPembelian({
 
 export async function getServerSideProps(context) {
   let query =
-    "select no_faktur,tanggal,margin,user.username,supplier.kode_supplier,total " +
+    "select no_faktur,tanggal,user.username,supplier.kode_supplier,total " +
     "from transaksi_pembelian inner join user on transaksi_pembelian.idUser = user.idUser " +
     "inner join supplier on transaksi_pembelian.id_supplier=supplier.id_supplier ";
 
