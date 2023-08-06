@@ -65,7 +65,6 @@ export default function TransaksiPembelian({
             <td className="is-vcentered">{x.namaSatuan}</td>
             <td className="is-vcentered">{x.harga_per_satuan}</td>
             <td className="is-vcentered">{x.subtotal}</td>
-            <td className="is-vcentered">{x.margin}</td>
           </tr>
         );
       });
@@ -371,7 +370,6 @@ export default function TransaksiPembelian({
                     Harga Per Satuan
                   </th>
                   <th className="has-text-centered is-vcentered">Subtotal</th>
-                  <th className="has-text-centered is-vcentered">Margin</th>
                 </tr>
               </thead>
               <tbody>{changeToHTML(isiModal)}</tbody>

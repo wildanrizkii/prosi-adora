@@ -108,6 +108,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
           <td className="is-vcentered">{x.namaRak}</td>
           <td className="is-vcentered">{x.namaSatuan}</td>
           <td className="is-vcentered">{x.namaJenis}</td>
+          <td className="is-vcentered">{x.margin}</td>
           <td className="is-vcentered">
             {x.status === 1 ? "Aktif" : "Non-Aktif"}
           </td>
@@ -222,6 +223,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
             <th className="has-text-centered is-vcentered">Rak</th>
             <th className="has-text-centered is-vcentered">Satuan</th>
             <th className="has-text-centered is-vcentered">Jenis</th>
+            <th className="has-text-centered is-vcentered">Margin</th>
             <th className="has-text-centered is-vcentered">Status</th>
             <th className="has-text-centered is-vcentered">Aksi</th>
           </tr>
@@ -266,7 +268,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
 
 export async function getServerSideProps(context) {
   let query =
-    "select id_item,item.nama as namaItem,stok,stok_min,item.status,rak.nama_rak as namaRak,satuan.nama as namaSatuan,jenis.nama as namaJenis " +
+    "select id_item,item.nama as namaItem,stok,stok_min,item.status,rak.nama_rak as namaRak,satuan.nama as namaSatuan,jenis.nama as namaJenis,margin " +
     "from item inner join rak on item.id_rak=rak.id_rak inner join satuan on " +
     "satuan.id_satuan=item.id_satuan inner join jenis on jenis.id_jenis=item.id_jenis_item ";
 

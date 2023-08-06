@@ -21,13 +21,14 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
     Satuan: hasil[0].id_satuan,
     Jenis: hasil[0].id_jenis_item,
     "Nama Checked": true,
+    Margin: hasil[0].margin,
   });
   const [modal, setModal] = useState({
     pesan: undefined,
     isSuccess: true,
     isModalClosed: true,
   });
-  const submit = field["Nama Checked"] === true;
+  const submit = field["Nama Checked"] === true && parseInt(field.Margin) > 0;
 
   const Router = useRouter();
   const onChangeNamaItem = async (Nama) => {
@@ -51,6 +52,7 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
         Satuan: field.Satuan,
         Jenis: field.Jenis,
         IdItem: Router.query.id,
+        Margin: field.Margin,
       });
       setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
     } catch (e) {
@@ -93,6 +95,15 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
           onChange={setField}
           field={field}
           IconLeft="fas fa-chart-bar"
+          type="number"
+          min="0"
+        />
+        <Field
+          nama="Margin"
+          value={field.Margin}
+          onChange={setField}
+          field={field}
+          IconLeft="fas fa-percent"
           type="number"
           min="0"
         />
@@ -154,7 +165,7 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
 
 export async function getServerSideProps(context) {
   const query =
-    "select nama,stok_min,id_rak,id_satuan,id_jenis_item " +
+    "select nama,stok_min,id_rak,id_satuan,id_jenis_item,margin " +
     "from item where id_item=?";
   const values = [context.query.id];
 

@@ -21,13 +21,14 @@ export default function TambahItem({ rak, satuan, jenis }) {
     Satuan: satuan[0].id_satuan,
     Jenis: jenis[0].id_jenis,
     "Nama Checked": false,
+    Margin: 0,
   });
   const [modal, setModal] = useState({
     pesan: undefined,
     isSuccess: true,
     isModalClosed: true,
   });
-  const submit = field["Nama Checked"] === true;
+  const submit = field["Nama Checked"] === true && parseInt(field.Margin) > 0;
   const Router = useRouter();
   const onChangeNamaItem = async (Nama) => {
     if (Nama === "") {
@@ -48,6 +49,7 @@ export default function TambahItem({ rak, satuan, jenis }) {
         Rak: field.Rak,
         Satuan: field.Satuan,
         Jenis: field.Jenis,
+        Margin: field.Margin,
       });
       setModal({
         pesan: res.data,
@@ -96,6 +98,15 @@ export default function TambahItem({ rak, satuan, jenis }) {
           field={field}
           IconLeft="fas fa-chart-bar"
           type="number"
+          min="0"
+        />
+        <Field
+          nama="Margin"
+          value={field.Margin}
+          onChange={setField}
+          IconLeft="fas fa-percent"
+          type="number"
+          field={field}
           min="0"
         />
         <Dropdown

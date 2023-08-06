@@ -36,7 +36,6 @@ export default function Tambah({ supplier, item }) {
       Jumlah_Item: 0,
       Harga_Beli: 0,
       Subtotal: 0,
-      Margin: 0,
     },
   ]);
 
@@ -51,8 +50,7 @@ export default function Tambah({ supplier, item }) {
         (detail[i].Satuan !== undefined ||
           detail[i].Satuan !== "GAGAL MENDAPAT INFO") &&
         parseInt(detail[i].Jumlah_Item) > 0 &&
-        parseInt(detail[i].Harga_Beli) > 0 &&
-        parseInt(detail[i].Margin) > 0
+        parseInt(detail[i].Harga_Beli) > 0
       ) {
         rightDetail = rightDetail + 1;
       }
@@ -127,12 +125,6 @@ export default function Tambah({ supplier, item }) {
     arrDetail[index] = hasil;
     setDetail(arrDetail);
   };
-  const onChangeMargin = (margin, index) => {
-    const arrDetail = [...detail];
-    const hasil = { ...detail[index], Margin: margin };
-    arrDetail[index] = hasil;
-    setDetail(arrDetail);
-  };
   const tambahBaris = () => {
     const detailBaru = [...detail];
     const objBaru = {
@@ -143,7 +135,6 @@ export default function Tambah({ supplier, item }) {
       Jumlah_Item: 0,
       Harga_Beli: 0,
       Subtotal: 0,
-      Margin: 0,
     };
     detailBaru.push(objBaru);
     setDetail(detailBaru);
@@ -177,8 +168,7 @@ export default function Tambah({ supplier, item }) {
         (detail[i].Satuan !== undefined ||
           detail[i].Satuan !== "GAGAL MENDAPAT INFO") &&
         parseInt(detail[i].Jumlah_Item) > 0 &&
-        parseInt(detail[i].Harga_Beli) > 0 &&
-        parseInt(detail[i].Margin) > 0
+        parseInt(detail[i].Harga_Beli) > 0
       ) {
         arrDetail.push(detail[i]);
       }
@@ -243,7 +233,6 @@ export default function Tambah({ supplier, item }) {
                   Harga Beli/Satuan (RP)
                 </th>
                 <th className="has-text-centered is-vcentered">Subtotal</th>
-                <th className="has-text-centered is-vcentered">Margin (%)</th>
               </tr>
             </thead>
             <tbody>
@@ -295,15 +284,6 @@ export default function Tambah({ supplier, item }) {
                       />
                     </td>
                     <td className="is-vcentered">{x.Subtotal}</td>
-                    <td className="is-vcentered">
-                      <input
-                        type="number"
-                        className="input has-text-centered"
-                        value={x.Margin}
-                        onChange={(e) => onChangeMargin(e.target.value, index)}
-                        min="0"
-                      />
-                    </td>
                     <td className="is-vcentered">
                       <button
                         type="button"

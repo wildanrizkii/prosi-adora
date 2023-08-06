@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     }
     const values1 = [faktur, masukanTanggal, idUser, supplier, total];
     const query2 =
-      "INSERT INTO detail_transaksi_pembelian(no_faktur,id_item,jumlah,subtotal,harga_per_satuan,margin) VALUES(?,?,?,?,?,?)";
+      "INSERT INTO detail_transaksi_pembelian(no_faktur,id_item,jumlah,subtotal,harga_per_satuan) VALUES(?,?,?,?,?)";
     try {
       await handlerQuery({ query: query1, values: values1 });
       for (let i = 0; i < sendDetail.length; i++) {
@@ -28,7 +28,6 @@ export default async function handler(req, res) {
             sendDetail[i].Jumlah_Item,
             sendDetail[i].Subtotal,
             sendDetail[i].Harga_Beli,
-            sendDetail[i].Margin,
           ],
         });
       }
