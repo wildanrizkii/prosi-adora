@@ -4,10 +4,10 @@ import Link from "next/link";
 import handlerQuery from "../../../../lib/db";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { Pagination } from "../../../../components/AllComponent";
+import { Pagination, readableDate } from "../../../../components/AllComponent";
 
-import { DatePicker, ConfigProvider } from "antd";
-import idID from "antd/locale/id_ID";
+import { DatePicker } from "antd";
+
 import dayjs from "dayjs";
 import "dayjs/locale/id";
 import { Modal } from "../../../../components/AllComponent";
@@ -141,82 +141,13 @@ export default function TransaksiPembelian({
     router.push(hrefDepan + "?" + hrefBelakang);
   };
 
-  function readableDate(input) {
-    const output = new Date(input);
-    const tanggal = output.getDate();
-    let bulan;
-    switch (output.getMonth()) {
-      case 0:
-        bulan = "Januari";
-        break;
-      case 1:
-        bulan = "Februari";
-        break;
-      case 2:
-        bulan = "Maret";
-        break;
-      case 3:
-        bulan = "April";
-        break;
-      case 4:
-        bulan = "Mei";
-        break;
-      case 5:
-        bulan = "Juni";
-        break;
-      case 6:
-        bulan = "Juli";
-        break;
-      case 7:
-        bulan = "Agustus";
-        break;
-      case 8:
-        bulan = "September";
-        break;
-      case 9:
-        bulan = "Oktober";
-        break;
-      case 10:
-        bulan = "November";
-        break;
-      case 11:
-        bulan = "Desember";
-        break;
-    }
-
-    let hari;
-    switch (output.getDay()) {
-      case 0:
-        hari = "Minggu";
-        break;
-      case 1:
-        hari = "Senin";
-        break;
-      case 2:
-        hari = "Selasa";
-        break;
-      case 3:
-        hari = "Rabu";
-        break;
-      case 4:
-        hari = "Kamis";
-        break;
-      case 5:
-        hari = "Jumat";
-        break;
-      case 6:
-        hari = "Sabtu";
-    }
-    const tahun = output.getFullYear();
-
-    const hasil = hari + " " + tanggal + " " + " " + bulan + " " + tahun;
-    return hasil;
-  }
+  let index = (parseInt(router.query.p) - 1) * 10;
   try {
-    semuaData = hasil.map((x, index) => {
+    semuaData = hasil.map((x) => {
+      index = index + 1;
       return (
         <tr key={x.no_faktur} style={{ fontWeight: "bold" }}>
-          <td className="is-vcentered">{index + 1}</td>
+          <td className="is-vcentered">{index}</td>
           <td className="is-vcentered">{x.no_faktur}</td>
           <td className="is-vcentered">{readableDate(x.tanggal)}</td>
           <td className="is-vcentered">{x.username}</td>
@@ -297,14 +228,13 @@ export default function TransaksiPembelian({
 
       <div className="field">
         <label className="label">Tanggal</label>
-        <ConfigProvider locale={idID.default}>
-          <RangePicker
-            onChange={onChangeDate}
-            size="large"
-            format="DD-MM-YYYY"
-            value={filter.Tanggal}
-          />
-        </ConfigProvider>
+
+        <RangePicker
+          onChange={onChangeDate}
+          size="large"
+          format="DD-MM-YYYY"
+          value={filter.Tanggal}
+        />
       </div>
 
       <div className="field">

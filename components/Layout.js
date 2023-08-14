@@ -15,9 +15,9 @@ const Layout = ({ children, clicked }) => {
     { nama: "Rak", icon: "fas fa-cubes" },
   ];
   const dropdownTransaksi = [
-    { nama: "Transaksi Stok Opname", icon: "fas fa-file-invoice-dollar" },
+    { nama: "Transaksi Stok Opname?p=1", icon: "fas fa-file-invoice-dollar" },
     { nama: "Transaksi Pembelian?p=1", icon: "fas fa-file-invoice-dollar" },
-    { nama: "Transaksi Penjualan", icon: "fas fa-file-invoice-dollar" },
+    { nama: "Transaksi Penjualan?p=1", icon: "fas fa-file-invoice-dollar" },
   ];
   const dropdownLaporan = [
     { nama: "Laporan Penjualan", icon: "far fa-file-alt" },

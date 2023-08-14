@@ -80,8 +80,8 @@ export default function Kota({ hasil }) {
           key={x.id_kota}
           style={{
             fontWeight: "bold",
-            backgroundColor: x.status === 0 && "red",
-            color: x.status === 0 && "white",
+            backgroundColor: x.status === 0 ? "red" : "white",
+            color: x.status === 0 ? "white" : "rgb(54,54,54)",
           }}
         >
           <td className="is-vcentered">{index + 1}</td>

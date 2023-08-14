@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useReducer, useState } from "react";
 import { useRouter } from "next/router";
+import React from "react";
 export function Field({
   nama,
   value,
@@ -299,19 +300,19 @@ export function Pagination({ href, currentPage, jumlah }) {
       <ul className="pagination-list">
         {uniq.map((el, index) => {
           return (
-            <>
+            <React.Fragment key={index}>
               {index === 1 && elipsisKiri === true ? (
-                <li key="elipsis-kiri">
+                <li>
                   <span className="pagination-ellipsis">…</span>
                 </li>
               ) : undefined}
               {index === uniq.length - 1 && elipsisKanan === true ? (
-                <li key="elipsis-kanan">
+                <li>
                   <span className="pagination-ellipsis">…</span>
                 </li>
               ) : undefined}
 
-              <li key={el}>
+              <li>
                 <button
                   className={`button pagination-link ${
                     el === currPage && "is-current"
@@ -325,7 +326,7 @@ export function Pagination({ href, currentPage, jumlah }) {
                   {el}
                 </button>
               </li>
-            </>
+            </React.Fragment>
           );
         })}
       </ul>
@@ -597,4 +598,76 @@ export function Pembungkus({ children }) {
 
 export function Gambar() {
   return <img src="/image/Logo ADORA.jpg" alt="Logo Apotek Adora" />;
+}
+
+export function readableDate(input) {
+  const output = new Date(input);
+  const tanggal = output.getDate();
+  let bulan;
+  switch (output.getMonth()) {
+    case 0:
+      bulan = "Januari";
+      break;
+    case 1:
+      bulan = "Februari";
+      break;
+    case 2:
+      bulan = "Maret";
+      break;
+    case 3:
+      bulan = "April";
+      break;
+    case 4:
+      bulan = "Mei";
+      break;
+    case 5:
+      bulan = "Juni";
+      break;
+    case 6:
+      bulan = "Juli";
+      break;
+    case 7:
+      bulan = "Agustus";
+      break;
+    case 8:
+      bulan = "September";
+      break;
+    case 9:
+      bulan = "Oktober";
+      break;
+    case 10:
+      bulan = "November";
+      break;
+    case 11:
+      bulan = "Desember";
+      break;
+  }
+
+  let hari;
+  switch (output.getDay()) {
+    case 0:
+      hari = "Minggu";
+      break;
+    case 1:
+      hari = "Senin";
+      break;
+    case 2:
+      hari = "Selasa";
+      break;
+    case 3:
+      hari = "Rabu";
+      break;
+    case 4:
+      hari = "Kamis";
+      break;
+    case 5:
+      hari = "Jumat";
+      break;
+    case 6:
+      hari = "Sabtu";
+  }
+  const tahun = output.getFullYear();
+
+  const hasil = hari + " " + tanggal + " " + " " + bulan + " " + tahun;
+  return hasil;
 }

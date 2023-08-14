@@ -18,7 +18,7 @@ export function Menu({ nama, clickedMenu, onClick, atas, icon }) {
     ) : (
       nama.split("?")[0]
     );
-  const bgColor = clickedMenu === nama.split("?")[0] && "#f5f5f5";
+  const bgColor = clickedMenu === nama.split("?")[0] ? "#f5f5f5" : "white";
   function handleClick() {
     if (atas !== undefined) {
       router.push("/" + atas + "/" + nama.replaceAll(" ", ""));

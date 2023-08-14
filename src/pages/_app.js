@@ -1,7 +1,8 @@
 import Script from "next/script";
 import "../styles/a.scss";
 import { SessionProvider } from "next-auth/react";
-
+import idID from "antd/locale/id_ID";
+import { ConfigProvider } from "antd";
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
@@ -12,7 +13,9 @@ export default function App({
       {getLayout(
         <>
           <Script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" />
-          <Component {...pageProps} />
+          <ConfigProvider locale={idID.default}>
+            <Component {...pageProps} />
+          </ConfigProvider>
         </>
       )}
     </SessionProvider>
