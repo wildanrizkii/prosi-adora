@@ -17,6 +17,7 @@ import {
   IsiModalSuccess,
   IsiModalFailed,
 } from "../../../components/TambahUserComp";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 export default function Tambah() {
   const [state, dispacth] = useReducer(Usernamereducer, userinitValue);
@@ -45,7 +46,7 @@ export default function Tambah() {
   const Eye = ({ onClick }) => {
     return (
       <FontAwesomeIcon
-        icon="eye"
+        icon={faEye}
         onClick={onClick}
         pointerEvents="all"
         cursor="pointer"
@@ -55,7 +56,7 @@ export default function Tambah() {
   const EyeSlash = ({ onClick }) => {
     return (
       <FontAwesomeIcon
-        icon="eye-slash"
+        icon={faEyeSlash}
         onClick={onClick}
         pointerEvents="all"
         cursor="pointer"

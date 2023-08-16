@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 import axios from "axios";
+import { faCity } from "@fortawesome/free-solid-svg-icons";
 export default function Edit({ hasil }) {
   let [tipe, setTipe] = useState(hasil[0].tipe);
   const [field, setField] = useState({
@@ -91,7 +92,7 @@ export default function Edit({ hasil }) {
           value={field["Nama Kota atau Kab"]}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-city"
+          IconLeft={faCity}
           maxLength="50"
           fungsiCheck={onChangeNamaKota}
           id="a"

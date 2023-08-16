@@ -6,7 +6,6 @@ export default async function handler(req, res) {
   if (req.method === "PATCH") {
     const { username, role, password, id } = req.body;
     if (password !== "") {
-      console.log("password tidak kosong");
       const salt = uuidv4();
       const hashedPass = sha256(salt + password);
       const query =
@@ -19,7 +18,6 @@ export default async function handler(req, res) {
         res.status(500).send(e.message);
       }
     } else if (password === "") {
-      console.log("password kosong");
       const query = "UPDATE user set username=?,role=? where idUser=?";
       const values = [username, role, id];
       try {

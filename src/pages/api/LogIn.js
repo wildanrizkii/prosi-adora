@@ -2,7 +2,6 @@ import handlerQuery from "../../../lib/db";
 import { sha256 } from "js-sha256";
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    console.log("MASUK HANDLER");
     const { x, y } = JSON.parse(req.body);
     const query =
       "select password,salt,role,idUser,username,status from user where username=?";

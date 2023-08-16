@@ -12,6 +12,8 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 export default function Kota({ hasil }) {
   let semuaAkun;
   const router = useRouter();
@@ -158,7 +160,7 @@ export default function Kota({ hasil }) {
             required
           />
           <span className="icon is-small is-left">
-            <i className="fas fa-search"></i>
+            <FontAwesomeIcon icon={faSearch} />
           </span>
         </div>
       </div>

@@ -1,32 +1,54 @@
 import { ImageOfAdora, Menu, MenuWithDropdown } from "./LayoutComponent";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Modal, FieldWithEye, FieldKhusus } from "./AllComponent";
+import { Modal, FieldKhusus } from "./AllComponent";
 import { Password, passwordReducer, passinitValue } from "./TambahUserComp";
 import { useReducer, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCapsules,
+  faChartLine,
+  faCashRegister,
+  faPills,
+  faPrescriptionBottle,
+  faCubes,
+  faFileInvoiceDollar,
+  faAddressBook,
+  faCity,
+  faUserTie,
+  faWallet,
+  faBox,
+  faClipboardList,
+  faSignOutAlt,
+  faUserGear,
+  faEye,
+  faEyeSlash,
+  faUser,
+  faKey,
+} from "@fortawesome/free-solid-svg-icons";
+import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
 import axios from "axios";
 const Layout = ({ children, clicked }) => {
   const clickedMenu = clicked;
   const dropdownProduk = [
-    { nama: "Daftar Item?p=1", icon: "fas fa-capsules" },
-    { nama: "Jenis Item", icon: "fas fa-pills" },
-    { nama: "Satuan Item", icon: "fas fa-prescription-bottle" },
-    { nama: "Rak", icon: "fas fa-cubes" },
+    { nama: "Daftar Item?p=1", icon: faCapsules },
+    { nama: "Jenis Item", icon: faPills },
+    { nama: "Satuan Item", icon: faPrescriptionBottle },
+    { nama: "Rak", icon: faCubes },
   ];
   const dropdownTransaksi = [
-    { nama: "Transaksi Stok Opname?p=1", icon: "fas fa-file-invoice-dollar" },
-    { nama: "Transaksi Pembelian?p=1", icon: "fas fa-file-invoice-dollar" },
-    { nama: "Transaksi Penjualan?p=1", icon: "fas fa-file-invoice-dollar" },
+    { nama: "Transaksi Stok Opname?p=1", icon: faFileInvoiceDollar },
+    { nama: "Transaksi Pembelian?p=1", icon: faFileInvoiceDollar },
+    { nama: "Transaksi Penjualan?p=1", icon: faFileInvoiceDollar },
   ];
   const dropdownLaporan = [
-    { nama: "Laporan Penjualan", icon: "far fa-file-alt" },
-    { nama: "Laporan Pembelian", icon: "far fa-file-alt" },
-    { nama: "Laporan Item Terlaris", icon: "far fa-file-alt" },
+    { nama: "Laporan Penjualan", icon: faFileAlt },
+    { nama: "Laporan Pembelian", icon: faFileAlt },
+    { nama: "Laporan Item Terlaris", icon: faFileAlt },
   ];
   const dropdownSupplier = [
-    { nama: "Data Supplier", icon: "fas fa-address-book" },
-    { nama: "Kota", icon: "fas fa-city" },
+    { nama: "Data Supplier", icon: faAddressBook },
+    { nama: "Kota", icon: faCity },
   ];
 
   const { data: session, status, update } = useSession({ required: true });
@@ -46,7 +68,7 @@ const Layout = ({ children, clicked }) => {
   const Eye = ({ onClick }) => {
     return (
       <FontAwesomeIcon
-        icon="eye"
+        icon={faEye}
         onClick={onClick}
         pointerEvents="all"
         cursor="pointer"
@@ -56,7 +78,7 @@ const Layout = ({ children, clicked }) => {
   const EyeSlash = ({ onClick }) => {
     return (
       <FontAwesomeIcon
-        icon="eye-slash"
+        icon={faEyeSlash}
         onClick={onClick}
         pointerEvents="all"
         cursor="pointer"
@@ -137,35 +159,31 @@ const Layout = ({ children, clicked }) => {
   };
   const AksesPemilik = (
     <>
-      <Menu
-        clickedMenu={clickedMenu}
-        nama="Dashboard"
-        icon="fas fa-chart-line"
-      />
-      <Menu clickedMenu={clickedMenu} nama="Kasir" icon="fas fa-receipt" />
+      <Menu clickedMenu={clickedMenu} nama="Dashboard" icon={faChartLine} />
+      <Menu clickedMenu={clickedMenu} nama="Kasir" icon={faCashRegister} />
       <MenuWithDropdown
         clickedMenu={clickedMenu}
         dropdown={dropdownSupplier}
         nama="Supplier"
-        icon="fas fa-user-tie"
+        icon={faUserTie}
       />
       <MenuWithDropdown
         clickedMenu={clickedMenu}
         nama="Transaksi"
         dropdown={dropdownTransaksi}
-        icon="fas fa-wallet"
+        icon={faWallet}
       />
       <MenuWithDropdown
         clickedMenu={clickedMenu}
         nama="Produk"
         dropdown={dropdownProduk}
-        icon="fas fa-box"
+        icon={faBox}
       />
       <MenuWithDropdown
         clickedMenu={clickedMenu}
         nama="Laporan"
         dropdown={dropdownLaporan}
-        icon="fas fa-clipboard-list"
+        icon={faClipboardList}
       />
     </>
   );
@@ -175,18 +193,18 @@ const Layout = ({ children, clicked }) => {
         clickedMenu={clickedMenu}
         dropdown={dropdownSupplier}
         nama="Supplier"
-        icon="fas fa-user-tie"
+        icon={faUserTie}
       />
       <MenuWithDropdown
         clickedMenu={clickedMenu}
         nama="Transaksi"
         dropdown={dropdownTransaksi}
-        icon="fas fa-wallet"
+        icon={faWallet}
       />
     </>
   );
   const AksesKasir = (
-    <Menu clickedMenu={clickedMenu} nama="Kasir" icon="fas fa-receipt" />
+    <Menu clickedMenu={clickedMenu} nama="Kasir" icon={faCashRegister} />
   );
   const idUser = status === "authenticated" && session.user.idUser;
   const CheckUsername = async (Username) => {
@@ -215,7 +233,6 @@ const Layout = ({ children, clicked }) => {
   const onsubmitUsername = async (e) => {
     e.preventDefault();
 
-    console.log("SUBMIT USERNAME");
     try {
       const res = await axios.patch("/api/ChangeUsername", {
         UsernameBaru: fieldUsername["Username Baru"],
@@ -232,8 +249,6 @@ const Layout = ({ children, clicked }) => {
 
   const onSubmitPassword = async (e) => {
     e.preventDefault();
-    console.log("SUBMIT PASS");
-    console.log("PASSNYA " + password);
     try {
       const res = await axios.patch("/api/ChangePassword", {
         passwordBaru: password,
@@ -277,7 +292,7 @@ const Layout = ({ children, clicked }) => {
                   <Menu
                     clickedMenu={clickedMenu}
                     nama="Pengaturan User"
-                    icon="fas fa-users-cog"
+                    icon={faUserGear}
                   />
                 )}
 
@@ -285,7 +300,7 @@ const Layout = ({ children, clicked }) => {
                 clickedMenu={clickedMenu}
                 nama="Log Out"
                 onClick={signOut}
-                icon="fas fa-sign-out-alt"
+                icon={faSignOutAlt}
               />
             </ul>
           </aside>
@@ -311,7 +326,10 @@ const Layout = ({ children, clicked }) => {
                   aria-controls="dropdown-menu2"
                 >
                   <span style={{ width: "10vw" }}>
-                    <i className="fas fa-user" style={{ marginRight: "5px" }} />
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      style={{ marginRight: "5px" }}
+                    />
                     {status === "authenticated" && session.user.username}
                   </span>
                 </button>
@@ -344,8 +362,8 @@ const Layout = ({ children, clicked }) => {
                         style={{ marginBottom: "5px" }}
                         onClick={() => setModalFormUsername(true)}
                       >
-                        <i
-                          className="fas fa-user"
+                        <FontAwesomeIcon
+                          icon={faUser}
                           style={{ color: "#ffffff", marginRight: "5px" }}
                         />
                         Ganti Username
@@ -354,8 +372,8 @@ const Layout = ({ children, clicked }) => {
                         className="button is-success"
                         onClick={() => setModalFormPassword(true)}
                       >
-                        <i
-                          className="fas fa-key"
+                        <FontAwesomeIcon
+                          icon={faKey}
                           style={{ color: "#ffffff", marginRight: "5px" }}
                         />
                         Ganti Password
@@ -387,7 +405,7 @@ const Layout = ({ children, clicked }) => {
                     nama="Username Baru"
                     value={fieldUsername["Username Baru"]}
                     onChange={setFieldUsername}
-                    IconLeft="fas fa-user"
+                    IconLeft={faUser}
                     field={fieldUsername}
                     maxLength="15"
                     fungsiCheck={CheckUsername}

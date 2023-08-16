@@ -8,7 +8,6 @@ export default withAuth(
       req.nextauth.token?.role !== "kasir" &&
       req.nextauth.token?.role !== "pemilik"
     ) {
-      console.log(req.nextauth.token?.role);
       return NextResponse.rewrite(new URL("/NotAuthorized", req.url));
     } else if (
       (req.nextUrl.pathname.startsWith("/Transaksi") ||
@@ -46,7 +45,6 @@ export default withAuth(
     callbacks: {
       // authorized: ({ token }) => !!token,
       authorized({ req, token }) {
-        // console.log(req.nextUrl.pathname);
         if (req.nextUrl.pathname.startsWith("/login")) {
           return true;
         }

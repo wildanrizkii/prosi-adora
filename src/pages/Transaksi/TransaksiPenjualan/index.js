@@ -8,11 +8,13 @@ import handlerQuery from "../../../../lib/db";
 import { DatePicker } from "antd";
 const { RangePicker } = DatePicker;
 import "dayjs/locale/id";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Pagination,
   Modal,
   readableDate,
 } from "../../../../components/AllComponent";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
   let semuaData;
@@ -193,7 +195,7 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
             required
           />
           <span className="icon is-small is-left">
-            <i className="fas fa-search"></i>
+            <FontAwesomeIcon icon={faSearch} />
           </span>
         </div>
       </div>

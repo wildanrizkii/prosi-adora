@@ -2,6 +2,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useReducer, useState } from "react";
 import { useRouter } from "next/router";
 import React from "react";
+import {
+  faCheck,
+  faEye,
+  faEyeSlash,
+  faLock,
+  faSpinner,
+  faTimes,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 export function Field({
   nama,
   value,
@@ -29,7 +38,7 @@ export function Field({
           </p>
         ),
         warnaTextbox: "input is-info",
-        icon: <FontAwesomeIcon icon="spinner" spin color="blue" />,
+        icon: <FontAwesomeIcon icon={faSpinner} spin color="blue" />,
       };
     } else if (action.type === "BISA") {
       return {
@@ -39,7 +48,7 @@ export function Field({
           </p>
         ),
         warnaTextbox: "input is-success",
-        icon: <FontAwesomeIcon icon="check" color="green" />,
+        icon: <FontAwesomeIcon icon={faCheck} color="green" />,
       };
     } else if (action.type === "TIDAK BISA") {
       return {
@@ -49,7 +58,7 @@ export function Field({
           </p>
         ),
         warnaTextbox: "input is-danger",
-        icon: <FontAwesomeIcon icon="times" color="red" />,
+        icon: <FontAwesomeIcon icon={faTimes} color="red" />,
       };
     } else if (action.type === "TIDAK BOLEH") {
       return {
@@ -59,7 +68,7 @@ export function Field({
           </p>
         ),
         warnaTextbox: "input is-danger",
-        icon: <FontAwesomeIcon icon="times" color="red" />,
+        icon: <FontAwesomeIcon icon={faTimes} color="red" />,
       };
     } else if (action.type === "error") {
       return {
@@ -69,7 +78,7 @@ export function Field({
           </p>
         ),
         warnaTextbox: "input is-danger",
-        icon: <FontAwesomeIcon icon="times" color="red" />,
+        icon: <FontAwesomeIcon icon={faTimes} color="red" />,
       };
     } else if (action.type === "default") {
       return initialState;
@@ -79,7 +88,6 @@ export function Field({
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const onChangeValueWithFunc = async (e) => {
-    console.log(e.target.value);
     onChange({ ...field, [nama]: e.target.value });
     dispatch({ type: "LOADING" });
 
@@ -145,7 +153,7 @@ export function Field({
           required
         />
         <span className="icon is-small is-left">
-          {IconLeft !== undefined && <i className={IconLeft}></i>}
+          {IconLeft !== undefined && <FontAwesomeIcon icon={IconLeft} />}
         </span>
         <span className="icon is-small is-right">{state.icon}</span>
       </div>
@@ -281,7 +289,6 @@ export function Pagination({ href, currentPage, jumlah }) {
         disabled={prev === 0 && true}
         onClick={() => {
           hrefBelakang.set("p", prev);
-          console.log(hrefBelakang.toString());
           Router.push(hrefDepan + "?" + hrefBelakang.toString());
         }}
       >
@@ -360,7 +367,7 @@ export function FieldKhusus({
           </p>
         ),
         warnaTextbox: "input is-info",
-        icon: <FontAwesomeIcon icon="spinner" spin color="blue" />,
+        icon: <FontAwesomeIcon icon={faSpinner} spin color="blue" />,
       };
     } else if (action.type === "BISA") {
       return {
@@ -370,7 +377,7 @@ export function FieldKhusus({
           </p>
         ),
         warnaTextbox: "input is-success",
-        icon: <FontAwesomeIcon icon="check" color="green" />,
+        icon: <FontAwesomeIcon icon={faCheck} color="green" />,
       };
     } else if (action.type === "TIDAK BISA") {
       return {
@@ -380,7 +387,7 @@ export function FieldKhusus({
           </p>
         ),
         warnaTextbox: "input is-danger",
-        icon: <FontAwesomeIcon icon="times" color="red" />,
+        icon: <FontAwesomeIcon icon={faTimes} color="red" />,
       };
     } else if (action.type === "TIDAK BOLEH") {
       return {
@@ -390,7 +397,7 @@ export function FieldKhusus({
           </p>
         ),
         warnaTextbox: "input is-danger",
-        icon: <FontAwesomeIcon icon="times" color="red" />,
+        icon: <FontAwesomeIcon icon={faTimes} color="red" />,
       };
     } else if (action.type === "error") {
       return {
@@ -400,7 +407,7 @@ export function FieldKhusus({
           </p>
         ),
         warnaTextbox: "input is-danger",
-        icon: <FontAwesomeIcon icon="times" color="red" />,
+        icon: <FontAwesomeIcon icon={faTimes} color="red" />,
       };
     } else if (action.type === "default") {
       return initialState;
@@ -410,7 +417,6 @@ export function FieldKhusus({
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const onChangeValueWithFunc = async (e) => {
-    console.log(e.target.value);
     onChange({ ...field, [nama]: e.target.value });
     dispatch({ type: "LOADING" });
 
@@ -475,7 +481,7 @@ export function FieldKhusus({
           required
         />
         <span className="icon is-small is-left">
-          {IconLeft !== undefined && <i className={IconLeft}></i>}
+          {IconLeft !== undefined && <FontAwesomeIcon icon={IconLeft} />}
         </span>
         <span className="icon is-small is-right">{state.icon}</span>
       </div>
@@ -502,7 +508,7 @@ export function FieldWithEye({
   const Eye = ({ onClick }) => {
     return (
       <FontAwesomeIcon
-        icon="eye"
+        icon={faEye}
         onClick={onClick}
         pointerEvents="all"
         cursor="pointer"
@@ -512,7 +518,7 @@ export function FieldWithEye({
   const EyeSlash = ({ onClick }) => {
     return (
       <FontAwesomeIcon
-        icon="eye-slash"
+        icon={faEyeSlash}
         onClick={onClick}
         pointerEvents="all"
         cursor="pointer"
@@ -537,13 +543,13 @@ export function FieldWithEye({
           required
         />
         <span className="icon is-small is-left">
-          <i className="fas fa-lock"></i>
+          <FontAwesomeIcon icon={faLock} />
         </span>
         <span className="icon is-small is-right">
           {isPass === true ? (
-            <Eye onClick={onClick} />
-          ) : (
             <EyeSlash onClick={onClick} />
+          ) : (
+            <Eye onClick={onClick} />
           )}
         </span>
       </div>
@@ -579,7 +585,7 @@ export function Username({
           required
         />
         <span className="icon is-small is-left">
-          <i className="fas fa-user"></i>
+          <FontAwesomeIcon icon={faUser} />
         </span>
       </div>
     </div>

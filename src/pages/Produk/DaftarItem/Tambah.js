@@ -11,6 +11,11 @@ import {
   Dropdown,
 } from "../../../../components/AllComponent";
 import handlerQuery from "../../../../lib/db";
+import {
+  faCapsules,
+  faChartBar,
+  faPercent,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function TambahItem({ rak, satuan, jenis }) {
   const [field, setField] = useState({
@@ -78,7 +83,7 @@ export default function TambahItem({ rak, satuan, jenis }) {
           value={field.Nama}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-tags"
+          IconLeft={faCapsules}
           maxLength="50"
           fungsiCheck={onChangeNamaItem}
         />
@@ -96,7 +101,7 @@ export default function TambahItem({ rak, satuan, jenis }) {
           value={field["Stok Minimum"]}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-chart-bar"
+          IconLeft={faChartBar}
           type="number"
           min="0"
         />
@@ -104,7 +109,7 @@ export default function TambahItem({ rak, satuan, jenis }) {
           nama="Margin"
           value={field.Margin}
           onChange={setField}
-          IconLeft="fas fa-percent"
+          IconLeft={faPercent}
           type="number"
           field={field}
           min="0"

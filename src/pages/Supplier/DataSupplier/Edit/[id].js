@@ -12,6 +12,12 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 import axios from "axios";
+import {
+  faMapMarkedAlt,
+  faPhone,
+  faSignature,
+  faTags,
+} from "@fortawesome/free-solid-svg-icons";
 export default function Edit({ hasil, DaftarKota }) {
   const [field, setField] = useState({
     "Kode Supplier": hasil[0].kode_supplier,
@@ -72,7 +78,7 @@ export default function Edit({ hasil, DaftarKota }) {
           nama="Kode Supplier"
           value={field["Kode Supplier"]}
           onChange={setField}
-          IconLeft="fas fa-tags"
+          IconLeft={faTags}
           field={field}
           maxLength="5"
           fungsiCheck={onChangeKodeSupplier}
@@ -81,7 +87,7 @@ export default function Edit({ hasil, DaftarKota }) {
           nama="Nama Supplier"
           value={field["Nama Supplier"]}
           onChange={setField}
-          IconLeft="fas fa-signature"
+          IconLeft={faSignature}
           field={field}
           maxLength="20"
         />
@@ -89,7 +95,7 @@ export default function Edit({ hasil, DaftarKota }) {
           nama="Alamat"
           value={field["Alamat"]}
           onChange={setField}
-          IconLeft="fas fa-map-marked-alt"
+          IconLeft={faMapMarkedAlt}
           field={field}
           maxLength="100"
         />
@@ -107,7 +113,7 @@ export default function Edit({ hasil, DaftarKota }) {
           value={field["No HP"]}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-phone"
+          IconLeft={faPhone}
           maxLength="13"
         />
 

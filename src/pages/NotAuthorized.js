@@ -10,7 +10,6 @@ export default function NotAuthorized() {
   useEffect(() => {
     setSekarangDimana(Router.asPath);
   }, []);
-  console.log(SekarangDiMana);
   const isi = SekarangDiMana.startsWith("/Dashboard")
     ? "PEMILIK"
     : SekarangDiMana.startsWith("/Laporan")
@@ -23,7 +22,9 @@ export default function NotAuthorized() {
     ? "PEMILIK,TTK"
     : SekarangDiMana.startsWith("/Supplier")
     ? "PEMILIK,TTK"
-    : "KASIR";
+    : SekarangDiMana.startsWith("/Kasir")
+    ? "PEMILIK,KASIR"
+    : "";
   const RoleAnda =
     status === "authenticated" && session.user.role.toUpperCase();
   return (

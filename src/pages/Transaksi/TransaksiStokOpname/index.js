@@ -14,6 +14,8 @@ import {
   Modal,
   readableDate,
 } from "../../../../components/AllComponent";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 export default function TransaksiStokOpname({ hasil, jumlah, user }) {
   let semuaData;
   const router = useRouter();
@@ -41,7 +43,9 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
     if (typeof masukan === "string") {
       return (
         <tr>
-          <td colSpan="4">{masukan}</td>
+          <td colSpan="6" className="is-vcentered">
+            {masukan}
+          </td>
         </tr>
       );
     } else {
@@ -141,7 +145,7 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
   } catch (e) {
     semuaData = (
       <tr>
-        <td colSpan="6" className="is-vcentered">
+        <td colSpan="5" className="is-vcentered">
           {hasil}
         </td>
       </tr>
@@ -156,6 +160,7 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
       <Link
         className="button is-link"
         href="/Transaksi/TransaksiStokOpname/Tambah"
+        style={{ marginBottom: "10px" }}
       >
         Tambah
       </Link>
@@ -198,7 +203,7 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
             required
           />
           <span className="icon is-small is-left">
-            <i className="fas fa-search"></i>
+            <FontAwesomeIcon icon={faSearch} />
           </span>
         </div>
       </div>

@@ -1,3 +1,10 @@
+import {
+  faCheck,
+  faLock,
+  faSpinner,
+  faTimes,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export function Usernamereducer(state, action) {
   if (action.type === "loading") {
@@ -8,7 +15,7 @@ export function Usernamereducer(state, action) {
         </p>
       ),
       warnaTextbox: "input is-info",
-      icon: <FontAwesomeIcon icon="spinner" spin color="blue" />,
+      icon: <FontAwesomeIcon icon={faSpinner} spin color="blue" />,
     };
   } else if (action.type === "available") {
     return {
@@ -18,7 +25,7 @@ export function Usernamereducer(state, action) {
         </p>
       ),
       warnaTextbox: "input is-success",
-      icon: <FontAwesomeIcon icon="check" color="green" />,
+      icon: <FontAwesomeIcon icon={faCheck} color="green" />,
     };
   } else if (action.type === "not available") {
     return {
@@ -28,7 +35,7 @@ export function Usernamereducer(state, action) {
         </p>
       ),
       warnaTextbox: "input is-danger",
-      icon: <FontAwesomeIcon icon="times" color="red" />,
+      icon: <FontAwesomeIcon icon={faTimes} color="red" />,
     };
   } else if (action.type === "not allowed") {
     return {
@@ -38,7 +45,7 @@ export function Usernamereducer(state, action) {
         </p>
       ),
       warnaTextbox: "input is-danger",
-      icon: <FontAwesomeIcon icon="times" color="red" />,
+      icon: <FontAwesomeIcon icon={faTimes} color="red" />,
     };
   } else if (action.type === "error") {
     return {
@@ -48,7 +55,7 @@ export function Usernamereducer(state, action) {
         </p>
       ),
       warnaTextbox: "input is-danger",
-      icon: <FontAwesomeIcon icon="times" color="red" />,
+      icon: <FontAwesomeIcon icon={faTimes} color="red" />,
     };
   } else if (action.type === "default") {
     return userinitValue;
@@ -112,7 +119,7 @@ export function Username({ className, value, onChange, icon, hasil }) {
           maxLength="15"
         />
         <span className="icon is-small is-left">
-          <i className="fas fa-user" />
+          <FontAwesomeIcon icon={faUser} />
         </span>
         <span className="icon is-small is-right">{icon}</span>
       </div>
@@ -146,7 +153,7 @@ export function Password({
           disabled={disabled}
         />
         <span className="icon is-small is-left">
-          <i className="fas fa-lock" />
+          <FontAwesomeIcon icon={faLock} />
         </span>
         <span className="icon is-small is-right">{icon}</span>
       </div>

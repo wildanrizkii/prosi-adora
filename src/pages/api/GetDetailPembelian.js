@@ -4,7 +4,6 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     const query = req.query;
     const { faktur } = query;
-    console.log(faktur);
     const queryDB =
       "select no_detail_pembelian,item.nama as nama,jumlah,subtotal,harga_per_satuan,satuan.nama as namaSatuan " +
       "from detail_transaksi_pembelian inner join item on item.id_item=detail_transaksi_pembelian.id_item " +

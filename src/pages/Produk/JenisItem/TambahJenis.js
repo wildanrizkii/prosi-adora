@@ -10,6 +10,7 @@ import {
   IsiModalFailed,
   IsiModalSuccess,
 } from "../../../../components/AllComponent";
+import { faPills } from "@fortawesome/free-solid-svg-icons";
 
 export default function TambahJenis() {
   const [field, setField] = useState({
@@ -67,7 +68,7 @@ export default function TambahJenis() {
           value={field["Nama Jenis Item"]}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-pills"
+          IconLeft={faPills}
           maxLength="15"
           fungsiCheck={onChangeNamaJenis}
         />

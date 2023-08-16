@@ -12,6 +12,7 @@ import handlerQuery from "../../../../lib/db";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { faReceipt } from "@fortawesome/free-solid-svg-icons";
 
 export default function Tambah({ supplier, item }) {
   const [field, setField] = useState({
@@ -205,7 +206,7 @@ export default function Tambah({ supplier, item }) {
           nama="No Faktur"
           value={field["No Faktur"]}
           onChange={setField}
-          IconLeft="fas fa-receipt"
+          IconLeft={faReceipt}
           field={field}
           maxLength="50"
           fungsiCheck={onChangeFaktur}

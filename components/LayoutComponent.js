@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export function ImageOfAdora() {
   return (
     <li>
@@ -29,7 +30,7 @@ export function Menu({ nama, clickedMenu, onClick, atas, icon }) {
   return (
     <li style={{ marginBottom: 10, marginLeft: 10, backgroundColor: bgColor }}>
       <a onClick={onClick ? onClick : handleClick}>
-        <i className={icon} style={{ marginRight: "5px" }} />
+        <FontAwesomeIcon icon={icon} style={{ marginRight: "5px" }} />
         {nameStyle}
       </a>
     </li>
@@ -37,7 +38,14 @@ export function Menu({ nama, clickedMenu, onClick, atas, icon }) {
 }
 
 export function MenuWithDropdown({ nama, clickedMenu, dropdown, icon }) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  let bool = false;
+  for (let i = 0; i < dropdown.length; i++) {
+    if (dropdown[i].nama.split("?")[0] === clickedMenu) {
+      bool = true;
+      break;
+    }
+  }
+  const [isDropdownOpen, setIsDropdownOpen] = useState(bool);
   const ClickHandler = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -55,7 +63,7 @@ export function MenuWithDropdown({ nama, clickedMenu, dropdown, icon }) {
   return (
     <li style={{ marginBottom: 10, marginLeft: 10 }}>
       <a onClick={ClickHandler}>
-        <i className={icon} style={{ marginRight: "5px" }} />
+        <FontAwesomeIcon icon={icon} style={{ marginRight: "5px" }} />
         {nama}
       </a>
 

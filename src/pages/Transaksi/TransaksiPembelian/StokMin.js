@@ -3,7 +3,6 @@ import Layout from "../../../../components/Layout";
 import { useState } from "react";
 import handlerQuery from "../../../../lib/db";
 export default function StokMin({ hasil }) {
-  console.log(hasil);
   let semuaProduk;
   try {
     semuaProduk = hasil.map((x, index) => {

@@ -10,8 +10,6 @@ export const authOptions = {
       type: "credentials",
       credentials: {},
       async authorize(credentials, req) {
-        console.log("username " + credentials.username);
-        console.log("password " + credentials.password);
         try {
           const res = await fetch("http://localhost:3000/api/LogIn", {
             method: "POST",
@@ -22,7 +20,6 @@ export const authOptions = {
           });
           const hasil = await res.json();
           const data = hasil.data;
-          console.log(hasil);
           if (
             typeof data !== "string"
             // data != "Maaf Username atau Password anda salah" &&

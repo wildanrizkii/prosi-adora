@@ -12,6 +12,7 @@ import {
   IsiModalFailed,
   IsiModalSuccess,
 } from "../../../../../components/AllComponent";
+import { faCubes } from "@fortawesome/free-solid-svg-icons";
 export default function Edit({ hasil }) {
   const [field, setField] = useState({
     "Nama Rak": hasil[0].nama_rak,
@@ -72,7 +73,7 @@ export default function Edit({ hasil }) {
           value={field["Nama Rak"]}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-cubes"
+          IconLeft={faCubes}
           maxLength="15"
           fungsiCheck={onChangeNamaRak}
         />

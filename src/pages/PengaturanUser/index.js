@@ -2,6 +2,8 @@ import Layout from "../../../components/Layout";
 import Head from "next/head";
 import handlerQuery from "../../../lib/db";
 import Link from "next/link";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../api/auth/[...nextauth]";
 
 import {
   Modal,
@@ -153,9 +155,11 @@ export default function PengaturanUser({ hasil }) {
   );
 }
 
-export async function getServerSideProps() {
-  const query = "select username,role,idUser,status from user";
-  const values = [];
+export async function getServerSideProps(context) {
+  const query = "select username,role,idUser,status from user where idUser!=?";
+  const session = await getServerSession(context.req, context.res, authOptions);
+  const idUser = session.user.idUser;
+  const values = [idUser];
   try {
     const getData = await handlerQuery({ query, values });
     const hasil = JSON.parse(JSON.stringify(getData));

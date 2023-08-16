@@ -13,6 +13,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import handlerQuery from "../../../../lib/db";
+import { faReceipt } from "@fortawesome/free-solid-svg-icons";
 
 export default function Tambah({ dataRak }) {
   const [field, setField] = useState({
@@ -62,7 +63,7 @@ export default function Tambah({ dataRak }) {
           nama="No Opname"
           value={field["No Opname"]}
           onChange={setField}
-          IconLeft="fas fa-receipt"
+          IconLeft={faReceipt}
           field={field}
           maxLength="50"
           fungsiCheck={onChangeNoOpname}

@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import { useState, useReducer } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 export default function Edit({ hasil }) {
   const [state, dispacth] = useReducer(Usernamereducer, userinitValue);
   const [username, setUsername] = useState(hasil[0].username);
@@ -48,7 +49,7 @@ export default function Edit({ hasil }) {
   const Eye = ({ onClick }) => {
     return (
       <FontAwesomeIcon
-        icon="eye"
+        icon={faEye}
         onClick={onClick}
         pointerEvents="all"
         cursor="pointer"
@@ -58,7 +59,7 @@ export default function Edit({ hasil }) {
   const EyeSlash = ({ onClick }) => {
     return (
       <FontAwesomeIcon
-        icon="eye-slash"
+        icon={faEyeSlash}
         onClick={onClick}
         pointerEvents="all"
         cursor="pointer"

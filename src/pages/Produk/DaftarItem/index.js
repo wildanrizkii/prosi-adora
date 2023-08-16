@@ -11,6 +11,8 @@ import {
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
   let semuaAkun;
 
@@ -143,7 +145,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
   } catch (e) {
     semuaAkun = (
       <tr>
-        <td colSpan="4" className="is-vcentered">
+        <td colSpan="10" className="is-vcentered">
           {hasil}
         </td>
       </tr>
@@ -201,7 +203,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
             required
           />
           <span className="icon is-small is-left">
-            <i className="fas fa-search"></i>
+            <FontAwesomeIcon icon={faSearch} />
           </span>
         </div>
       </div>

@@ -5,9 +5,6 @@ import { sha256 } from "js-sha256";
 export default async function handler(req, res) {
   if (req.method === "PATCH") {
     const { passwordBaru, UserId } = req.body;
-    console.log("");
-    console.log("Pass Baru: " + passwordBaru);
-    console.log("ID: " + UserId);
     const salt = uuidv4();
     const hashedPass = sha256(salt + passwordBaru);
     const query = "UPDATE user set password=?,salt=? where idUser=?";

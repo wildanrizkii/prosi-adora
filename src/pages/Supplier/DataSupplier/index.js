@@ -91,7 +91,7 @@ export default function DataSupplier({ hasil }) {
   } catch (e) {
     semuaAkun = (
       <tr>
-        <td colSpan="4" className="is-vcentered">
+        <td colSpan="8" className="is-vcentered">
           {hasil}
         </td>
       </tr>

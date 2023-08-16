@@ -12,6 +12,8 @@ import dayjs from "dayjs";
 import "dayjs/locale/id";
 import { Modal } from "../../../../components/AllComponent";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faSearch } from "@fortawesome/free-solid-svg-icons";
 const { RangePicker } = DatePicker;
 export default function TransaksiPembelian({
   hasil,
@@ -47,7 +49,9 @@ export default function TransaksiPembelian({
     if (typeof masukan === "string") {
       return (
         <tr>
-          <td colSpan="4">{masukan}</td>
+          <td colSpan="6" className="is-vcentered">
+            {masukan}
+          </td>
         </tr>
       );
     } else {
@@ -167,7 +171,7 @@ export default function TransaksiPembelian({
   } catch (e) {
     semuaData = (
       <tr>
-        <td colSpan="6" className="is-vcentered">
+        <td colSpan="7" className="is-vcentered">
           {hasil}
         </td>
       </tr>
@@ -181,7 +185,7 @@ export default function TransaksiPembelian({
       <h1 className="title">Transaksi Pembelian</h1>
       <Link href="/Transaksi/TransaksiPembelian/StokMin">
         Daftar Item yang dibawah stok minimum {""}
-        <i className="fas fa-arrow-right" style={{ marginLeft: "5px" }} />
+        <FontAwesomeIcon icon={faArrowRight} style={{ marginLeft: "5px" }} />
       </Link>
       <br />
       <Link
@@ -249,7 +253,7 @@ export default function TransaksiPembelian({
             required
           />
           <span className="icon is-small is-left">
-            <i className="fas fa-search"></i>
+            <FontAwesomeIcon icon={faSearch} />
           </span>
         </div>
       </div>
