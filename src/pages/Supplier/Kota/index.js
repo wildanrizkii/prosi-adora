@@ -14,11 +14,12 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { Badge, Button } from "antd";
+import { EditFilled } from "@ant-design/icons";
 export default function Kota({ hasil }) {
   let semuaAkun;
   const router = useRouter();
-  // const [isUpdateStatusSuccess, setUpdateStatus] = useState(false);
-  // const [showModal, setShowModal] = useState(false);
+
   const [modal, setModal] = useState({
     pesan: undefined,
     isSuccess: true,
@@ -26,7 +27,7 @@ export default function Kota({ hasil }) {
   });
 
   const [filter, setFilter] = useState({
-    Search: router.query.Search,
+    Search: router.query.Search !== undefined ? router.query.Search : "",
     Tipe: router.query.Tipe !== undefined ? router.query.Tipe : "KAB. DAN KOTA",
   });
 
@@ -82,7 +83,7 @@ export default function Kota({ hasil }) {
           key={x.id_kota}
           style={{
             fontWeight: "bold",
-            backgroundColor: x.status === 0 ? "red" : "white",
+            backgroundColor: x.status === 0 ? "rgb(255, 77, 79)" : "white",
             color: x.status === 0 ? "white" : "rgb(54,54,54)",
           }}
         >
@@ -92,28 +93,29 @@ export default function Kota({ hasil }) {
             {x.status === 1 ? "Aktif" : "Non-Aktif"}
           </td>
           <td className="is-vcentered">
-            <Link
-              href={`Kota/Edit/${x.id_kota}`}
-              className="button is-success is-small"
-            >
-              Edit
-            </Link>
+            <Button
+              icon={<EditFilled />}
+              block
+              onClick={() => router.push(`/Supplier/Kota/Edit/${x.id_kota}`)}
+            />
             {x.status === 1 ? (
-              <button
-                className="button is-danger is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                danger
+                block
                 onClick={() => changeStatus(x.id_kota, false)}
               >
                 Non-Aktifkan
-              </button>
+              </Button>
             ) : (
-              <button
-                className="button is-primary is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                style={{ backgroundColor: "rgb(72, 199, 142)" }}
+                block
                 onClick={() => changeStatus(x.id_kota, true)}
               >
                 Aktifkan
-              </button>
+              </Button>
             )}
           </td>
         </tr>
@@ -172,7 +174,7 @@ export default function Kota({ hasil }) {
         Tambah
       </Link>
 
-      <table className="table has-text-centered">
+      <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
             <th className="has-text-centered is-vcentered">No</th>
@@ -190,7 +192,7 @@ export default function Kota({ hasil }) {
               className="button is-success"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.reload();
+                router.push(router.asPath);
               }}
             >
               OK
@@ -202,7 +204,7 @@ export default function Kota({ hasil }) {
               className="button is-danger"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.reload();
+                router.push(router.asPath);
               }}
             >
               OK

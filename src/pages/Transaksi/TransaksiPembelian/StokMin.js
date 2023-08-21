@@ -11,7 +11,7 @@ export default function StokMin({ hasil }) {
           key={x.id_item}
           style={{
             fontWeight: "bold",
-            backgroundColor: x.status === 0 ? "red" : "white",
+            backgroundColor: x.status === 0 ? "rgb(255, 77, 79)" : "white",
             color: x.status === 0 ? "white" : "rgb(54,54,54)",
           }}
         >
@@ -40,7 +40,7 @@ export default function StokMin({ hasil }) {
         <title>Stok Minimum</title>
       </Head>
       <h1 className="title">Item yang di bawah Stok Minimum</h1>
-      <table className="table has-text-centered">
+      <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
             <th className="has-text-centered is-vcentered">No</th>

@@ -8,11 +8,14 @@ import {
   IsiModalSuccess,
   Pagination,
 } from "../../../../components/AllComponent";
+import { Badge } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { EditFilled } from "@ant-design/icons";
+import { Button } from "antd";
 export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
   let semuaAkun;
 
@@ -25,7 +28,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
   const router = useRouter();
 
   const [filter, setFilter] = useState({
-    Search: router.query.Search,
+    Search: router.query.Search !== undefined ? router.query.Search : "",
     Jenis: router.query.Jenis !== undefined ? router.query.Jenis : "SEMUA",
     Satuan: router.query.Satuan !== undefined ? router.query.Satuan : "SEMUA",
   });
@@ -99,7 +102,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
           key={x.id_item}
           style={{
             fontWeight: "bold",
-            backgroundColor: x.status === 0 ? "red" : "white",
+            backgroundColor: x.status === 0 ? "rgb(255, 77, 79)" : "white",
             color: x.status === 0 ? "white" : "rgb(54,54,54)",
           }}
         >
@@ -115,28 +118,53 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
             {x.status === 1 ? "Aktif" : "Non-Aktif"}
           </td>
           <td className="is-vcentered">
-            <Link
-              href={`/Produk/DaftarItem/Edit/${x.id_item}`}
-              className="button is-success is-small"
-            >
-              Edit
-            </Link>
+            {(x.statusRak !== 1 ||
+              x.statusJenis !== 1 ||
+              x.statusSatuan !== 1) &&
+            x.status === 1 ? (
+              <>
+                <Button
+                  icon={
+                    <>
+                      <Badge count="!" offset={[11, 0]}>
+                        <EditFilled />
+                      </Badge>
+                    </>
+                  }
+                  block
+                  onClick={() =>
+                    router.push(`/Produk/DaftarItem/Edit/${x.id_item}`)
+                  }
+                ></Button>
+              </>
+            ) : (
+              <Button
+                icon={<EditFilled />}
+                block
+                onClick={() =>
+                  router.push(`/Produk/DaftarItem/Edit/${x.id_item}`)
+                }
+              />
+            )}
+
             {x.status === 1 ? (
-              <button
-                className="button is-danger is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                danger
+                block
                 onClick={() => changeStatus(x.id_item, false)}
               >
                 Non-Aktifkan
-              </button>
+              </Button>
             ) : (
-              <button
-                className="button is-primary is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                style={{ backgroundColor: "rgb(72, 199, 142)" }}
+                block
                 onClick={() => changeStatus(x.id_item, true)}
               >
                 Aktifkan
-              </button>
+              </Button>
             )}
           </td>
         </tr>
@@ -215,7 +243,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
         Tambah
       </Link>
 
-      <table className="table has-text-centered">
+      <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
             <th className="has-text-centered is-vcentered">No</th>
@@ -244,7 +272,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
               className="button is-success"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.reload();
+                router.push(router.asPath);
               }}
             >
               OK
@@ -256,7 +284,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
               className="button is-danger"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.reload();
+                router.push(router.asPath);
               }}
             >
               OK
@@ -270,7 +298,8 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
 
 export async function getServerSideProps(context) {
   let query =
-    "select id_item,item.nama as namaItem,stok,stok_min,item.status,rak.nama_rak as namaRak,satuan.nama as namaSatuan,jenis.nama as namaJenis,margin " +
+    "select id_item,item.nama as namaItem,stok,stok_min,item.status,rak.nama_rak as namaRak,satuan.nama as namaSatuan,jenis.nama as namaJenis,margin," +
+    "satuan.status as statusSatuan,rak.status as statusRak,jenis.status as statusJenis " +
     "from item inner join rak on item.id_rak=rak.id_rak inner join satuan on " +
     "satuan.id_satuan=item.id_satuan inner join jenis on jenis.id_jenis=item.id_jenis_item ";
 

@@ -26,8 +26,8 @@ export default function TransaksiPembelian({
   const router = useRouter();
   const [filter, setFilter] = useState({
     User: router.query.User !== undefined ? router.query.User : "",
-    Search: router.query.Search,
-    Supplier: router.query.Supplier,
+    Search: router.query.Search !== undefined ? router.query.Search : "",
+    Supplier: router.query.Supplier !== undefined ? router.query.Supplier : "",
     Tanggal:
       router.query.Awal !== undefined
         ? [dayjs(router.query.Awal), dayjs(router.query.Akhir)]
@@ -257,7 +257,7 @@ export default function TransaksiPembelian({
           </span>
         </div>
       </div>
-      <table className="table has-text-centered">
+      <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
             <th className="has-text-centered is-vcentered">No</th>

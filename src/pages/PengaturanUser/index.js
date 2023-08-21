@@ -14,6 +14,8 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { Badge, Button } from "antd";
+import { EditFilled } from "@ant-design/icons";
 export default function PengaturanUser({ hasil }) {
   let semuaAkun;
 
@@ -49,7 +51,7 @@ export default function PengaturanUser({ hasil }) {
           key={x.idUser}
           style={{
             fontWeight: "bold",
-            backgroundColor: x.status === 0 ? "red" : "white",
+            backgroundColor: x.status === 0 ? "rgb(255, 77, 79)" : "white",
             color: x.status === 0 ? "white" : "rgb(54,54,54)",
           }}
         >
@@ -60,28 +62,35 @@ export default function PengaturanUser({ hasil }) {
             {x.status === 1 ? "Aktif" : "Non-Aktif"}
           </td>
           <td className="is-vcentered">
-            <Link
+            {/* <Link
               href={`PengaturanUser/Edit/${x.idUser}`}
               className="button is-success is-small"
             >
               Edit
-            </Link>
+            </Link> */}
+            <Button
+              icon={<EditFilled />}
+              block
+              onClick={() => router.push(`/PengaturanUser/Edit/${x.idUser}`)}
+            />
             {x.status === 1 ? (
-              <button
-                className="button is-danger is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                danger
+                block
                 onClick={() => changeStatus(x.idUser, false)}
               >
                 Non-Aktifkan
-              </button>
+              </Button>
             ) : (
-              <button
-                className="button is-primary is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                style={{ backgroundColor: "rgb(72, 199, 142)" }}
+                block
                 onClick={() => changeStatus(x.idUser, true)}
               >
                 Aktifkan
-              </button>
+              </Button>
             )}
           </td>
         </tr>
@@ -112,7 +121,7 @@ export default function PengaturanUser({ hasil }) {
         Tambah
       </Link>
 
-      <table className="table has-text-centered">
+      <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
             <th className="has-text-centered is-vcentered">No</th>
@@ -131,7 +140,7 @@ export default function PengaturanUser({ hasil }) {
               className="button is-success"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.push("/PengaturanUser");
+                router.push(router.asPath);
               }}
             >
               OK
@@ -143,7 +152,7 @@ export default function PengaturanUser({ hasil }) {
               className="button is-danger"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.push("/PengaturanUser");
+                router.push(router.asPath);
               }}
             >
               OK
