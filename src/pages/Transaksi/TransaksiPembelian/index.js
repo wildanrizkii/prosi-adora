@@ -24,15 +24,52 @@ export default function TransaksiPembelian({
 }) {
   let semuaData;
   const router = useRouter();
-  const [filter, setFilter] = useState({
+
+  const [filterSearch, setFilterSearch] = useState(
+    router.query.Search !== undefined ? router.query.Search : ""
+  );
+
+  const [filterTanggal, setFilterTanggal] = useState(
+    router.query.Awal !== undefined && router.query.Akhir !== undefined
+      ? [dayjs(router.query.Awal), dayjs(router.query.Akhir)]
+      : null
+  );
+
+  const dropdown = {
     User: router.query.User !== undefined ? router.query.User : "",
-    Search: router.query.Search !== undefined ? router.query.Search : "",
     Supplier: router.query.Supplier !== undefined ? router.query.Supplier : "",
-    Tanggal:
-      router.query.Awal !== undefined
-        ? [dayjs(router.query.Awal), dayjs(router.query.Akhir)]
-        : null,
-  });
+  };
+
+  let tunggulSelesaiMengetik;
+  let waktuTunggu = 1000;
+
+  const changeSearch = (e) => {
+    setFilterSearch(e.target.value);
+  };
+
+  const onKeyUp = () => {
+    clearTimeout(tunggulSelesaiMengetik);
+    tunggulSelesaiMengetik = setTimeout(selesaiTunggu, waktuTunggu);
+  };
+
+  const onKeyDown = () => {
+    clearTimeout(tunggulSelesaiMengetik);
+  };
+
+  const selesaiTunggu = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+
+    if (filterSearch !== "") {
+      hrefBelakang.set("Search", filterSearch);
+    } else {
+      hrefBelakang.delete("Search");
+    }
+
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
 
   const [isModalOpened, setModal] = useState(false);
   const [isiModal, setIsiModal] = useState("");
@@ -76,25 +113,13 @@ export default function TransaksiPembelian({
     }
   };
   const onChangeDate = (date, dateString) => {
-    setFilter({ ...filter, Tanggal: date });
+    setFilterTanggal(date);
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
     if (Array.isArray(date)) {
-      const tanggalinput1 = new Date(date[0]);
-      const tanggalinput2 = new Date(date[1]);
-      const tanggalOutput1 =
-        tanggalinput1.getFullYear() +
-        "-" +
-        (tanggalinput1.getMonth() + 1) +
-        "-" +
-        tanggalinput1.getDate();
-      const tanggalOutput2 =
-        tanggalinput2.getFullYear() +
-        "-" +
-        (tanggalinput2.getMonth() + 1) +
-        "-" +
-        tanggalinput2.getDate();
+      const tanggalOutput1 = dayjs(date[0]).format("YYYY-MM-DD");
+      const tanggalOutput2 = dayjs(date[1]).format("YYYY-MM-DD");
       hrefBelakang.set("Awal", tanggalOutput1);
       hrefBelakang.set("Akhir", tanggalOutput2);
     } else {
@@ -104,22 +129,8 @@ export default function TransaksiPembelian({
     hrefBelakang.set("p", 1);
     router.push(hrefDepan + "?" + hrefBelakang);
   };
-  const onChangeSearch = (e) => {
-    setFilter({ ...filter, Search: e.target.value });
-    const bagi = router.asPath.split("?");
-    const hrefDepan = bagi[0];
-    const hrefBelakang = new URLSearchParams(bagi[1]);
 
-    if (e.target.value !== "") {
-      hrefBelakang.set("Search", e.target.value);
-    } else {
-      hrefBelakang.delete("Search");
-    }
-    hrefBelakang.set("p", 1);
-    router.push(hrefDepan + "?" + hrefBelakang);
-  };
   const onChangeUser = (e) => {
-    setFilter({ ...filter, User: e.target.value });
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
@@ -132,7 +143,6 @@ export default function TransaksiPembelian({
     router.push(hrefDepan + "?" + hrefBelakang);
   };
   const onChangeSupplier = (e) => {
-    setFilter({ ...filter, Supplier: e.target.value });
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
@@ -177,6 +187,76 @@ export default function TransaksiPembelian({
       </tr>
     );
   }
+
+  const userDipilih = user.filter(
+    (el) => parseInt(el.idUser) === parseInt(router.query.User)
+  )[0];
+
+  const suppDipilih = supplier.filter(
+    (el) => parseInt(el.id_supplier) === parseInt(router.query.Supplier)
+  )[0];
+
+  const tanggalDipilih =
+    filterTanggal !== null
+      ? `${dayjs(filterTanggal[0]).format("DD-MM-YYYY")} sampai ${dayjs(
+          filterTanggal[1]
+        ).format("DD-MM-YYYY")}`
+      : "";
+
+  const clearUser = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("User");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const clearSupp = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Supplier");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const clearTanggal = () => {
+    setFilterTanggal(null);
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Awal");
+    hrefBelakang.delete("Akhir");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const clearSearch = () => {
+    setFilterSearch("");
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Search");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const clearAll = () => {
+    setFilterSearch("");
+    setFilterTanggal(null);
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Search");
+    hrefBelakang.delete("Awal");
+    hrefBelakang.delete("Akhir");
+    hrefBelakang.delete("User");
+    hrefBelakang.delete("Supplier");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
   return (
     <>
       <Head>
@@ -200,7 +280,7 @@ export default function TransaksiPembelian({
         <label className="label">User</label>
         <div className="control">
           <div className="select">
-            <select onChange={onChangeUser} value={filter.User}>
+            <select onChange={onChangeUser} value={dropdown.User}>
               {user.map((el) => {
                 return (
                   <option key={el.idUser} value={el.idUser}>
@@ -217,7 +297,7 @@ export default function TransaksiPembelian({
         <label className="label">Supplier</label>
         <div className="control">
           <div className="select">
-            <select onChange={onChangeSupplier} value={filter.Supplier}>
+            <select onChange={onChangeSupplier} value={dropdown.Supplier}>
               {supplier.map((el) => {
                 return (
                   <option key={el.id_supplier} value={el.id_supplier}>
@@ -237,7 +317,7 @@ export default function TransaksiPembelian({
           onChange={onChangeDate}
           size="large"
           format="DD-MM-YYYY"
-          value={filter.Tanggal}
+          value={filterTanggal}
         />
       </div>
 
@@ -247,8 +327,10 @@ export default function TransaksiPembelian({
           <input
             className="input"
             type="text"
-            value={filter.Search}
-            onChange={onChangeSearch}
+            value={filterSearch}
+            onChange={changeSearch}
+            onKeyUp={onKeyUp}
+            onKeyDown={onKeyDown}
             maxLength="100"
             required
           />
@@ -256,6 +338,80 @@ export default function TransaksiPembelian({
             <FontAwesomeIcon icon={faSearch} />
           </span>
         </div>
+      </div>
+
+      <h1 className="title is-6">{`${jumlah[0].jumlah.toLocaleString(
+        "id-ID"
+      )} hasil ditemukan`}</h1>
+
+      <div className="field is-grouped is-grouped-multiline">
+        {router.query.Search !== undefined && (
+          <div className="control">
+            <span
+              className="tag is-medium is-rounded"
+              style={{ backgroundColor: "white", fontWeight: "bold" }}
+            >
+              {`hasil "${router.query.Search}"`}
+              <button className="delete" onClick={() => clearSearch()} />
+            </span>
+          </div>
+        )}
+        {router.query.User !== undefined && (
+          <div className="control">
+            <div className="tags has-addons">
+              <span className="tag is-medium is-link">
+                {userDipilih.username}
+              </span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearUser()}
+              />
+            </div>
+          </div>
+        )}
+        {router.query.Supplier !== undefined && (
+          <div className="control">
+            <div className="tags has-addons">
+              <span className="tag is-medium is-link">
+                {suppDipilih.kode_supplier}
+              </span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearSupp()}
+              />
+            </div>
+          </div>
+        )}
+        {router.query.Awal !== undefined &&
+          router.query.Akhir !== undefined && (
+            <div className="control">
+              <div className="tags has-addons">
+                <span className="tag is-medium is-link">{tanggalDipilih}</span>
+                <button
+                  className="button tag is-medium is-delete"
+                  onClick={() => clearTanggal()}
+                />
+              </div>
+            </div>
+          )}
+
+        {(router.query.Search !== undefined ||
+          router.query.User !== undefined ||
+          router.query.Supplier !== undefined ||
+          (router.query.Awal !== undefined &&
+            router.query.Akhir !== undefined)) && (
+          <div className="control">
+            <div className="tags has-addons">
+              <button
+                className="button tag is-medium is-rounded is-info is-outlined"
+                style={{ fontWeight: "bold" }}
+                onClick={() => clearAll()}
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        )}
       </div>
       <table className="table has-text-centered is-fullwidth">
         <thead>

@@ -27,20 +27,36 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
 
   const router = useRouter();
 
-  const [filter, setFilter] = useState({
-    Search: router.query.Search !== undefined ? router.query.Search : "",
-    Jenis: router.query.Jenis !== undefined ? router.query.Jenis : "SEMUA",
-    Satuan: router.query.Satuan !== undefined ? router.query.Satuan : "SEMUA",
-  });
+  const [filterSearch, setFilterSearch] = useState(
+    router.query.Search !== undefined ? router.query.Search : ""
+  );
 
-  const changeSearch = async (e) => {
-    setFilter({ ...filter, Search: e.target.value });
+  const dropdown = {
+    Jenis: router.query.Jenis !== undefined ? router.query.Jenis : "",
+    Satuan: router.query.Satuan !== undefined ? router.query.Satuan : "",
+  };
+
+  let tungguSelesaiMengetik;
+  let waktuTunggu = 1000;
+  const changeSearch = (e) => {
+    setFilterSearch(e.target.value);
+  };
+
+  const onKeyUp = () => {
+    clearTimeout(tungguSelesaiMengetik);
+    tungguSelesaiMengetik = setTimeout(selesaiTunggu, waktuTunggu);
+  };
+  const onKeyDown = () => {
+    clearTimeout(tungguSelesaiMengetik);
+  };
+
+  const selesaiTunggu = () => {
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
 
-    if (e.target.value !== "") {
-      hrefBelakang.set("Search", e.target.value);
+    if (filterSearch !== "") {
+      hrefBelakang.set("Search", filterSearch);
     } else {
       hrefBelakang.delete("Search");
     }
@@ -50,7 +66,6 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
   };
 
   const onChangeJenis = (e) => {
-    setFilter({ ...filter, Jenis: e.target.value });
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
@@ -63,7 +78,6 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
     router.push(hrefDepan + "?" + hrefBelakang.toString());
   };
   const onChangeSatuan = (e) => {
-    setFilter({ ...filter, Satuan: e.target.value });
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
@@ -180,18 +194,72 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
     );
   }
 
+  const satuanDipilih = satuan.filter(
+    (el) => parseInt(el.id_satuan) === parseInt(router.query.Satuan)
+  )[0];
+
+  const jenisDipilih = jenis.filter(
+    (el) => parseInt(el.id_jenis) === parseInt(router.query.Jenis)
+  )[0];
+
+  const clearSatuan = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Satuan");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const clearJenis = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Jenis");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const clearSearch = () => {
+    setFilterSearch("");
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Search");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const clearAll = () => {
+    setFilterSearch("");
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Search");
+    hrefBelakang.delete("Satuan");
+    hrefBelakang.delete("Jenis");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
   return (
     <>
       <Head>
         <title>Daftar Item</title>
       </Head>
       <h1 className="title">Daftar Item</h1>
-
+      <Link
+        className="button is-link"
+        href="/Produk/DaftarItem/Tambah"
+        style={{ marginBottom: "10px" }}
+      >
+        Tambah
+      </Link>
       <div className="field">
         <label className="label">Jenis</label>
         <div className="control">
           <div className="select">
-            <select onChange={onChangeJenis} value={filter.Jenis}>
+            <select onChange={onChangeJenis} value={dropdown.Jenis}>
               {jenis.map((el) => {
                 return (
                   <option key={el.id_jenis} value={el.id_jenis}>
@@ -207,7 +275,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
         <label className="label">Satuan</label>
         <div className="control">
           <div className="select">
-            <select onChange={onChangeSatuan} value={filter.Satuan}>
+            <select onChange={onChangeSatuan} value={dropdown.Satuan}>
               {satuan.map((el) => {
                 return (
                   <option key={el.id_satuan} value={el.id_satuan}>
@@ -225,8 +293,10 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
           <input
             className="input"
             type="text"
-            value={filter.Search}
+            value={filterSearch}
             onChange={changeSearch}
+            onKeyUp={onKeyUp}
+            onKeyDown={onKeyDown}
             maxLength="100"
             required
           />
@@ -235,13 +305,64 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
           </span>
         </div>
       </div>
-      <Link
-        className="button is-link"
-        href="/Produk/DaftarItem/Tambah"
-        style={{ marginBottom: "10px" }}
-      >
-        Tambah
-      </Link>
+
+      <h1 className="title is-6">{`${jumlah[0].jumlah.toLocaleString(
+        "id-ID"
+      )} hasil ditemukan`}</h1>
+
+      <div className="field is-grouped is-grouped-multiline">
+        {router.query.Search !== undefined && (
+          <div className="control">
+            <span
+              className="tag is-medium is-rounded"
+              style={{ backgroundColor: "white", fontWeight: "bold" }}
+            >
+              {`hasil "${router.query.Search}"`}
+              <button className="delete" onClick={() => clearSearch()} />
+            </span>
+          </div>
+        )}
+
+        {router.query.Satuan !== undefined && (
+          <div className="control">
+            <div className="tags has-addons">
+              <span className="tag is-medium is-link">
+                {satuanDipilih.nama}
+              </span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearSatuan()}
+              />
+            </div>
+          </div>
+        )}
+        {router.query.Jenis !== undefined && (
+          <div className="control">
+            <div className="tags has-addons">
+              <span className="tag is-medium is-link">{jenisDipilih.nama}</span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearJenis()}
+              />
+            </div>
+          </div>
+        )}
+        {(router.query.Search !== undefined ||
+          router.query.Satuan !== undefined ||
+          router.query.Jenis !== undefined) && (
+          <div className="control">
+            <div className="tags has-addons">
+              <button
+                className="button tag is-medium is-rounded is-info is-outlined"
+                style={{ fontWeight: "bold" }}
+                onClick={() => clearAll()}
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       <table className="table has-text-centered is-fullwidth">
         <thead>
