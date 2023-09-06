@@ -10,7 +10,7 @@ import { DatePicker } from "antd";
 
 import dayjs from "dayjs";
 import "dayjs/locale/id";
-import { Modal } from "../../../../components/AllComponent";
+import { Modal, rupiah } from "../../../../components/AllComponent";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -24,7 +24,6 @@ export default function TransaksiPembelian({
 }) {
   let semuaData;
   const router = useRouter();
-
   const [filterSearch, setFilterSearch] = useState(
     router.query.Search !== undefined ? router.query.Search : ""
   );
@@ -104,8 +103,10 @@ export default function TransaksiPembelian({
             <td className="is-vcentered">{x.nama}</td>
             <td className="is-vcentered">{x.jumlah}</td>
             <td className="is-vcentered">{x.namaSatuan}</td>
-            <td className="is-vcentered">{x.harga_per_satuan}</td>
-            <td className="is-vcentered">{x.subtotal}</td>
+            <td className="is-vcentered">
+              {rupiah.format(x.harga_per_satuan)}
+            </td>
+            <td className="is-vcentered">{rupiah.format(x.subtotal)}</td>
           </tr>
         );
       });
@@ -174,7 +175,7 @@ export default function TransaksiPembelian({
               Detail
             </button>
           </td>
-          <td className="is-vcentered">{x.total}</td>
+          <td className="is-vcentered">{rupiah.format(x.total)}</td>
         </tr>
       );
     });
@@ -428,7 +429,9 @@ export default function TransaksiPembelian({
         <tbody>{semuaData}</tbody>
       </table>
       <div className="field">
-        <p style={{ fontWeight: "bolder" }}>Total : {sum[0].sumTotal || 0}</p>
+        <p style={{ fontWeight: "bolder" }}>
+          Total : {rupiah.format(sum[0].sumTotal || 0)}
+        </p>
       </div>
       <Pagination
         href={router.asPath}

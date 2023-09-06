@@ -2,6 +2,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useReducer, useState } from "react";
 import { useRouter } from "next/router";
 import React from "react";
+import { jsPDF } from "jspdf";
+
 import {
   faCheck,
   faEye,
@@ -674,6 +676,48 @@ export function readableDate(input) {
   }
   const tahun = output.getFullYear();
 
-  const hasil = hari + " " + tanggal + " " + " " + bulan + " " + tahun;
+  const hasil = hari + ", " + tanggal + " " + " " + bulan + " " + tahun;
   return hasil;
 }
+
+export const setHeaderForLaporan = (orientation = "p") => {
+  const doc = new jsPDF(orientation, "px", "a4");
+  const width = doc.internal.pageSize.getWidth();
+  const image = new Image();
+  image.src = "/image/Logo Adora.jpg";
+  let startX = 0;
+  let startY = 0;
+  doc.addImage(image, "JPG", (startX += 10), (startY += 10), 50, 50);
+
+  doc.setFont("times", "bold");
+  doc.setFontSize(20);
+  doc.text("APOTEK ADORA", (startX += 50), (startY += 20));
+
+  doc.setFont("times", "normal");
+  doc.setFontSize(10);
+  doc.text("Jalan Cigadung Selatan No. 1A, Cigadung", startX, (startY += 10));
+
+  doc.setFont("times", "normal");
+  doc.setFontSize(10);
+  doc.text("ApotekAdora@gmail.com", startX, (startY += 10));
+
+  doc.setFont("times", "normal");
+  doc.setFontSize(10);
+  doc.text("0813-9459-7073", startX, (startY += 10));
+
+  doc.line(0, 70, width, 70);
+  doc.setLineWidth(2);
+
+  doc.line(0, 75, width, 75);
+
+  doc.setFont("times", "italic");
+  doc.setFontSize(10);
+  const tanggal = new Date();
+  const tanggalBisaDibaca = readableDate(tanggal);
+  doc.text(`Tanggal Dibuat : ${tanggalBisaDibaca}`, 10, 90);
+  return doc;
+};
+export const rupiah = new Intl.NumberFormat("id-ID", {
+  style: "currency",
+  currency: "IDR",
+});

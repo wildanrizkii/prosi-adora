@@ -13,6 +13,7 @@ import {
   Pagination,
   Modal,
   readableDate,
+  rupiah,
 } from "../../../../components/AllComponent";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
@@ -103,8 +104,10 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
             <td className="is-vcentered">{x.namaJenis}</td>
             <td className="is-vcentered">{x.jumlah}</td>
             <td className="is-vcentered">{x.namaSatuan}</td>
-            <td className="is-vcentered">{x.harga_per_satuan}</td>
-            <td className="is-vcentered">{x.subtotal}</td>
+            <td className="is-vcentered">
+              {rupiah.format(x.harga_per_satuan)}
+            </td>
+            <td className="is-vcentered">{rupiah.format(x.subtotal)}</td>
             <td className="is-vcentered">{x.jenis_pelanggan}</td>
           </tr>
         );
@@ -153,8 +156,8 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
           <td className="is-vcentered">{x.no_transaksi}</td>
           <td className="is-vcentered">{readableDate(x.tanggal)}</td>
           <td className="is-vcentered">{x.username}</td>
-          <td className="is-vcentered">{x.biaya_racik}</td>
-          <td className="is-vcentered">{x.diskon}</td>
+          <td className="is-vcentered">{rupiah.format(x.biaya_racik)}</td>
+          <td className="is-vcentered">{rupiah.format(x.diskon)}</td>
           <td className="is-vcentered">
             <button
               className="button is-success"
@@ -163,7 +166,7 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
               Detail
             </button>
           </td>
-          <td className="is-vcentered">{x.total}</td>
+          <td className="is-vcentered">{rupiah.format(x.total)}</td>
         </tr>
       );
     });
@@ -361,7 +364,9 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
         <tbody>{semuaData}</tbody>
       </table>
       <div className="field">
-        <p style={{ fontWeight: "bolder" }}>Total : {sum[0].sumTotal || 0}</p>
+        <p style={{ fontWeight: "bolder" }}>
+          Total : {rupiah.format(sum[0].sumTotal || 0)}
+        </p>
       </div>
 
       <Pagination
