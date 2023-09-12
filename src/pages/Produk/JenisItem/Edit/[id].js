@@ -11,6 +11,7 @@ import {
 import { useRouter } from "next/router";
 import { useState } from "react";
 import axios from "axios";
+import { faPills } from "@fortawesome/free-solid-svg-icons";
 export default function Edit({ hasil }) {
   const [field, setField] = useState({
     "Nama Jenis Item": hasil[0].nama,
@@ -70,7 +71,7 @@ export default function Edit({ hasil }) {
           value={field["Nama Jenis Item"]}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-pills"
+          IconLeft={faPills}
           maxLength="15"
           fungsiCheck={onChangeNamaJenis}
         />

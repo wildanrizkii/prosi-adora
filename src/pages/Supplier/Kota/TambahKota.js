@@ -10,6 +10,7 @@ import {
   IsiModalFailed,
   IsiModalSuccess,
 } from "../../../../components/AllComponent";
+import { faCity } from "@fortawesome/free-solid-svg-icons";
 
 export default function TambahKota() {
   let [tipe, setTipe] = useState("KAB.");
@@ -90,7 +91,7 @@ export default function TambahKota() {
           value={field["Nama Kota atau Kab"]}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-city"
+          IconLeft={faCity}
           maxLength="50"
           fungsiCheck={onChangeNamaKota}
           id="a"

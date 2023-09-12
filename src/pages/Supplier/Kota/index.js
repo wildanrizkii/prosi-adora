@@ -12,21 +12,68 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { Button } from "antd";
+import { EditFilled } from "@ant-design/icons";
 export default function Kota({ hasil }) {
   let semuaAkun;
   const router = useRouter();
-  // const [isUpdateStatusSuccess, setUpdateStatus] = useState(false);
-  // const [showModal, setShowModal] = useState(false);
+
   const [modal, setModal] = useState({
     pesan: undefined,
     isSuccess: true,
     isModalClosed: true,
   });
 
-  const [filter, setFilter] = useState({
-    Search: router.query.Search,
-    Tipe: router.query.Tipe !== undefined ? router.query.Tipe : "KAB. DAN KOTA",
-  });
+  const [filterSearch, setFilterSearch] = useState(
+    router.query.Search !== undefined ? router.query.Search : ""
+  );
+
+  const dropdown = {
+    Tipe: router.query.Tipe !== undefined ? router.query.Tipe : "",
+  };
+
+  let tungguSelesaiMengetik;
+  let waktuTunggu = 1000;
+  const changeSearch = (e) => {
+    setFilterSearch(e.target.value);
+  };
+
+  const onKeyUp = () => {
+    clearTimeout(tungguSelesaiMengetik);
+    tungguSelesaiMengetik = setTimeout(selesaiTunggu, waktuTunggu);
+  };
+
+  const onKeyDown = () => {
+    clearTimeout(tungguSelesaiMengetik);
+  };
+
+  const selesaiTunggu = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+
+    if (filterSearch !== "") {
+      hrefBelakang.set("Search", filterSearch);
+    } else {
+      hrefBelakang.delete("Search");
+    }
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const onChangeTipe = (e) => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    if (e.target.value !== "") {
+      hrefBelakang.set("Tipe", e.target.value);
+    } else {
+      hrefBelakang.delete("Tipe");
+    }
+
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
 
   async function changeStatus(id, toActive) {
     try {
@@ -45,33 +92,6 @@ export default function Kota({ hasil }) {
       });
     }
   }
-  const changeSearch = (e) => {
-    setFilter({ ...filter, Search: e.target.value });
-    const bagi = router.asPath.split("?");
-    const hrefDepan = bagi[0];
-    const hrefBelakang = new URLSearchParams(bagi[1]);
-    if (e.target.value !== "") {
-      hrefBelakang.set("Search", e.target.value);
-    } else {
-      hrefBelakang.delete("Search");
-    }
-
-    router.push(hrefDepan + "?" + hrefBelakang.toString());
-  };
-
-  const onChangeTipe = (e) => {
-    setFilter({ ...filter, Tipe: e.target.value });
-    const bagi = router.asPath.split("?");
-    const hrefDepan = bagi[0];
-    const hrefBelakang = new URLSearchParams(bagi[1]);
-    if (e.target.value !== "KAB. DAN KOTA") {
-      hrefBelakang.set("Tipe", e.target.value);
-    } else {
-      hrefBelakang.delete("Tipe");
-    }
-
-    router.push(hrefDepan + "?" + hrefBelakang.toString());
-  };
 
   try {
     semuaAkun = hasil.map((x, index) => {
@@ -80,36 +100,39 @@ export default function Kota({ hasil }) {
           key={x.id_kota}
           style={{
             fontWeight: "bold",
-            backgroundColor: x.status === 0 && "red",
-            color: x.status === 0 && "white",
+            backgroundColor: x.status === 0 ? "rgb(255, 77, 79)" : "white",
+            color: x.status === 0 ? "white" : "rgb(54,54,54)",
           }}
         >
-          <td>{index + 1}</td>
-          <td>{x.tipe + " " + x.nama_kota}</td>
-          <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
-          <td>
-            <Link
-              href={`Kota/Edit/${x.id_kota}`}
-              className="button is-success is-small"
-            >
-              Edit
-            </Link>
+          <td className="is-vcentered">{index + 1}</td>
+          <td className="is-vcentered">{x.tipe + " " + x.nama_kota}</td>
+          <td className="is-vcentered">
+            {x.status === 1 ? "Aktif" : "Non-Aktif"}
+          </td>
+          <td className="is-vcentered">
+            <Button
+              icon={<EditFilled />}
+              block
+              onClick={() => router.push(`/Supplier/Kota/Edit/${x.id_kota}`)}
+            />
             {x.status === 1 ? (
-              <button
-                className="button is-danger is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                danger
+                block
                 onClick={() => changeStatus(x.id_kota, false)}
               >
                 Non-Aktifkan
-              </button>
+              </Button>
             ) : (
-              <button
-                className="button is-primary is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                style={{ backgroundColor: "rgb(72, 199, 142)" }}
+                block
                 onClick={() => changeStatus(x.id_kota, true)}
               >
                 Aktifkan
-              </button>
+              </Button>
             )}
           </td>
         </tr>
@@ -118,10 +141,39 @@ export default function Kota({ hasil }) {
   } catch (e) {
     semuaAkun = (
       <tr>
-        <td colSpan="4">{hasil}</td>
+        <td colSpan="4" className="is-vcentered">
+          {hasil}
+        </td>
       </tr>
     );
   }
+
+  const clearSearch = () => {
+    setFilterSearch("");
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Search");
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const clearTipe = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Tipe");
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const clearAll = () => {
+    setFilterSearch("");
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Search");
+    hrefBelakang.delete("Tipe");
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
 
   return (
     <>
@@ -129,13 +181,19 @@ export default function Kota({ hasil }) {
         <title>Kota</title>
       </Head>
       <h1 className="title">Kota</h1>
-
+      <Link
+        className="button is-link"
+        href="Kota/TambahKota"
+        style={{ marginBottom: "10px" }}
+      >
+        Tambah
+      </Link>
       <div className="field">
         <label className="label">KAB/KOTA</label>
         <div className="control">
           <div className="select">
-            <select onChange={onChangeTipe} value={filter.Tipe}>
-              <option value="KAB. DAN KOTA">KAB. DAN KOTA</option>
+            <select onChange={onChangeTipe} value={dropdown.Tipe}>
+              <option value="">KAB. DAN KOTA</option>
               <option value="KAB.">KAB.</option>
               <option value="KOTA">KOTA</option>
             </select>
@@ -148,31 +206,69 @@ export default function Kota({ hasil }) {
           <input
             className="input"
             type="text"
-            value={filter.Search}
+            value={filterSearch}
             onChange={changeSearch}
+            onKeyUp={onKeyUp}
+            onKeyDown={onKeyDown}
             maxLength="100"
             required
           />
           <span className="icon is-small is-left">
-            <i className="fas fa-search"></i>
+            <FontAwesomeIcon icon={faSearch} />
           </span>
         </div>
       </div>
-      <Link
-        className="button is-link"
-        href="Kota/TambahKota"
-        style={{ marginBottom: "10px" }}
-      >
-        Tambah
-      </Link>
 
-      <table className="table">
+      <h1 className="title is-6">{`${hasil.length.toLocaleString(
+        "id-ID"
+      )} hasil ditemukan`}</h1>
+
+      <div className="field is-grouped is-grouped-multiline">
+        {router.query.Search !== undefined && (
+          <div className="control">
+            <span
+              className="tag is-medium is-rounded"
+              style={{ backgroundColor: "white", fontWeight: "bold" }}
+            >
+              {`hasil "${router.query.Search}"`}
+              <button className="delete" onClick={() => clearSearch()} />
+            </span>
+          </div>
+        )}
+        {router.query.Tipe !== undefined && (
+          <div className="control">
+            <div className="tags has-addons">
+              <span className="tag is-medium is-link">{router.query.Tipe}</span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearTipe()}
+              />
+            </div>
+          </div>
+        )}
+        {(router.query.Search !== undefined ||
+          router.query.Tipe !== undefined) && (
+          <div className="control">
+            <div className="tags has-addons">
+              <button
+                className="button tag is-medium is-rounded is-info is-outlined"
+                style={{ fontWeight: "bold" }}
+                onClick={() => clearAll()}
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Status</th>
-            <th>Aksi</th>
+            <th className="has-text-centered is-vcentered">No</th>
+            <th className="has-text-centered is-vcentered">Nama</th>
+            <th className="has-text-centered is-vcentered">Status</th>
+            <th className="has-text-centered is-vcentered">Aksi</th>
           </tr>
         </thead>
         <tbody>{semuaAkun}</tbody>
@@ -184,7 +280,7 @@ export default function Kota({ hasil }) {
               className="button is-success"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.reload();
+                router.push(router.asPath);
               }}
             >
               OK
@@ -196,7 +292,7 @@ export default function Kota({ hasil }) {
               className="button is-danger"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.reload();
+                router.push(router.asPath);
               }}
             >
               OK

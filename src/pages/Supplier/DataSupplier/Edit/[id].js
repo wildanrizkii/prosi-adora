@@ -10,14 +10,20 @@ import {
 } from "../../../../../components/AllComponent";
 import { useRouter } from "next/router";
 import { useState } from "react";
-
+import { Badge } from "antd";
 import axios from "axios";
+import {
+  faMapMarkedAlt,
+  faPhone,
+  faSignature,
+  faTags,
+} from "@fortawesome/free-solid-svg-icons";
 export default function Edit({ hasil, DaftarKota }) {
   const [field, setField] = useState({
     "Kode Supplier": hasil[0].kode_supplier,
     "Nama Supplier": hasil[0].nama_supplier,
     Alamat: hasil[0].alamat,
-    Kota: hasil[0].id_kota,
+    Kota: hasil[0].statusKota === 1 ? hasil[0].id_kota : "",
     "No HP": hasil[0].no_hp,
     "Kode Supplier Checked": true,
   });
@@ -27,7 +33,7 @@ export default function Edit({ hasil, DaftarKota }) {
     isModalClosed: true,
   });
 
-  const submit = field["Kode Supplier Checked"] === true;
+  const submit = field["Kode Supplier Checked"] === true && field.Kota !== "";
 
   const Router = useRouter();
   const onChangeKodeSupplier = async (Kode) => {
@@ -72,7 +78,7 @@ export default function Edit({ hasil, DaftarKota }) {
           nama="Kode Supplier"
           value={field["Kode Supplier"]}
           onChange={setField}
-          IconLeft="fas fa-tags"
+          IconLeft={faTags}
           field={field}
           maxLength="5"
           fungsiCheck={onChangeKodeSupplier}
@@ -81,7 +87,7 @@ export default function Edit({ hasil, DaftarKota }) {
           nama="Nama Supplier"
           value={field["Nama Supplier"]}
           onChange={setField}
-          IconLeft="fas fa-signature"
+          IconLeft={faSignature}
           field={field}
           maxLength="20"
         />
@@ -89,25 +95,43 @@ export default function Edit({ hasil, DaftarKota }) {
           nama="Alamat"
           value={field["Alamat"]}
           onChange={setField}
-          IconLeft="fas fa-map-marked-alt"
+          IconLeft={faMapMarkedAlt}
           field={field}
           maxLength="100"
         />
-        <Dropdown
-          nama="Kota"
-          value={field.Kota}
-          onChange={setField}
-          field={field}
-          arr={DaftarKota}
-          mappingElement={["id_kota", "nama_kota"]}
-        />
+        {field.Kota === "" ? (
+          <div className="notification is-danger is-light">
+            <Badge count="!" />
+            <br />
+            {`${hasil[0].tipe} ${hasil[0].nama_kota} sudah tidak aktif! Silahkan pilih KAB/Kota yang baru`}
+            <Dropdown
+              nama="Kota"
+              value={field.Kota}
+              onChange={setField}
+              field={field}
+              arr={DaftarKota}
+              mappingElement={["id_kota", "nama_kota"]}
+              placeholder={hasil[0].statusKota === 1 ? undefined : ""}
+            />
+          </div>
+        ) : (
+          <Dropdown
+            nama="Kota"
+            value={field.Kota}
+            onChange={setField}
+            field={field}
+            arr={DaftarKota}
+            mappingElement={["id_kota", "nama_kota"]}
+            placeholder={hasil[0].statusKota === 1 ? undefined : ""}
+          />
+        )}
 
         <Field
           nama="No HP"
           value={field["No HP"]}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-phone"
+          IconLeft={faPhone}
           maxLength="13"
         />
 
@@ -142,11 +166,12 @@ export default function Edit({ hasil, DaftarKota }) {
 
 export async function getServerSideProps(context) {
   const query =
-    "select kode_supplier as kode_supplier, nama_supplier,alamat, no_hp, id_kota " +
-    "from supplier where id_supplier=?";
+    "select kode_supplier, nama_supplier,alamat, no_hp, supplier.id_kota,kota.tipe,kota.nama_kota,kota.status as statusKota " +
+    "from supplier inner join kota on supplier.id_kota=kota.id_kota where id_supplier=?";
   const values = [context.query.id];
 
-  const query2 = "select id_kota,nama_kota,tipe from kota order by nama_kota";
+  const query2 =
+    "select id_kota,nama_kota,tipe from kota where status=1 order by nama_kota";
 
   try {
     const getData = await handlerQuery({ query, values });

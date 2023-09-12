@@ -1,6 +1,18 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useReducer, useState } from "react";
 import { useRouter } from "next/router";
+import React from "react";
+import { jsPDF } from "jspdf";
+
+import {
+  faCheck,
+  faEye,
+  faEyeSlash,
+  faLock,
+  faSpinner,
+  faTimes,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 export function Field({
   nama,
   value,
@@ -28,7 +40,7 @@ export function Field({
           </p>
         ),
         warnaTextbox: "input is-info",
-        icon: <FontAwesomeIcon icon="spinner" spin color="blue" />,
+        icon: <FontAwesomeIcon icon={faSpinner} spin color="blue" />,
       };
     } else if (action.type === "BISA") {
       return {
@@ -38,7 +50,7 @@ export function Field({
           </p>
         ),
         warnaTextbox: "input is-success",
-        icon: <FontAwesomeIcon icon="check" color="green" />,
+        icon: <FontAwesomeIcon icon={faCheck} color="green" />,
       };
     } else if (action.type === "TIDAK BISA") {
       return {
@@ -48,7 +60,7 @@ export function Field({
           </p>
         ),
         warnaTextbox: "input is-danger",
-        icon: <FontAwesomeIcon icon="times" color="red" />,
+        icon: <FontAwesomeIcon icon={faTimes} color="red" />,
       };
     } else if (action.type === "TIDAK BOLEH") {
       return {
@@ -58,7 +70,7 @@ export function Field({
           </p>
         ),
         warnaTextbox: "input is-danger",
-        icon: <FontAwesomeIcon icon="times" color="red" />,
+        icon: <FontAwesomeIcon icon={faTimes} color="red" />,
       };
     } else if (action.type === "error") {
       return {
@@ -68,7 +80,7 @@ export function Field({
           </p>
         ),
         warnaTextbox: "input is-danger",
-        icon: <FontAwesomeIcon icon="times" color="red" />,
+        icon: <FontAwesomeIcon icon={faTimes} color="red" />,
       };
     } else if (action.type === "default") {
       return initialState;
@@ -78,7 +90,6 @@ export function Field({
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const onChangeValueWithFunc = async (e) => {
-    console.log(e.target.value);
     onChange({ ...field, [nama]: e.target.value });
     dispatch({ type: "LOADING" });
 
@@ -144,7 +155,7 @@ export function Field({
           required
         />
         <span className="icon is-small is-left">
-          {IconLeft !== undefined && <i className={IconLeft}></i>}
+          {IconLeft !== undefined && <FontAwesomeIcon icon={IconLeft} />}
         </span>
         <span className="icon is-small is-right">{state.icon}</span>
       </div>
@@ -280,7 +291,6 @@ export function Pagination({ href, currentPage, jumlah }) {
         disabled={prev === 0 && true}
         onClick={() => {
           hrefBelakang.set("p", prev);
-          console.log(hrefBelakang.toString());
           Router.push(hrefDepan + "?" + hrefBelakang.toString());
         }}
       >
@@ -299,19 +309,19 @@ export function Pagination({ href, currentPage, jumlah }) {
       <ul className="pagination-list">
         {uniq.map((el, index) => {
           return (
-            <>
+            <React.Fragment key={index}>
               {index === 1 && elipsisKiri === true ? (
-                <li key="elipsis-kiri">
+                <li>
                   <span className="pagination-ellipsis">…</span>
                 </li>
               ) : undefined}
               {index === uniq.length - 1 && elipsisKanan === true ? (
-                <li key="elipsis-kanan">
+                <li>
                   <span className="pagination-ellipsis">…</span>
                 </li>
               ) : undefined}
 
-              <li key={el}>
+              <li>
                 <button
                   className={`button pagination-link ${
                     el === currPage && "is-current"
@@ -325,7 +335,7 @@ export function Pagination({ href, currentPage, jumlah }) {
                   {el}
                 </button>
               </li>
-            </>
+            </React.Fragment>
           );
         })}
       </ul>
@@ -359,7 +369,7 @@ export function FieldKhusus({
           </p>
         ),
         warnaTextbox: "input is-info",
-        icon: <FontAwesomeIcon icon="spinner" spin color="blue" />,
+        icon: <FontAwesomeIcon icon={faSpinner} spin color="blue" />,
       };
     } else if (action.type === "BISA") {
       return {
@@ -369,7 +379,7 @@ export function FieldKhusus({
           </p>
         ),
         warnaTextbox: "input is-success",
-        icon: <FontAwesomeIcon icon="check" color="green" />,
+        icon: <FontAwesomeIcon icon={faCheck} color="green" />,
       };
     } else if (action.type === "TIDAK BISA") {
       return {
@@ -379,7 +389,7 @@ export function FieldKhusus({
           </p>
         ),
         warnaTextbox: "input is-danger",
-        icon: <FontAwesomeIcon icon="times" color="red" />,
+        icon: <FontAwesomeIcon icon={faTimes} color="red" />,
       };
     } else if (action.type === "TIDAK BOLEH") {
       return {
@@ -389,7 +399,7 @@ export function FieldKhusus({
           </p>
         ),
         warnaTextbox: "input is-danger",
-        icon: <FontAwesomeIcon icon="times" color="red" />,
+        icon: <FontAwesomeIcon icon={faTimes} color="red" />,
       };
     } else if (action.type === "error") {
       return {
@@ -399,7 +409,7 @@ export function FieldKhusus({
           </p>
         ),
         warnaTextbox: "input is-danger",
-        icon: <FontAwesomeIcon icon="times" color="red" />,
+        icon: <FontAwesomeIcon icon={faTimes} color="red" />,
       };
     } else if (action.type === "default") {
       return initialState;
@@ -409,7 +419,6 @@ export function FieldKhusus({
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const onChangeValueWithFunc = async (e) => {
-    console.log(e.target.value);
     onChange({ ...field, [nama]: e.target.value });
     dispatch({ type: "LOADING" });
 
@@ -474,7 +483,7 @@ export function FieldKhusus({
           required
         />
         <span className="icon is-small is-left">
-          {IconLeft !== undefined && <i className={IconLeft}></i>}
+          {IconLeft !== undefined && <FontAwesomeIcon icon={IconLeft} />}
         </span>
         <span className="icon is-small is-right">{state.icon}</span>
       </div>
@@ -501,7 +510,7 @@ export function FieldWithEye({
   const Eye = ({ onClick }) => {
     return (
       <FontAwesomeIcon
-        icon="eye"
+        icon={faEye}
         onClick={onClick}
         pointerEvents="all"
         cursor="pointer"
@@ -511,7 +520,7 @@ export function FieldWithEye({
   const EyeSlash = ({ onClick }) => {
     return (
       <FontAwesomeIcon
-        icon="eye-slash"
+        icon={faEyeSlash}
         onClick={onClick}
         pointerEvents="all"
         cursor="pointer"
@@ -536,13 +545,13 @@ export function FieldWithEye({
           required
         />
         <span className="icon is-small is-left">
-          <i className="fas fa-lock"></i>
+          <FontAwesomeIcon icon={faLock} />
         </span>
         <span className="icon is-small is-right">
           {isPass === true ? (
-            <Eye onClick={onClick} />
-          ) : (
             <EyeSlash onClick={onClick} />
+          ) : (
+            <Eye onClick={onClick} />
           )}
         </span>
       </div>
@@ -578,7 +587,7 @@ export function Username({
           required
         />
         <span className="icon is-small is-left">
-          <i className="fas fa-user"></i>
+          <FontAwesomeIcon icon={faUser} />
         </span>
       </div>
     </div>
@@ -598,3 +607,117 @@ export function Pembungkus({ children }) {
 export function Gambar() {
   return <img src="/image/Logo ADORA.jpg" alt="Logo Apotek Adora" />;
 }
+
+export function readableDate(input) {
+  const output = new Date(input);
+  const tanggal = output.getDate();
+  let bulan;
+  switch (output.getMonth()) {
+    case 0:
+      bulan = "Januari";
+      break;
+    case 1:
+      bulan = "Februari";
+      break;
+    case 2:
+      bulan = "Maret";
+      break;
+    case 3:
+      bulan = "April";
+      break;
+    case 4:
+      bulan = "Mei";
+      break;
+    case 5:
+      bulan = "Juni";
+      break;
+    case 6:
+      bulan = "Juli";
+      break;
+    case 7:
+      bulan = "Agustus";
+      break;
+    case 8:
+      bulan = "September";
+      break;
+    case 9:
+      bulan = "Oktober";
+      break;
+    case 10:
+      bulan = "November";
+      break;
+    case 11:
+      bulan = "Desember";
+      break;
+  }
+
+  let hari;
+  switch (output.getDay()) {
+    case 0:
+      hari = "Minggu";
+      break;
+    case 1:
+      hari = "Senin";
+      break;
+    case 2:
+      hari = "Selasa";
+      break;
+    case 3:
+      hari = "Rabu";
+      break;
+    case 4:
+      hari = "Kamis";
+      break;
+    case 5:
+      hari = "Jumat";
+      break;
+    case 6:
+      hari = "Sabtu";
+  }
+  const tahun = output.getFullYear();
+
+  const hasil = hari + ", " + tanggal + " " + " " + bulan + " " + tahun;
+  return hasil;
+}
+
+export const setHeaderForLaporan = (orientation = "p") => {
+  const doc = new jsPDF(orientation, "px", "a4");
+  const width = doc.internal.pageSize.getWidth();
+  const image = new Image();
+  image.src = "/image/Logo Adora.jpg";
+  let startX = 0;
+  let startY = 0;
+  doc.addImage(image, "JPG", (startX += 10), (startY += 10), 50, 50);
+
+  doc.setFont("times", "bold");
+  doc.setFontSize(20);
+  doc.text("APOTEK ADORA", (startX += 50), (startY += 20));
+
+  doc.setFont("times", "normal");
+  doc.setFontSize(10);
+  doc.text("Jalan Cigadung Selatan No. 1A, Cigadung", startX, (startY += 10));
+
+  doc.setFont("times", "normal");
+  doc.setFontSize(10);
+  doc.text("ApotekAdora@gmail.com", startX, (startY += 10));
+
+  doc.setFont("times", "normal");
+  doc.setFontSize(10);
+  doc.text("0813-9459-7073", startX, (startY += 10));
+
+  doc.line(0, 70, width, 70);
+  doc.setLineWidth(2);
+
+  doc.line(0, 75, width, 75);
+
+  doc.setFont("times", "italic");
+  doc.setFontSize(10);
+  const tanggal = new Date();
+  const tanggalBisaDibaca = readableDate(tanggal);
+  doc.text(`Tanggal Dibuat : ${tanggalBisaDibaca}`, 10, 90);
+  return doc;
+};
+export const rupiah = new Intl.NumberFormat("id-ID", {
+  style: "currency",
+  currency: "IDR",
+});

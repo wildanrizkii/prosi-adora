@@ -12,6 +12,9 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { Badge } from "antd";
+import { EditFilled } from "@ant-design/icons";
+import { Button } from "antd";
 export default function DataSupplier({ hasil }) {
   let semuaAkun;
 
@@ -47,40 +50,70 @@ export default function DataSupplier({ hasil }) {
           key={x.id_supplier}
           style={{
             fontWeight: "bold",
-            backgroundColor: x.status === 0 && "red",
-            color: x.status === 0 && "white",
+            backgroundColor: x.status === 0 ? "rgb(255, 77, 79)" : "white",
+            color: x.status === 0 ? "white" : "rgb(54,54,54)",
           }}
         >
-          <td>{index + 1}</td>
-          <td>{x.kode_supplier}</td>
-          <td>{x.nama_supplier}</td>
-          <td>{x.alamat}</td>
-          <td>{x.no_hp}</td>
-          <td>{x.tipe_kota + " " + x.nama_kota}</td>
-          <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
-          <td>
-            <Link
+          <td className="is-vcentered">{index + 1}</td>
+          <td className="is-vcentered">{x.kode_supplier}</td>
+          <td className="is-vcentered">{x.nama_supplier}</td>
+          <td className="is-vcentered">{x.alamat}</td>
+          <td className="is-vcentered">{x.no_hp}</td>
+          <td className="is-vcentered">{x.tipe_kota + " " + x.nama_kota}</td>
+          <td className="is-vcentered">
+            {x.status === 1 ? "Aktif" : "Non-Aktif"}
+          </td>
+          <td className="is-vcentered">
+            {/* <Link
               href={`DataSupplier/Edit/${x.id_supplier}`}
               className="button is-success is-small"
             >
               Edit
-            </Link>
+            </Link> */}
+            {x.statusKota !== 1 && x.status === 1 ? (
+              <>
+                <Button
+                  icon={
+                    <>
+                      <Badge count="!" offset={[11, 0]}>
+                        <EditFilled />
+                      </Badge>
+                    </>
+                  }
+                  block
+                  onClick={() =>
+                    router.push(`/Supplier/DataSupplier/Edit/${x.id_supplier}`)
+                  }
+                ></Button>
+              </>
+            ) : (
+              <Button
+                icon={<EditFilled />}
+                block
+                onClick={() =>
+                  router.push(`/Supplier/DataSupplier/Edit/${x.id_supplier}`)
+                }
+              />
+            )}
+
             {x.status === 1 ? (
-              <button
-                className="button is-danger is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                danger
+                block
                 onClick={() => changeStatus(x.id_supplier, false)}
               >
                 Non-Aktifkan
-              </button>
+              </Button>
             ) : (
-              <button
-                className="button is-primary is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                style={{ backgroundColor: "rgb(72, 199, 142)" }}
+                block
                 onClick={() => changeStatus(x.id_supplier, true)}
               >
                 Aktifkan
-              </button>
+              </Button>
             )}
           </td>
         </tr>
@@ -89,7 +122,9 @@ export default function DataSupplier({ hasil }) {
   } catch (e) {
     semuaAkun = (
       <tr>
-        <td colSpan="4">{hasil}</td>
+        <td colSpan="8" className="is-vcentered">
+          {hasil}
+        </td>
       </tr>
     );
   }
@@ -109,17 +144,17 @@ export default function DataSupplier({ hasil }) {
         Tambah
       </Link>
 
-      <table className="table">
+      <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
-            <th>No</th>
-            <th>Kode</th>
-            <th>Nama</th>
-            <th>Alamat</th>
-            <th>Telepon</th>
-            <th>Kota</th>
-            <th>Status</th>
-            <th>Aksi</th>
+            <th className="has-text-centered is-vcentered">No</th>
+            <th className="has-text-centered is-vcentered">Kode</th>
+            <th className="has-text-centered is-vcentered">Nama</th>
+            <th className="has-text-centered is-vcentered">Alamat</th>
+            <th className="has-text-centered is-vcentered">Telepon</th>
+            <th className="has-text-centered is-vcentered">Kota</th>
+            <th className="has-text-centered is-vcentered">Status</th>
+            <th className="has-text-centered is-vcentered">Aksi</th>
           </tr>
         </thead>
         <tbody>{semuaAkun}</tbody>
@@ -131,7 +166,7 @@ export default function DataSupplier({ hasil }) {
               className="button is-success"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.push("/Supplier/DataSupplier");
+                router.push(router.asPath);
               }}
             >
               OK
@@ -143,7 +178,7 @@ export default function DataSupplier({ hasil }) {
               className="button is-danger"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.push("/Supplier/DataSupplier");
+                router.push(router.asPath);
               }}
             >
               OK
@@ -157,7 +192,8 @@ export default function DataSupplier({ hasil }) {
 
 export async function getServerSideProps() {
   const query =
-    "select supplier.id_supplier , supplier.kode_supplier , supplier.nama_supplier , supplier.alamat , supplier.no_hp , kota.nama_kota AS nama_kota,kota.tipe as tipe_kota, supplier.status from supplier INNER JOIN kota ON kota.id_kota = supplier.id_kota ";
+    "select supplier.id_supplier , supplier.kode_supplier , supplier.nama_supplier , supplier.alamat , supplier.no_hp , kota.nama_kota AS nama_kota,kota.tipe as tipe_kota, supplier.status,kota.status as statusKota  " +
+    "from supplier INNER JOIN kota ON kota.id_kota = supplier.id_kota ";
   const values = [];
   try {
     const getData = await handlerQuery({ query, values });

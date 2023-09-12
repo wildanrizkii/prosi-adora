@@ -8,9 +8,14 @@ import {
   IsiModalSuccess,
   Pagination,
 } from "../../../../components/AllComponent";
+import { Badge } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { EditFilled } from "@ant-design/icons";
+import { Button } from "antd";
 export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
   let semuaAkun;
 
@@ -22,20 +27,36 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
 
   const router = useRouter();
 
-  const [filter, setFilter] = useState({
-    Search: router.query.Search,
-    Jenis: router.query.Jenis !== undefined ? router.query.Jenis : "SEMUA",
-    Satuan: router.query.Satuan !== undefined ? router.query.Satuan : "SEMUA",
-  });
+  const [filterSearch, setFilterSearch] = useState(
+    router.query.Search !== undefined ? router.query.Search : ""
+  );
 
-  const changeSearch = async (e) => {
-    setFilter({ ...filter, Search: e.target.value });
+  const dropdown = {
+    Jenis: router.query.Jenis !== undefined ? router.query.Jenis : "",
+    Satuan: router.query.Satuan !== undefined ? router.query.Satuan : "",
+  };
+
+  let tungguSelesaiMengetik;
+  let waktuTunggu = 1000;
+  const changeSearch = (e) => {
+    setFilterSearch(e.target.value);
+  };
+
+  const onKeyUp = () => {
+    clearTimeout(tungguSelesaiMengetik);
+    tungguSelesaiMengetik = setTimeout(selesaiTunggu, waktuTunggu);
+  };
+  const onKeyDown = () => {
+    clearTimeout(tungguSelesaiMengetik);
+  };
+
+  const selesaiTunggu = () => {
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
 
-    if (e.target.value !== "") {
-      hrefBelakang.set("Search", e.target.value);
+    if (filterSearch !== "") {
+      hrefBelakang.set("Search", filterSearch);
     } else {
       hrefBelakang.delete("Search");
     }
@@ -45,7 +66,6 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
   };
 
   const onChangeJenis = (e) => {
-    setFilter({ ...filter, Jenis: e.target.value });
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
@@ -58,7 +78,6 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
     router.push(hrefDepan + "?" + hrefBelakang.toString());
   };
   const onChangeSatuan = (e) => {
-    setFilter({ ...filter, Satuan: e.target.value });
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
@@ -97,41 +116,69 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
           key={x.id_item}
           style={{
             fontWeight: "bold",
-            backgroundColor: x.status === 0 && "red",
-            color: x.status === 0 && "white",
+            backgroundColor: x.status === 0 ? "rgb(255, 77, 79)" : "white",
+            color: x.status === 0 ? "white" : "rgb(54,54,54)",
           }}
         >
-          <td>{index}</td>
-          <td>{x.namaItem}</td>
-          <td>{x.stok}</td>
-          <td>{x.stok_min}</td>
-          <td>{x.namaRak}</td>
-          <td>{x.namaSatuan}</td>
-          <td>{x.namaJenis}</td>
-          <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
-          <td>
-            <Link
-              href={`/Produk/DaftarItem/Edit/${x.id_item}`}
-              className="button is-success is-small"
-            >
-              Edit
-            </Link>
+          <td className="is-vcentered">{index}</td>
+          <td className="is-vcentered">{x.namaItem}</td>
+          <td className="is-vcentered">{x.stok}</td>
+          <td className="is-vcentered">{x.stok_min}</td>
+          <td className="is-vcentered">{x.namaRak}</td>
+          <td className="is-vcentered">{x.namaSatuan}</td>
+          <td className="is-vcentered">{x.namaJenis}</td>
+          <td className="is-vcentered">{x.margin}</td>
+          <td className="is-vcentered">
+            {x.status === 1 ? "Aktif" : "Non-Aktif"}
+          </td>
+          <td className="is-vcentered">
+            {(x.statusRak !== 1 ||
+              x.statusJenis !== 1 ||
+              x.statusSatuan !== 1) &&
+            x.status === 1 ? (
+              <>
+                <Button
+                  icon={
+                    <>
+                      <Badge count="!" offset={[11, 0]}>
+                        <EditFilled />
+                      </Badge>
+                    </>
+                  }
+                  block
+                  onClick={() =>
+                    router.push(`/Produk/DaftarItem/Edit/${x.id_item}`)
+                  }
+                ></Button>
+              </>
+            ) : (
+              <Button
+                icon={<EditFilled />}
+                block
+                onClick={() =>
+                  router.push(`/Produk/DaftarItem/Edit/${x.id_item}`)
+                }
+              />
+            )}
+
             {x.status === 1 ? (
-              <button
-                className="button is-danger is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                danger
+                block
                 onClick={() => changeStatus(x.id_item, false)}
               >
                 Non-Aktifkan
-              </button>
+              </Button>
             ) : (
-              <button
-                className="button is-primary is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                style={{ backgroundColor: "rgb(72, 199, 142)" }}
+                block
                 onClick={() => changeStatus(x.id_item, true)}
               >
                 Aktifkan
-              </button>
+              </Button>
             )}
           </td>
         </tr>
@@ -140,10 +187,60 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
   } catch (e) {
     semuaAkun = (
       <tr>
-        <td colSpan="4">{hasil}</td>
+        <td colSpan="10" className="is-vcentered">
+          {hasil}
+        </td>
       </tr>
     );
   }
+
+  const satuanDipilih = satuan.filter(
+    (el) => parseInt(el.id_satuan) === parseInt(router.query.Satuan)
+  )[0];
+
+  const jenisDipilih = jenis.filter(
+    (el) => parseInt(el.id_jenis) === parseInt(router.query.Jenis)
+  )[0];
+
+  const clearSatuan = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Satuan");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const clearJenis = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Jenis");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const clearSearch = () => {
+    setFilterSearch("");
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Search");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const clearAll = () => {
+    setFilterSearch("");
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Search");
+    hrefBelakang.delete("Satuan");
+    hrefBelakang.delete("Jenis");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
 
   return (
     <>
@@ -151,12 +248,18 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
         <title>Daftar Item</title>
       </Head>
       <h1 className="title">Daftar Item</h1>
-
+      <Link
+        className="button is-link"
+        href="/Produk/DaftarItem/Tambah"
+        style={{ marginBottom: "10px" }}
+      >
+        Tambah
+      </Link>
       <div className="field">
         <label className="label">Jenis</label>
         <div className="control">
           <div className="select">
-            <select onChange={onChangeJenis} value={filter.Jenis}>
+            <select onChange={onChangeJenis} value={dropdown.Jenis}>
               {jenis.map((el) => {
                 return (
                   <option key={el.id_jenis} value={el.id_jenis}>
@@ -172,7 +275,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
         <label className="label">Satuan</label>
         <div className="control">
           <div className="select">
-            <select onChange={onChangeSatuan} value={filter.Satuan}>
+            <select onChange={onChangeSatuan} value={dropdown.Satuan}>
               {satuan.map((el) => {
                 return (
                   <option key={el.id_satuan} value={el.id_satuan}>
@@ -190,36 +293,90 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
           <input
             className="input"
             type="text"
-            value={filter.Search}
+            value={filterSearch}
             onChange={changeSearch}
+            onKeyUp={onKeyUp}
+            onKeyDown={onKeyDown}
             maxLength="100"
             required
           />
           <span className="icon is-small is-left">
-            <i className="fas fa-search"></i>
+            <FontAwesomeIcon icon={faSearch} />
           </span>
         </div>
       </div>
-      <Link
-        className="button is-link"
-        href="/Produk/DaftarItem/Tambah"
-        style={{ marginBottom: "10px" }}
-      >
-        Tambah
-      </Link>
 
-      <table className="table">
+      <h1 className="title is-6">{`${jumlah[0].jumlah.toLocaleString(
+        "id-ID"
+      )} hasil ditemukan`}</h1>
+
+      <div className="field is-grouped is-grouped-multiline">
+        {router.query.Search !== undefined && (
+          <div className="control">
+            <span
+              className="tag is-medium is-rounded"
+              style={{ backgroundColor: "white", fontWeight: "bold" }}
+            >
+              {`hasil "${router.query.Search}"`}
+              <button className="delete" onClick={() => clearSearch()} />
+            </span>
+          </div>
+        )}
+
+        {router.query.Satuan !== undefined && (
+          <div className="control">
+            <div className="tags has-addons">
+              <span className="tag is-medium is-link">
+                {satuanDipilih.nama}
+              </span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearSatuan()}
+              />
+            </div>
+          </div>
+        )}
+        {router.query.Jenis !== undefined && (
+          <div className="control">
+            <div className="tags has-addons">
+              <span className="tag is-medium is-link">{jenisDipilih.nama}</span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearJenis()}
+              />
+            </div>
+          </div>
+        )}
+        {(router.query.Search !== undefined ||
+          router.query.Satuan !== undefined ||
+          router.query.Jenis !== undefined) && (
+          <div className="control">
+            <div className="tags has-addons">
+              <button
+                className="button tag is-medium is-rounded is-info is-outlined"
+                style={{ fontWeight: "bold" }}
+                onClick={() => clearAll()}
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Stok</th>
-            <th>Stok Min</th>
-            <th>Rak</th>
-            <th>Satuan</th>
-            <th>Jenis</th>
-            <th>Status</th>
-            <th>Aksi</th>
+            <th className="has-text-centered is-vcentered">No</th>
+            <th className="has-text-centered is-vcentered">Nama</th>
+            <th className="has-text-centered is-vcentered">Stok</th>
+            <th className="has-text-centered is-vcentered">Stok Min</th>
+            <th className="has-text-centered is-vcentered">Rak</th>
+            <th className="has-text-centered is-vcentered">Satuan</th>
+            <th className="has-text-centered is-vcentered">Jenis</th>
+            <th className="has-text-centered is-vcentered">Margin</th>
+            <th className="has-text-centered is-vcentered">Status</th>
+            <th className="has-text-centered is-vcentered">Aksi</th>
           </tr>
         </thead>
         <tbody>{semuaAkun}</tbody>
@@ -236,7 +393,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
               className="button is-success"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.reload();
+                router.push(router.asPath);
               }}
             >
               OK
@@ -248,7 +405,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
               className="button is-danger"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.reload();
+                router.push(router.asPath);
               }}
             >
               OK
@@ -262,7 +419,8 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
 
 export async function getServerSideProps(context) {
   let query =
-    "select id_item,item.nama as namaItem,stok,stok_min,item.status,rak.nama_rak as namaRak,satuan.nama as namaSatuan,jenis.nama as namaJenis " +
+    "select id_item,item.nama as namaItem,stok,stok_min,item.status,rak.nama_rak as namaRak,satuan.nama as namaSatuan,jenis.nama as namaJenis,margin," +
+    "satuan.status as statusSatuan,rak.status as statusRak,jenis.status as statusJenis " +
     "from item inner join rak on item.id_rak=rak.id_rak inner join satuan on " +
     "satuan.id_satuan=item.id_satuan inner join jenis on jenis.id_jenis=item.id_jenis_item ";
 

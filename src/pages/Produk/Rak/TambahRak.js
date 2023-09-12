@@ -9,6 +9,7 @@ import {
   IsiModalFailed,
   IsiModalSuccess,
 } from "../../../../components/AllComponent";
+import { faCubes } from "@fortawesome/free-solid-svg-icons";
 
 export default function TambahRak() {
   const [field, setField] = useState({
@@ -67,7 +68,7 @@ export default function TambahRak() {
           value={field["Nama Rak"]}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-cubes"
+          IconLeft={faCubes}
           maxLength="15"
           fungsiCheck={onChangeNamaRak}
         />

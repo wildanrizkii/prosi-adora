@@ -10,6 +10,7 @@ import {
   IsiModalFailed,
   IsiModalSuccess,
 } from "../../../../components/AllComponent";
+import { faPrescriptionBottle } from "@fortawesome/free-solid-svg-icons";
 
 export default function TambahSatuan() {
   const [field, setField] = useState({
@@ -69,7 +70,7 @@ export default function TambahSatuan() {
           value={field["Nama Satuan"]}
           onChange={setField}
           field={field}
-          IconLeft="fas fa-prescription-bottle"
+          IconLeft={faPrescriptionBottle}
           maxLength="15"
           fungsiCheck={onChangeNamaSatuan}
         />

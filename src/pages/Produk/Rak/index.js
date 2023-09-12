@@ -12,6 +12,8 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { Badge, Button } from "antd";
+import { EditFilled } from "@ant-design/icons";
 export default function Rak({ hasil }) {
   let semuaAkun;
 
@@ -47,36 +49,45 @@ export default function Rak({ hasil }) {
           key={x.id_rak}
           style={{
             fontWeight: "bold",
-            backgroundColor: x.status === 0 && "red",
-            color: x.status === 0 && "white",
+            backgroundColor: x.status === 0 ? "rgb(255, 77, 79)" : "white",
+            color: x.status === 0 ? "white" : "rgb(54,54,54)",
           }}
         >
-          <td>{index + 1}</td>
-          <td>{x.nama_rak}</td>
-          <td>{x.status === 1 ? "Aktif" : "Non-Aktif"}</td>
-          <td>
-            <Link
+          <td className="is-vcentered">{index + 1}</td>
+          <td className="is-vcentered">{x.nama_rak}</td>
+          <td className="is-vcentered">
+            {x.status === 1 ? "Aktif" : "Non-Aktif"}
+          </td>
+          <td className="is-vcentered">
+            {/* <Link
               href={`Rak/Edit/${x.id_rak}`}
               className="button is-success is-small"
             >
               Edit
-            </Link>
+            </Link> */}
+            <Button
+              icon={<EditFilled />}
+              block
+              onClick={() => router.push(`/Produk/Rak/Edit/${x.id_rak}`)}
+            />
             {x.status === 1 ? (
-              <button
-                className="button is-danger is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                danger
+                block
                 onClick={() => changeStatus(x.id_rak, false)}
               >
                 Non-Aktifkan
-              </button>
+              </Button>
             ) : (
-              <button
-                className="button is-primary is-small"
-                style={{ marginLeft: "5px" }}
+              <Button
+                type="primary"
+                style={{ backgroundColor: "rgb(72, 199, 142)" }}
+                block
                 onClick={() => changeStatus(x.id_rak, true)}
               >
                 Aktifkan
-              </button>
+              </Button>
             )}
           </td>
         </tr>
@@ -85,7 +96,9 @@ export default function Rak({ hasil }) {
   } catch (e) {
     semuaAkun = (
       <tr>
-        <td colSpan="4">{hasil}</td>
+        <td colSpan="4" className="is-vcentered">
+          {hasil}
+        </td>
       </tr>
     );
   }
@@ -105,13 +118,13 @@ export default function Rak({ hasil }) {
         Tambah
       </Link>
 
-      <table className="table">
+      <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Status</th>
-            <th>Aksi</th>
+            <th className="has-text-centered is-vcentered">No</th>
+            <th className="has-text-centered is-vcentered">Nama</th>
+            <th className="has-text-centered is-vcentered">Status</th>
+            <th className="has-text-centered is-vcentered">Aksi</th>
           </tr>
         </thead>
         <tbody>{semuaAkun}</tbody>
@@ -123,7 +136,7 @@ export default function Rak({ hasil }) {
               className="button is-success"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.push("/Produk/Rak");
+                router.push(router.asPath);
               }}
             >
               OK
@@ -135,7 +148,7 @@ export default function Rak({ hasil }) {
               className="button is-danger"
               onClick={() => {
                 setModal({ ...modal, isModalClosed: true });
-                router.push("/Produk/Rak");
+                router.push(router.asPath);
               }}
             >
               OK

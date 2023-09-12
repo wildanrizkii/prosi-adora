@@ -25,7 +25,6 @@ const Login = () => {
       password: field.Password,
       redirect: false,
     });
-    console.log(res);
     if (res.status === 200) {
       setDisabled(false);
       setKelas("button is-success is-fullwidth");
