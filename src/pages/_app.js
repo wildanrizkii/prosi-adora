@@ -5,7 +5,10 @@ import idID from "antd/locale/id_ID";
 import { ConfigProvider } from "antd";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "../../node_modules/@fortawesome/fontawesome-svg-core/styles.css";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+import dayjs from "dayjs";
 config.autoAddCss = false;
+dayjs.extend(localizedFormat);
 export default function App({
   Component,
   pageProps: { session, ...pageProps },

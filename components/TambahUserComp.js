@@ -1,9 +1,12 @@
 import {
   faCheck,
+  faClipboardUser,
   faLock,
   faSpinner,
   faTimes,
   faUser,
+  faUserTie,
+  faUsersRectangle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export function Usernamereducer(state, action) {
@@ -176,16 +179,18 @@ export function FieldButton({ nama, disabled }) {
 
 export function Role({ onChange, value }) {
   return (
-    <div className="field">
+    <div className="field control has-icons-left">
       <label className="label">Role</label>
-      <div className="control">
-        <div className="select">
-          <select onChange={onChange} value={value}>
-            <option value="pemilik">PEMILIK</option>
-            <option value="kasir">KASIR</option>
-            <option value="ttk">TTK</option>
-          </select>
-        </div>
+
+      <div className="select">
+        <select onChange={onChange} value={value}>
+          <option value="pemilik">PEMILIK</option>
+          <option value="kasir">KASIR</option>
+          <option value="ttk">TTK</option>
+        </select>
+        <span className="icon is-left">
+          <FontAwesomeIcon icon={faClipboardUser} />
+        </span>
       </div>
     </div>
   );

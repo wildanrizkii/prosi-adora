@@ -3,9 +3,11 @@ import { useReducer, useState } from "react";
 import { useRouter } from "next/router";
 import React from "react";
 import { jsPDF } from "jspdf";
+import dayjs from "dayjs";
 
 import {
   faCheck,
+  faCircleExclamation,
   faEye,
   faEyeSlash,
   faLock,
@@ -80,7 +82,7 @@ export function Field({
           </p>
         ),
         warnaTextbox: "input is-danger",
-        icon: <FontAwesomeIcon icon={faTimes} color="red" />,
+        icon: <FontAwesomeIcon icon={faCircleExclamation} color="red" />,
       };
     } else if (action.type === "default") {
       return initialState;
@@ -172,6 +174,7 @@ export function Dropdown({
   field,
   mappingElement,
   placeholder,
+  icon,
 }) {
   const onChangeValue = (e) => {
     onChange({ ...field, [nama]: e.target.value });
@@ -196,19 +199,21 @@ export function Dropdown({
   });
 
   return (
-    <div className="field">
+    <div className="field control has-icons-left">
       <label className="label">{nama}</label>
-      <div className="control">
-        <div className="select">
-          <select onChange={onChangeValue} value={value}>
-            {placeholder !== undefined && (
-              <option key="placeholder" value="" disabled>
-                {placeholder}
-              </option>
-            )}
-            {isiOption}
-          </select>
-        </div>
+
+      <div className="select">
+        <select onChange={onChangeValue} value={value}>
+          {placeholder !== undefined && (
+            <option key="placeholder" value="" disabled>
+              {placeholder}
+            </option>
+          )}
+          {isiOption}
+        </select>
+        <span className="icon is-left">
+          <FontAwesomeIcon icon={icon} />
+        </span>
       </div>
     </div>
   );
@@ -609,75 +614,77 @@ export function Gambar() {
 }
 
 export function readableDate(input) {
-  const output = new Date(input);
-  const tanggal = output.getDate();
-  let bulan;
-  switch (output.getMonth()) {
-    case 0:
-      bulan = "Januari";
-      break;
-    case 1:
-      bulan = "Februari";
-      break;
-    case 2:
-      bulan = "Maret";
-      break;
-    case 3:
-      bulan = "April";
-      break;
-    case 4:
-      bulan = "Mei";
-      break;
-    case 5:
-      bulan = "Juni";
-      break;
-    case 6:
-      bulan = "Juli";
-      break;
-    case 7:
-      bulan = "Agustus";
-      break;
-    case 8:
-      bulan = "September";
-      break;
-    case 9:
-      bulan = "Oktober";
-      break;
-    case 10:
-      bulan = "November";
-      break;
-    case 11:
-      bulan = "Desember";
-      break;
-  }
+  const keluaran = dayjs(input).locale("id").format("LLLL");
+  return keluaran;
+  // const output = new Date(input);
+  // const tanggal = output.getDate();
+  // let bulan;
+  // switch (output.getMonth()) {
+  //   case 0:
+  //     bulan = "Januari";
+  //     break;
+  //   case 1:
+  //     bulan = "Februari";
+  //     break;
+  //   case 2:
+  //     bulan = "Maret";
+  //     break;
+  //   case 3:
+  //     bulan = "April";
+  //     break;
+  //   case 4:
+  //     bulan = "Mei";
+  //     break;
+  //   case 5:
+  //     bulan = "Juni";
+  //     break;
+  //   case 6:
+  //     bulan = "Juli";
+  //     break;
+  //   case 7:
+  //     bulan = "Agustus";
+  //     break;
+  //   case 8:
+  //     bulan = "September";
+  //     break;
+  //   case 9:
+  //     bulan = "Oktober";
+  //     break;
+  //   case 10:
+  //     bulan = "November";
+  //     break;
+  //   case 11:
+  //     bulan = "Desember";
+  //     break;
+  // }
 
-  let hari;
-  switch (output.getDay()) {
-    case 0:
-      hari = "Minggu";
-      break;
-    case 1:
-      hari = "Senin";
-      break;
-    case 2:
-      hari = "Selasa";
-      break;
-    case 3:
-      hari = "Rabu";
-      break;
-    case 4:
-      hari = "Kamis";
-      break;
-    case 5:
-      hari = "Jumat";
-      break;
-    case 6:
-      hari = "Sabtu";
-  }
-  const tahun = output.getFullYear();
+  // let hari;
+  // switch (output.getDay()) {
+  //   case 0:
+  //     hari = "Minggu";
+  //     break;
+  //   case 1:
+  //     hari = "Senin";
+  //     break;
+  //   case 2:
+  //     hari = "Selasa";
+  //     break;
+  //   case 3:
+  //     hari = "Rabu";
+  //     break;
+  //   case 4:
+  //     hari = "Kamis";
+  //     break;
+  //   case 5:
+  //     hari = "Jumat";
+  //     break;
+  //   case 6:
+  //     hari = "Sabtu";
+  // }
+  // const tahun = output.getFullYear();
 
-  const hasil = hari + ", " + tanggal + " " + " " + bulan + " " + tahun;
-  return hasil;
+  // const hasil = hari + ", " + tanggal + " " + " " + bulan + " " + tahun;
+  // return hasil;
 }
 
 export const setHeaderForLaporan = (orientation = "p") => {

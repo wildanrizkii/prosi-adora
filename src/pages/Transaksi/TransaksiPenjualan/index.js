@@ -15,7 +15,12 @@ import {
   readableDate,
   rupiah,
 } from "../../../../components/AllComponent";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAnglesRight,
+  faCalendar,
+  faSearch,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
   let semuaData;
@@ -154,7 +159,7 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
         <tr key={x.no_transaksi} style={{ fontWeight: "bold" }}>
           <td className="is-vcentered">{index}</td>
           <td className="is-vcentered">{x.no_transaksi}</td>
-          <td className="is-vcentered">{readableDate(x.tanggal)}</td>
+          <td className="is-vcentered">{readableDate(x.time_stamp)}</td>
           <td className="is-vcentered">{x.username}</td>
           <td className="is-vcentered">{rupiah.format(x.biaya_racik)}</td>
           <td className="is-vcentered">{rupiah.format(x.diskon)}</td>
@@ -231,6 +236,32 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
     hrefBelakang.delete("Awal");
     hrefBelakang.delete("Akhir");
     hrefBelakang.delete("User");
+    hrefBelakang.delete("Order");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+  const clearOrder = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Order");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const onChangeOrderDesc = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.set("Order", "ASC");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+  const onChangeOrderAsc = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Order");
     hrefBelakang.set("p", 1);
     router.push(hrefDepan + "?" + hrefBelakang.toString());
   };
@@ -238,13 +269,13 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
   return (
     <>
       <Head>
-        <title>Transaksi Penjualan</title>
+        <title>Rekap Transaksi Penjualan</title>
       </Head>
-      <h1 className="title">Transaksi Penjualan</h1>
+      <h1 className="title">Rekap Transaksi Penjualan</h1>
 
-      <div className="field">
-        <label className="label">User</label>
-        <div className="control">
+      <div className="field is-grouped">
+        <div className="field control has-icons-left">
+          <label className="label">Kasir</label>
           <div className="select">
             <select onChange={onChangeUser} value={dropdown.User}>
               {user.map((el) => {
@@ -255,22 +286,55 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
                 );
               })}
             </select>
+            <span className="icon is-left">
+              <FontAwesomeIcon icon={faUser} />
+            </span>
           </div>
+        </div>
+
+        <div className="field control">
+          <label className="label">Tanggal</label>
+          <RangePicker
+            onChange={onChangeDate}
+            size="large"
+            format="DD-MM-YYYY"
+            value={filterTanggal}
+          />
+        </div>
+        <div className="field">
+          <label className="label">Urutan Tanggal</label>
+          {router.query.Order !== undefined ? (
+            <button className="button" onClick={onChangeOrderAsc}>
+              <FontAwesomeIcon
+                icon={faCalendar}
+                style={{ marginRight: "5px" }}
+              />
+              Lama
+              <FontAwesomeIcon
+                icon={faAnglesRight}
+                style={{ marginLeft: "5px", marginRight: "5px" }}
+              />
+              Baru
+            </button>
+          ) : (
+            <button className="button" onClick={onChangeOrderDesc}>
+              <FontAwesomeIcon
+                icon={faCalendar}
+                style={{ marginRight: "5px" }}
+              />
+              Baru
+              <FontAwesomeIcon
+                icon={faAnglesRight}
+                style={{ marginLeft: "5px", marginRight: "5px" }}
+              />
+              Lama
+            </button>
+          )}
         </div>
       </div>
 
       <div className="field">
-        <label className="label">Tanggal</label>
-        <RangePicker
-          onChange={onChangeDate}
-          size="large"
-          format="DD-MM-YYYY"
-          value={filterTanggal}
-        />
-      </div>
-
-      <div className="field">
-        <label className="label">Search by No Transaksi Penjualan</label>
+        <label className="label">Pencarian dengan No Transaksi Penjualan</label>
         <div className="control has-icons-left has-icons right">
           <input
             type="text"
@@ -294,19 +358,26 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
       <div className="field is-grouped is-grouped-multiline">
         {router.query.Search !== undefined && (
           <div className="control">
-            <span
-              className="tag is-medium is-rounded"
-              style={{ backgroundColor: "white", fontWeight: "bold" }}
-            >
-              {`hasil "${router.query.Search}"`}
-              <button className="delete" onClick={() => clearSearch()} />
-            </span>
+            <div className="tags has-addons">
+              <span className="tag is-medium is-success">
+                <FontAwesomeIcon
+                  icon={faSearch}
+                  style={{ marginRight: "5px" }}
+                />
+                {`"${router.query.Search}"`}
+              </span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearSearch()}
+              />
+            </div>
           </div>
         )}
         {router.query.User !== undefined && (
           <div className="control">
             <div className="tags has-addons">
-              <span className="tag is-medium is-link">
+              <span className="tag is-medium is-primary">
+                <FontAwesomeIcon icon={faUser} style={{ marginRight: "5px" }} />
                 {userDipilih.username}
               </span>
               <button
@@ -320,7 +391,13 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
           router.query.Akhir !== undefined && (
             <div className="control">
               <div className="tags has-addons">
-                <span className="tag is-medium is-link">{tanggalDipilih}</span>
+                <span className="tag is-medium is-link">
+                  <FontAwesomeIcon
+                    icon={faCalendar}
+                    style={{ marginRight: "5px" }}
+                  />
+                  {tanggalDipilih}
+                </span>
                 <button
                   className="button tag is-medium is-delete"
                   onClick={() => clearTanggal()}
@@ -328,10 +405,33 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
               </div>
             </div>
           )}
+        {router.query.Order !== undefined && (
+          <div className="control">
+            <div className="tags has-addons">
+              <span className="tag is-medium is-danger">
+                <FontAwesomeIcon
+                  icon={faCalendar}
+                  style={{ marginRight: "5px" }}
+                />
+                Lama
+                <FontAwesomeIcon
+                  icon={faAnglesRight}
+                  style={{ marginLeft: "5px", marginRight: "5px" }}
+                />
+                Baru
+              </span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearOrder()}
+              />
+            </div>
+          </div>
+        )}
         {(router.query.Search !== undefined ||
           router.query.User !== undefined ||
           (router.query.Awal !== undefined &&
-            router.query.Akhir !== undefined)) && (
+            router.query.Akhir !== undefined) ||
+          router.query.Order !== undefined) && (
           <div className="control">
             <div className="tags has-addons">
               <button
@@ -354,7 +454,7 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
               No Transaksi Penjualan
             </th>
             <th className="has-text-centered is-vcentered">Tanggal</th>
-            <th className="has-text-centered is-vcentered">User</th>
+            <th className="has-text-centered is-vcentered">Kasir</th>
             <th className="has-text-centered is-vcentered">Biaya Racik</th>
             <th className="has-text-centered is-vcentered">Diskon</th>
             <th className="has-text-centered is-vcentered">Detail</th>
@@ -406,7 +506,9 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
               <tbody>{changeToHTML(isiModal)}</tbody>
             </table>
           </section>
-          <footer className="modal-card-foot"></footer>
+          <footer className="modal-card-foot" style={{ fontWeight: "bold" }}>
+            {`Total : ${rupiah.format(isiModal[0]?.total)}`}
+          </footer>
         </div>
       </Modal>
     </>
@@ -415,7 +517,7 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
 
 export async function getServerSideProps(context) {
   let query =
-    "select no_transaksi,tanggal,total,biaya_racik,diskon,user.username " +
+    "select no_transaksi,time_stamp,total,biaya_racik,diskon,user.username " +
     "from transaksi_penjualan inner join user on transaksi_penjualan.idUser=user.idUser ";
 
   let queryTotal =
@@ -425,7 +527,7 @@ export async function getServerSideProps(context) {
     "select count(no_transaksi) as jumlah " +
     "from transaksi_penjualan inner join user on transaksi_penjualan.idUser=user.idUser ";
 
-  const { p, User, Search, Awal, Akhir } = context.query;
+  const { p, User, Search, Awal, Akhir, Order } = context.query;
 
   if (
     Search !== undefined ||
@@ -453,17 +555,22 @@ export async function getServerSideProps(context) {
     }
     if (Awal !== undefined && Akhir !== undefined) {
       if (Search !== undefined || User !== undefined) {
-        query = query + " and tanggal between ? and ?";
-        queryTotal = queryTotal + " and tanggal between ? and ?";
-        queryJumlah = queryJumlah + " and tanggal between ? and ?";
+        query = query + " and time_stamp between ? and ?";
+        queryTotal = queryTotal + " and time_stamp between ? and ?";
+        queryJumlah = queryJumlah + " and time_stamp between ? and ?";
       } else {
-        query = query + " tanggal between ? and ?";
-        queryTotal = queryTotal + " tanggal between ? and ?";
-        queryJumlah = queryJumlah + " tanggal between ? and ?";
+        query = query + " time_stamp between ? and ?";
+        queryTotal = queryTotal + " time_stamp between ? and ?";
+        queryJumlah = queryJumlah + " time_stamp between ? and ?";
       }
     }
   }
-  query = query + " order by tanggal LIMIT ?,10";
+
+  if (Order !== undefined) {
+    query = query + " order by time_stamp  LIMIT ?,10";
+  } else {
+    query = query + " order by time_stamp desc LIMIT ?,10";
+  }
   const values = [];
 
   if (Search !== undefined) {
@@ -511,5 +618,5 @@ export async function getServerSideProps(context) {
 }
 
 TransaksiPenjualan.getLayout = function getLayout(page) {
-  return <Layout clicked="Transaksi Penjualan">{page}</Layout>;
+  return <Layout clicked="Rekap Transaksi Penjualan">{page}</Layout>;
 };

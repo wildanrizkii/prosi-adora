@@ -5,9 +5,10 @@ export default async function handler(req, res) {
     const query = req.query;
     const { rak } = query;
     const queryDB =
-      "select item.id_item,item.stok,item.nama as namaItem,satuan.nama as namaSatuan,jenis.nama as namaJenis " +
+      "select item.id_item,item.stok,item.nama as namaItem,satuan.nama as namaSatuan,jenis.nama as namaJenis,rak.id_rak,nama_rak " +
       "from item inner join jenis on item.id_jenis_item=jenis.id_jenis inner join satuan on item.id_satuan=satuan.id_satuan " +
-      "where id_rak=? ";
+      "inner join rak on rak.id_rak=item.id_rak " +
+      "where rak.id_rak=? and item.status=1 ";
     const values = [rak];
     try {
       const hasil = await handlerQuery({ query: queryDB, values });

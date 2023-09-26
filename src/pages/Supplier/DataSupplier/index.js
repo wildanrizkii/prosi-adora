@@ -12,8 +12,8 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { Badge } from "antd";
-import { EditFilled } from "@ant-design/icons";
+import { Badge, FloatButton } from "antd";
+import { EditFilled, PlusOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 export default function DataSupplier({ hasil }) {
   let semuaAkun;
@@ -136,13 +136,13 @@ export default function DataSupplier({ hasil }) {
       </Head>
       <h1 className="title">Data Supplier</h1>
 
-      <Link
+      {/* <Link
         className="button is-link"
         href="DataSupplier/TambahSupplier"
         style={{ marginBottom: "10px" }}
       >
         Tambah
-      </Link>
+      </Link> */}
 
       <table className="table has-text-centered is-fullwidth">
         <thead>
@@ -159,6 +159,14 @@ export default function DataSupplier({ hasil }) {
         </thead>
         <tbody>{semuaAkun}</tbody>
       </table>
+      <FloatButton
+        shape="circle"
+        type="primary"
+        style={{ right: 24, width: "50px", height: "50px" }}
+        icon={<PlusOutlined />}
+        tooltip="Tambah Data Supplier"
+        onClick={() => router.push("/Supplier/DataSupplier/TambahSupplier")}
+      />
       <Modal show={modal.isModalClosed === false && "is-active"}>
         {modal.isSuccess === true ? (
           <IsiModalSuccess pesan={modal.pesan}>

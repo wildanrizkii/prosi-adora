@@ -6,14 +6,16 @@ import {
   Modal,
   IsiModalFailed,
   IsiModalSuccess,
+  rupiah,
 } from "../../../../components/AllComponent";
 import { useState } from "react";
 import handlerQuery from "../../../../lib/db";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { faReceipt } from "@fortawesome/free-solid-svg-icons";
-
+import { faReceipt, faUserTie } from "@fortawesome/free-solid-svg-icons";
+import { Select } from "antd";
+import { NumericFormat } from "react-number-format";
 export default function Tambah({ supplier, item }) {
   const [field, setField] = useState({
     "No Faktur": "",
@@ -30,13 +32,13 @@ export default function Tambah({ supplier, item }) {
   const idUser = status === "authenticated" && session.user.idUser;
   const [detail, setDetail] = useState([
     {
-      Kode: undefined,
-      IdItem: "",
+      IdItem: undefined,
       Jenis: undefined,
       Satuan: undefined,
-      Jumlah_Item: 0,
-      Harga_Beli: 0,
-      Subtotal: 0,
+      Jumlah_Item: undefined,
+      Harga_Beli: undefined,
+      Subtotal: undefined,
+      Margin: undefined,
     },
   ]);
 
@@ -44,14 +46,16 @@ export default function Tambah({ supplier, item }) {
     let rightDetail = 0;
     for (let i = 0; i < detail.length; i++) {
       if (
-        detail[i].Kode !== undefined &&
-        detail[i].IdItem !== "" &&
+        detail[i].IdItem !== undefined &&
         (detail[i].Jenis !== undefined ||
           detail[i].Jenis !== "GAGAL MENDAPAT INFO") &&
         (detail[i].Satuan !== undefined ||
           detail[i].Satuan !== "GAGAL MENDAPAT INFO") &&
-        parseInt(detail[i].Jumlah_Item) > 0 &&
-        parseInt(detail[i].Harga_Beli) > 0
+        (detail[i].Margin !== undefined ||
+          detail[i].Margin !== "GAGAL MENDAPAT INFO") &&
+        detail[i].Jumlah_Item !== undefined &&
+        detail[i].Harga_Beli !== undefined &&
+        detail[i].Subtotal !== undefined
       ) {
         rightDetail = rightDetail + 1;
       }
@@ -69,13 +73,13 @@ export default function Tambah({ supplier, item }) {
 
   const onChangeName = async (Id, index) => {
     const arrDetail = [...detail];
-    if (Id === "") {
+    if (Id === undefined) {
       const hasil = {
         ...detail[index],
-        Kode: undefined,
         IdItem: Id,
         Jenis: undefined,
         Satuan: undefined,
+        Margin: undefined,
       };
       arrDetail[index] = hasil;
       setDetail(arrDetail);
@@ -85,20 +89,20 @@ export default function Tambah({ supplier, item }) {
         const data = res.data;
         const hasil = {
           ...detail[index],
-          Kode: Id,
           IdItem: Id,
           Jenis: data[0].nama_jenis,
           Satuan: data[0].nama_satuan,
+          Margin: data[0].margin,
         };
         arrDetail[index] = hasil;
         setDetail(arrDetail);
       } catch (er) {
         const hasil = {
           ...detail[index],
-          Kode: Id,
           IdItem: Id,
           Jenis: er.response.data,
           Satuan: er.response.data,
+          Margin: er.response.data,
         };
         arrDetail[index] = hasil;
         setDetail(arrDetail);
@@ -110,7 +114,7 @@ export default function Tambah({ supplier, item }) {
     const hasil = {
       ...detail[index],
       Jumlah_Item: jumlah,
-      Subtotal: parseInt(jumlah) * parseInt(detail[index].Harga_Beli),
+      Subtotal: jumlah * detail[index].Harga_Beli,
     };
     arrDetail[index] = hasil;
 
@@ -121,7 +125,7 @@ export default function Tambah({ supplier, item }) {
     const hasil = {
       ...detail[index],
       Harga_Beli: harga,
-      Subtotal: parseInt(harga) * parseInt(detail[index].Jumlah_Item),
+      Subtotal: harga * detail[index].Jumlah_Item,
     };
     arrDetail[index] = hasil;
     setDetail(arrDetail);
@@ -129,13 +133,13 @@ export default function Tambah({ supplier, item }) {
   const tambahBaris = () => {
     const detailBaru = [...detail];
     const objBaru = {
-      Kode: undefined,
-      IdItem: "",
+      IdItem: undefined,
       Jenis: undefined,
       Satuan: undefined,
-      Jumlah_Item: 0,
-      Harga_Beli: 0,
-      Subtotal: 0,
+      Jumlah_Item: undefined,
+      Harga_Beli: undefined,
+      Subtotal: undefined,
+      Margin: undefined,
     };
     detailBaru.push(objBaru);
     setDetail(detailBaru);
@@ -162,14 +166,16 @@ export default function Tambah({ supplier, item }) {
 
     for (let i = 0; i < detail.length; i++) {
       if (
-        detail[i].Kode !== undefined &&
-        detail[i].IdItem !== "" &&
+        detail[i].IdItem !== undefined &&
         (detail[i].Jenis !== undefined ||
           detail[i].Jenis !== "GAGAL MENDAPAT INFO") &&
         (detail[i].Satuan !== undefined ||
           detail[i].Satuan !== "GAGAL MENDAPAT INFO") &&
-        parseInt(detail[i].Jumlah_Item) > 0 &&
-        parseInt(detail[i].Harga_Beli) > 0
+        (detail[i].Margin !== undefined ||
+          detail[i].Margin !== "GAGAL MENDAPAT INFO") &&
+        detail[i].Jumlah_Item !== undefined &&
+        detail[i].Harga_Beli !== undefined &&
+        detail[i].Subtotal !== undefined
       ) {
         arrDetail.push(detail[i]);
       }
@@ -195,6 +201,9 @@ export default function Tambah({ supplier, item }) {
     }
   };
 
+  const filterOption = (input, option) =>
+    (option?.nama ?? "").toLowerCase().includes(input.toLowerCase());
+
   return (
     <>
       <Head>
@@ -218,73 +227,93 @@ export default function Tambah({ supplier, item }) {
           arr={supplier}
           field={field}
           mappingElement={["id_supplier", "nama_supplier"]}
+          icon={faUserTie}
         />
 
         <div id="detail" className="field">
           <label className="label">Detail</label>
-          <table className="table has-text-centered">
+          <table className="table has-text-centered is-fullwidth">
             <thead>
               <tr>
-                <th className="has-text-centered is-vcentered">Kode Item</th>
                 <th className="has-text-centered is-vcentered">Nama Item</th>
                 <th className="has-text-centered is-vcentered">Jenis</th>
                 <th className="has-text-centered is-vcentered">Satuan</th>
+                <th className="has-text-centered is-vcentered">Margin (%)</th>
                 <th className="has-text-centered is-vcentered">Jumlah Item</th>
                 <th className="has-text-centered is-vcentered">
                   Harga Beli/Satuan (RP)
                 </th>
                 <th className="has-text-centered is-vcentered">Subtotal</th>
+                <th className="has-text-centered is-vcentered"></th>
               </tr>
             </thead>
             <tbody>
               {detail.map((x, index) => {
                 return (
                   <tr key={index}>
-                    <td className="is-vcentered">{x.Kode}</td>
-                    <td className="is-vcentered">
+                    <td className="is-vcentered" style={{ width: "40%" }}>
                       <div className="field">
                         <div className="control">
-                          <div className="select">
-                            <select
-                              value={x.IdItem}
-                              onChange={async (e) =>
-                                await onChangeName(e.target.value, index)
-                              }
-                              className="has-text-centered"
-                            >
-                              {item.map((el) => {
-                                return (
-                                  <option key={el.id_item} value={el.id_item}>
-                                    {el.nama}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
+                          <Select
+                            allowClear
+                            showSearch
+                            options={item}
+                            fieldNames={{ label: "nama", value: "id_item" }}
+                            filterOption={filterOption}
+                            placeholder="Pilih Item"
+                            size="large"
+                            style={{ width: "100%" }}
+                            value={detail[index].IdItem}
+                            dropdownStyle={{ textAlign: "center" }}
+                            onChange={(value) => onChangeName(value, index)}
+                          />
                         </div>
                       </div>
                     </td>
                     <td className="is-vcentered">{x.Jenis}</td>
                     <td className="is-vcentered">{x.Satuan}</td>
+                    <td className="is-vcentered">{x.Margin}</td>
                     <td className="is-vcentered">
-                      <input
-                        type="number"
+                      <NumericFormat
+                        allowNegative={false}
+                        thousandSeparator="."
+                        decimalSeparator=","
+                        decimalScale={0}
                         className="input has-text-centered"
                         value={x.Jumlah_Item}
-                        onChange={(e) => onChangeJumlah(e.target.value, index)}
-                        min="0"
+                        onValueChange={(value) => {
+                          onChangeJumlah(value.floatValue, index);
+                        }}
+                        isAllowed={(values) =>
+                          values.floatValue === undefined ||
+                          values.floatValue > 0
+                        }
                       />
                     </td>
                     <td className="is-vcentered">
-                      <input
-                        type="number"
+                      <NumericFormat
+                        allowNegative={false}
+                        thousandSeparator="."
+                        decimalSeparator=","
+                        decimalScale={0}
                         className="input has-text-centered"
                         value={x.Harga_Beli}
-                        onChange={(e) => onChangeHarga(e.target.value, index)}
-                        min="0"
+                        onValueChange={(value) => {
+                          onChangeHarga(value.floatValue, index);
+                        }}
+                        prefix="Rp "
+                        suffix=",00"
+                        isAllowed={(values) =>
+                          values.floatValue === undefined ||
+                          values.floatValue > 0
+                        }
                       />
                     </td>
-                    <td className="is-vcentered">{x.Subtotal}</td>
+                    <td className="is-vcentered">
+                      {!isNaN(x.Subtotal)
+                        ? rupiah.format(x.Subtotal)
+                        : undefined}
+                    </td>
                     <td className="is-vcentered">
                       <button
                         type="button"
@@ -344,14 +373,13 @@ export default function Tambah({ supplier, item }) {
 }
 
 export async function getServerSideProps() {
-  const query = "select id_supplier,nama_supplier from supplier";
-  const queryItem = "select id_item,nama from item";
+  const query = "select id_supplier,nama_supplier from supplier where status=1";
+  const queryItem = "select id_item,nama from item where status=1";
   try {
     const getSupplier = await handlerQuery({ query, values: [] });
     const supplier = JSON.parse(JSON.stringify(getSupplier));
     const getItem = await handlerQuery({ query: queryItem, values: [] });
     const item = JSON.parse(JSON.stringify(getItem));
-    item.unshift({ id_item: "", nama: "--Pilih Item--" });
     return {
       props: {
         supplier,
@@ -369,5 +397,5 @@ export async function getServerSideProps() {
 }
 
 Tambah.getLayout = function getLayout(page) {
-  return <Layout clicked="Transaksi Pembelian">{page}</Layout>;
+  return <Layout clicked="Rekap Transaksi Pembelian">{page}</Layout>;
 };

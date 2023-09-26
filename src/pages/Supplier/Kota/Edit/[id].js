@@ -12,6 +12,7 @@ import { useState } from "react";
 
 import axios from "axios";
 import { faCity } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function Edit({ hasil }) {
   let [tipe, setTipe] = useState(hasil[0].tipe);
   const [field, setField] = useState({
@@ -75,15 +76,17 @@ export default function Edit({ hasil }) {
       <h1 className="title">Edit Kota</h1>
 
       <form onSubmit={onSubmit}>
-        <div className="field">
+        <div className="field control has-icons-left">
           <label className="label">Tipe</label>
-          <div className="control">
-            <div className="select">
-              <select value={tipe} id="b" onChange={onChangeTipe}>
-                <option value="KAB.">KAB.</option>
-                <option value="KOTA">KOTA</option>
-              </select>
-            </div>
+
+          <div className="select">
+            <select value={tipe} id="b" onChange={onChangeTipe}>
+              <option value="KAB.">KAB.</option>
+              <option value="KOTA">KOTA</option>
+            </select>
+            <span className="icon is-left">
+              <FontAwesomeIcon icon={faCity} />
+            </span>
           </div>
         </div>
 

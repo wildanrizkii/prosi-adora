@@ -11,8 +11,8 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { Badge, Button } from "antd";
-import { EditFilled } from "@ant-design/icons";
+import { Badge, Button, FloatButton } from "antd";
+import { EditFilled, PlusOutlined } from "@ant-design/icons";
 export default function JenisItem({ hasil }) {
   let semuaAkun;
 
@@ -112,13 +112,13 @@ export default function JenisItem({ hasil }) {
       </Head>
       <h1 className="title">Jenis Item</h1>
 
-      <Link
+      {/* <Link
         className="button is-link"
         href="JenisItem/TambahJenis"
         style={{ marginBottom: "10px" }}
       >
         Tambah
-      </Link>
+      </Link> */}
 
       <table className="table has-text-centered is-fullwidth">
         <thead>
@@ -131,6 +131,14 @@ export default function JenisItem({ hasil }) {
         </thead>
         <tbody>{semuaAkun}</tbody>
       </table>
+      <FloatButton
+        shape="circle"
+        type="primary"
+        style={{ right: 24, width: "50px", height: "50px" }}
+        icon={<PlusOutlined />}
+        tooltip="Tambah Jenis"
+        onClick={() => router.push("/Produk/JenisItem/TambahJenis")}
+      />
       <Modal show={modal.isModalClosed === false && "is-active"}>
         {modal.isSuccess === true ? (
           <IsiModalSuccess pesan={modal.pesan}>

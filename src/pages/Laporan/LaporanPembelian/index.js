@@ -31,7 +31,7 @@ export default function LaporanPembelian() {
     while (i < hasil.length - 1) {
       rowSpanTanggal = 1;
       for (let j = i + 1; j < hasil.length; j++) {
-        if (hasil[i].tanggal === hasil[j].tanggal) {
+        if (hasil[i].time_stamp === hasil[j].time_stamp) {
           rowSpanTanggal = rowSpanTanggal + 1;
         }
 
@@ -40,8 +40,8 @@ export default function LaporanPembelian() {
         }
       }
       if (rowSpanTanggal !== 1) {
-        hasil[i].tanggal = {
-          content: hasil[i].tanggal,
+        hasil[i].time_stamp = {
+          content: hasil[i].time_stamp,
           rowSpan: rowSpanTanggal,
         };
       }
@@ -99,7 +99,7 @@ export default function LaporanPembelian() {
 
     doc.autoTable({
       columns: [
-        { header: "Tanggal", dataKey: "tanggal" },
+        { header: "Tanggal", dataKey: "time_stamp" },
         { header: "No Faktur", dataKey: "no_faktur" },
         { header: "Kode Supplier", dataKey: "kode_supplier" },
         { header: "Nama Item", dataKey: "nama_item" },
@@ -111,7 +111,7 @@ export default function LaporanPembelian() {
       margin: { top: 150 },
       body: hasil,
       columnStyles: {
-        tanggal: { halign: "center", valign: "middle" },
+        time_stamp: { halign: "center", valign: "middle" },
         no_faktur: { halign: "center", valign: "middle" },
         kode_supplier: { halign: "center", valign: "middle" },
         nama_item: { halign: "center", valign: "middle" },
@@ -122,6 +122,9 @@ export default function LaporanPembelian() {
       },
       headStyles: { halign: "center", valign: "middle" },
       theme: "grid",
+      styles: {
+        overflow: "visible",
+      },
     });
 
     let y = doc.lastAutoTable.finalY;
