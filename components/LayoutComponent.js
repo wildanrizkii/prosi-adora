@@ -11,21 +11,17 @@ export function ImageOfAdora() {
   );
 }
 
-export function Menu({ nama, clickedMenu, onClick, atas, icon }) {
+export function Menu({ nama, link, clickedMenu, onClick, icon }) {
   const router = useRouter();
   const nameStyle =
-    clickedMenu === nama.split("?")[0] ? (
-      <span style={{ color: "green" }}>{nama.split("?")[0]}</span>
+    clickedMenu === nama ? (
+      <span style={{ color: "green" }}>{nama}</span>
     ) : (
-      nama.split("?")[0]
+      nama
     );
-  const bgColor = clickedMenu === nama.split("?")[0] ? "#f5f5f5" : "white";
+  const bgColor = clickedMenu === nama ? "#f5f5f5" : "white";
   function handleClick() {
-    if (atas !== undefined) {
-      router.push("/" + atas + "/" + nama.replaceAll(" ", ""));
-    } else {
-      router.push("/" + nama.replaceAll(" ", ""));
-    }
+    router.push(link);
   }
   return (
     <li style={{ marginBottom: 10, marginLeft: 10, backgroundColor: bgColor }}>
@@ -40,7 +36,7 @@ export function Menu({ nama, clickedMenu, onClick, atas, icon }) {
 export function MenuWithDropdown({ nama, clickedMenu, dropdown, icon }) {
   let bool = false;
   for (let i = 0; i < dropdown.length; i++) {
-    if (dropdown[i].nama.split("?")[0] === clickedMenu) {
+    if (dropdown[i].nama === clickedMenu) {
       bool = true;
       break;
     }
@@ -55,8 +51,8 @@ export function MenuWithDropdown({ nama, clickedMenu, dropdown, icon }) {
         nama={x.nama}
         key={x.nama}
         clickedMenu={clickedMenu}
-        atas={nama}
         icon={x.icon}
+        link={x.link}
       ></Menu>
     );
   });

@@ -12,7 +12,7 @@ export default async function handler(req, res) {
         "from detail_transaksi_penjualan inner join item on item.id_item = detail_transaksi_penjualan.id_item inner join satuan on satuan.id_satuan=item.id_satuan " +
         "inner join jenis on jenis.id_jenis=item.id_jenis_item " +
         "inner join transaksi_penjualan on transaksi_penjualan.no_transaksi=detail_transaksi_penjualan.no_transaksi " +
-        "where tanggal between ? and ?" +
+        "where time_stamp between ? and ?" +
         "group by detail_transaksi_penjualan.id_item " +
         "order by jumlah_terjual desc LIMIT 5";
       values = [Awal, Akhir];

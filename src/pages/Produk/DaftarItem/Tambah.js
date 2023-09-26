@@ -14,7 +14,10 @@ import handlerQuery from "../../../../lib/db";
 import {
   faCapsules,
   faChartBar,
+  faCubes,
   faPercent,
+  faPills,
+  faPrescriptionBottle,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function TambahItem({ rak, satuan, jenis }) {
@@ -121,6 +124,7 @@ export default function TambahItem({ rak, satuan, jenis }) {
           field={field}
           arr={rak}
           mappingElement={["id_rak", "nama_rak"]}
+          icon={faCubes}
         />
         <Dropdown
           nama="Satuan"
@@ -129,6 +133,7 @@ export default function TambahItem({ rak, satuan, jenis }) {
           field={field}
           arr={satuan}
           mappingElement={["id_satuan", "nama"]}
+          icon={faPrescriptionBottle}
         />
         <Dropdown
           nama="Jenis"
@@ -137,6 +142,7 @@ export default function TambahItem({ rak, satuan, jenis }) {
           field={field}
           arr={jenis}
           mappingElement={["id_jenis", "nama"]}
+          icon={faPills}
         />
 
         <button className="button is-link" disabled={!submit}>

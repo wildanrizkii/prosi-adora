@@ -12,28 +12,28 @@ export default async function handler(req, res) {
     let values;
     if (Awal !== "" && Akhir !== "") {
       queryUtama =
-        "SELECT tanggal,transaksi_pembelian.no_faktur,kode_supplier,item.nama as nama_item,jumlah,harga_per_satuan,subtotal,total " +
+        "SELECT time_stamp,transaksi_pembelian.no_faktur,kode_supplier,item.nama as nama_item,jumlah,harga_per_satuan,subtotal,total " +
         "FROM detail_transaksi_pembelian inner join transaksi_pembelian on detail_transaksi_pembelian.no_faktur=transaksi_pembelian.no_faktur " +
         "inner join item on item.id_item =detail_transaksi_pembelian.id_item  " +
         "inner join supplier on supplier.id_supplier=transaksi_pembelian.id_supplier " +
-        "where tanggal between ? and ? " +
-        "order by tanggal,detail_transaksi_pembelian.no_faktur";
+        "where time_stamp between ? and ? " +
+        "order by time_stamp,detail_transaksi_pembelian.no_faktur";
       queryJumlah =
         "SELECT sum(jumlah) as jumlah " +
         "FROM detail_transaksi_pembelian inner join transaksi_pembelian on detail_transaksi_pembelian.no_faktur=transaksi_pembelian.no_faktur " +
-        "where tanggal between ? and ? ";
+        "where time_stamp between ? and ? ";
       queryTotal =
         "SELECT sum(total) as total " +
         "FROM transaksi_pembelian " +
-        "where tanggal between ? and ? ";
+        "where time_stamp between ? and ? ";
       values = [Awal, Akhir];
     } else {
       queryUtama =
-        "SELECT tanggal,transaksi_pembelian.no_faktur,kode_supplier,item.nama as nama_item,jumlah,harga_per_satuan,subtotal,total " +
+        "SELECT time_stamp,transaksi_pembelian.no_faktur,kode_supplier,item.nama as nama_item,jumlah,harga_per_satuan,subtotal,total " +
         "FROM detail_transaksi_pembelian inner join transaksi_pembelian on detail_transaksi_pembelian.no_faktur=transaksi_pembelian.no_faktur " +
         "inner join item on item.id_item =detail_transaksi_pembelian.id_item  " +
         "inner join supplier on supplier.id_supplier=transaksi_pembelian.id_supplier " +
-        "order by tanggal,detail_transaksi_pembelian.no_faktur";
+        "order by time_stamp,detail_transaksi_pembelian.no_faktur";
       queryJumlah =
         "SELECT sum(jumlah) as jumlah " + "FROM detail_transaksi_pembelian";
       queryTotal = "SELECT sum(total) as total " + "FROM transaksi_pembelian";
@@ -48,7 +48,9 @@ export default async function handler(req, res) {
         hasil[i].harga_per_satuan = rupiah.format(hasil[i].harga_per_satuan);
         hasil[i].subtotal = rupiah.format(hasil[i].subtotal);
         hasil[i].total = rupiah.format(hasil[i].total);
-        hasil[i].tanggal = dayjs(hasil[i].tanggal).format("DD-MM-YYYY");
+        hasil[i].time_stamp = dayjs(hasil[i].time_stamp)
+          .locale("id")
+          .format("LL");
       }
 
       total[0].total = rupiah.format(total[0].total);

@@ -11,6 +11,7 @@ import {
   IsiModalSuccess,
 } from "../../../../components/AllComponent";
 import { faCity } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function TambahKota() {
   let [tipe, setTipe] = useState("KAB.");
@@ -74,15 +75,17 @@ export default function TambahKota() {
       </Head>
       <h1 className="title">Tambah Kota</h1>
       <form onSubmit={onSubmit}>
-        <div className="field">
+        <div className="field control has-icons-left">
           <label className="label">Tipe</label>
-          <div className="control">
-            <div className="select">
-              <select value={tipe} id="b" onChange={onChangeTipe}>
-                <option value="KAB.">KAB.</option>
-                <option value="KOTA">KOTA</option>
-              </select>
-            </div>
+
+          <div className="select">
+            <select value={tipe} id="b" onChange={onChangeTipe}>
+              <option value="KAB.">KAB.</option>
+              <option value="KOTA">KOTA</option>
+            </select>
+            <span className="icon is-left">
+              <FontAwesomeIcon icon={faCity} />
+            </span>
           </div>
         </div>
 

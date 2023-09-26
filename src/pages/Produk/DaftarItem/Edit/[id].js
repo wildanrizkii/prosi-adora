@@ -15,7 +15,10 @@ import { Badge } from "antd";
 import {
   faCapsules,
   faChartBar,
+  faCubes,
   faPercent,
+  faPills,
+  faPrescriptionBottle,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function Edit({ hasil, rak, satuan, jenis }) {
@@ -132,6 +135,7 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
               arr={rak}
               mappingElement={["id_rak", "nama_rak"]}
               placeholder={hasil[0].statusRak === 1 ? undefined : ""}
+              icon={faCubes}
             />
           </div>
         ) : (
@@ -143,6 +147,7 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
             arr={rak}
             mappingElement={["id_rak", "nama_rak"]}
             placeholder={hasil[0].statusRak === 1 ? undefined : ""}
+            icon={faCubes}
           />
         )}
         {field.Satuan === "" ? (
@@ -158,6 +163,7 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
               arr={satuan}
               mappingElement={["id_satuan", "nama"]}
               placeholder={hasil[0].statusSatuan === 1 ? undefined : ""}
+              icon={faPrescriptionBottle}
             />
           </div>
         ) : (
@@ -169,6 +175,7 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
             arr={satuan}
             mappingElement={["id_satuan", "nama"]}
             placeholder={hasil[0].statusSatuan === 1 ? undefined : ""}
+            icon={faPrescriptionBottle}
           />
         )}
         {field.Jenis === "" ? (
@@ -184,6 +191,7 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
               arr={jenis}
               mappingElement={["id_jenis", "nama"]}
               placeholder={hasil[0].statusJenis === 1 ? undefined : ""}
+              icon={faPills}
             />
           </div>
         ) : (
@@ -195,6 +203,7 @@ export default function Edit({ hasil, rak, satuan, jenis }) {
             arr={jenis}
             mappingElement={["id_jenis", "nama"]}
             placeholder={hasil[0].statusJenis === 1 ? undefined : ""}
+            icon={faPills}
           />
         )}
         <button className="button is-link" disabled={!submit}>

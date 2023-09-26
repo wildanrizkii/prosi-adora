@@ -13,9 +13,9 @@ import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "antd";
-import { EditFilled } from "@ant-design/icons";
+import { faCity, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { Button, FloatButton } from "antd";
+import { EditFilled, PlusOutlined } from "@ant-design/icons";
 export default function Kota({ hasil }) {
   let semuaAkun;
   const router = useRouter();
@@ -181,23 +181,24 @@ export default function Kota({ hasil }) {
         <title>Kota</title>
       </Head>
       <h1 className="title">Kota</h1>
-      <Link
+      {/* <Link
         className="button is-link"
         href="Kota/TambahKota"
         style={{ marginBottom: "10px" }}
       >
         Tambah
-      </Link>
-      <div className="field">
+      </Link> */}
+      <div className="field control has-icons-left">
         <label className="label">KAB/KOTA</label>
-        <div className="control">
-          <div className="select">
-            <select onChange={onChangeTipe} value={dropdown.Tipe}>
-              <option value="">KAB. DAN KOTA</option>
-              <option value="KAB.">KAB.</option>
-              <option value="KOTA">KOTA</option>
-            </select>
-          </div>
+        <div className="select">
+          <select onChange={onChangeTipe} value={dropdown.Tipe}>
+            <option value="">KAB. DAN KOTA</option>
+            <option value="KAB.">KAB.</option>
+            <option value="KOTA">KOTA</option>
+          </select>
+          <span className="icon is-left">
+            <FontAwesomeIcon icon={faCity} />
+          </span>
         </div>
       </div>
       <div className="field">
@@ -226,19 +227,28 @@ export default function Kota({ hasil }) {
       <div className="field is-grouped is-grouped-multiline">
         {router.query.Search !== undefined && (
           <div className="control">
-            <span
-              className="tag is-medium is-rounded"
-              style={{ backgroundColor: "white", fontWeight: "bold" }}
-            >
-              {`hasil "${router.query.Search}"`}
-              <button className="delete" onClick={() => clearSearch()} />
-            </span>
+            <div className="tags has-addons">
+              <span className="tag is-medium is-success">
+                <FontAwesomeIcon
+                  icon={faSearch}
+                  style={{ marginRight: "5px" }}
+                />
+                {`"${router.query.Search}"`}
+              </span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearSearch()}
+              />
+            </div>
           </div>
         )}
         {router.query.Tipe !== undefined && (
           <div className="control">
             <div className="tags has-addons">
-              <span className="tag is-medium is-link">{router.query.Tipe}</span>
+              <span className="tag is-medium is-warning">
+                <FontAwesomeIcon icon={faCity} style={{ marginRight: "5px" }} />
+                {router.query.Tipe}
+              </span>
               <button
                 className="button tag is-medium is-delete"
                 onClick={() => clearTipe()}
@@ -273,6 +283,14 @@ export default function Kota({ hasil }) {
         </thead>
         <tbody>{semuaAkun}</tbody>
       </table>
+      <FloatButton
+        shape="circle"
+        type="primary"
+        style={{ right: 24, width: "50px", height: "50px" }}
+        icon={<PlusOutlined />}
+        tooltip="Tambah Kota"
+        onClick={() => router.push("/Supplier/Kota/TambahKota")}
+      />
       <Modal show={modal.isModalClosed === false && "is-active"}>
         {modal.isSuccess === true ? (
           <IsiModalSuccess pesan={modal.pesan}>

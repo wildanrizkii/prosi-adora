@@ -4,7 +4,6 @@ import handlerQuery from "../../../../lib/db";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import axios from "axios";
-import Link from "next/link";
 import { DatePicker } from "antd";
 const { RangePicker } = DatePicker;
 import dayjs from "dayjs";
@@ -15,7 +14,14 @@ import {
   readableDate,
 } from "../../../../components/AllComponent";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAnglesRight,
+  faCalendar,
+  faSearch,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
+import { FloatButton } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 export default function TransaksiStokOpname({ hasil, jumlah, user }) {
   let semuaData;
   const router = useRouter();
@@ -141,7 +147,7 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
         <tr key={x.no_opname} style={{ fontWeight: "bold" }}>
           <td className="is-vcentered">{index}</td>
           <td className="is-vcentered">{x.no_opname}</td>
-          <td className="is-vcentered">{readableDate(x.tanggal)}</td>
+          <td className="is-vcentered">{readableDate(x.time_stamp)}</td>
           <td className="is-vcentered">{x.username}</td>
           <td className="is-vcentered">
             <button
@@ -215,6 +221,33 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
     hrefBelakang.delete("Awal");
     hrefBelakang.delete("Akhir");
     hrefBelakang.delete("User");
+    hrefBelakang.delete("Order");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const onChangeOrderDesc = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.set("Order", "ASC");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+  const onChangeOrderAsc = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Order");
+    hrefBelakang.set("p", 1);
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
+
+  const clearOrder = () => {
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+    hrefBelakang.delete("Order");
     hrefBelakang.set("p", 1);
     router.push(hrefDepan + "?" + hrefBelakang.toString());
   };
@@ -222,20 +255,21 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
   return (
     <>
       <Head>
-        <title>Transaksi Stok Opname</title>
+        <title>Rekap Transaksi Stok Opname</title>
       </Head>
-      <h1 className="title">Transaksi Stok Opname</h1>
-      <Link
+      <h1 className="title">Rekap Transaksi Stok Opname</h1>
+      {/* <Link
         className="button is-link"
         href="/Transaksi/TransaksiStokOpname/Tambah"
         style={{ marginBottom: "10px" }}
       >
         Tambah
-      </Link>
+      </Link> */}
 
-      <div className="field">
-        <label className="label">User</label>
-        <div className="control">
+      <div className="field is-grouped">
+        <div className="field control has-icons-left">
+          <label className="label">TTK</label>
+
           <div className="select">
             <select onChange={onChangeUser} value={dropdown.User}>
               {user.map((el) => {
@@ -246,21 +280,54 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
                 );
               })}
             </select>
+            <span className="icon is-left">
+              <FontAwesomeIcon icon={faUser} />
+            </span>
           </div>
+        </div>
+        <div className="field control">
+          <label className="label">Tanggal</label>
+          <RangePicker
+            onChange={onChangeDate}
+            size="large"
+            format="DD-MM-YYYY"
+            value={filterTanggal}
+          />
+        </div>
+        <div className="field">
+          <label className="label">Urutan Tanggal</label>
+          {router.query.Order !== undefined ? (
+            <button className="button" onClick={onChangeOrderAsc}>
+              <FontAwesomeIcon
+                icon={faCalendar}
+                style={{ marginRight: "5px" }}
+              />
+              Lama
+              <FontAwesomeIcon
+                icon={faAnglesRight}
+                style={{ marginLeft: "5px", marginRight: "5px" }}
+              />
+              Baru
+            </button>
+          ) : (
+            <button className="button" onClick={onChangeOrderDesc}>
+              <FontAwesomeIcon
+                icon={faCalendar}
+                style={{ marginRight: "5px" }}
+              />
+              Baru
+              <FontAwesomeIcon
+                icon={faAnglesRight}
+                style={{ marginLeft: "5px", marginRight: "5px" }}
+              />
+              Lama
+            </button>
+          )}
         </div>
       </div>
 
       <div className="field">
-        <label className="label">Tanggal</label>
-        <RangePicker
-          onChange={onChangeDate}
-          size="large"
-          format="DD-MM-YYYY"
-          value={filterTanggal}
-        />
-      </div>
-      <div className="field">
-        <label className="label">Search by No Opname</label>
+        <label className="label">Pencarian dengan No Opname</label>
         <div className="control has-icons-left has-icons-right">
           <input
             className="input"
@@ -285,19 +352,26 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
       <div className="field is-grouped is-grouped-multiline">
         {router.query.Search !== undefined && (
           <div className="control">
-            <span
-              className="tag is-medium is-rounded"
-              style={{ backgroundColor: "white", fontWeight: "bold" }}
-            >
-              {`hasil "${router.query.Search}"`}
-              <button className="delete" onClick={() => clearSearch()} />
-            </span>
+            <div className="tags has-addons">
+              <span className="tag is-medium is-success">
+                <FontAwesomeIcon
+                  icon={faSearch}
+                  style={{ marginRight: "5px" }}
+                />
+                {`"${router.query.Search}"`}
+              </span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearSearch()}
+              />
+            </div>
           </div>
         )}
         {router.query.User !== undefined && (
           <div className="control">
             <div className="tags has-addons">
-              <span className="tag is-medium is-link">
+              <span className="tag is-medium is-primary">
+                <FontAwesomeIcon icon={faUser} style={{ marginRight: "5px" }} />
                 {userDipilih.username}
               </span>
               <button
@@ -311,7 +385,13 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
           router.query.Akhir !== undefined && (
             <div className="control">
               <div className="tags has-addons">
-                <span className="tag is-medium is-link">{tanggalDipilih}</span>
+                <span className="tag is-medium is-link">
+                  <FontAwesomeIcon
+                    icon={faCalendar}
+                    style={{ marginRight: "5px" }}
+                  />
+                  {tanggalDipilih}
+                </span>
                 <button
                   className="button tag is-medium is-delete"
                   onClick={() => clearTanggal()}
@@ -319,10 +399,33 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
               </div>
             </div>
           )}
+        {router.query.Order !== undefined && (
+          <div className="control">
+            <div className="tags has-addons">
+              <span className="tag is-medium is-danger">
+                <FontAwesomeIcon
+                  icon={faCalendar}
+                  style={{ marginRight: "5px" }}
+                />
+                Lama
+                <FontAwesomeIcon
+                  icon={faAnglesRight}
+                  style={{ marginLeft: "5px", marginRight: "5px" }}
+                />
+                Baru
+              </span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearOrder()}
+              />
+            </div>
+          </div>
+        )}
         {(router.query.Search !== undefined ||
           router.query.User !== undefined ||
           (router.query.Awal !== undefined &&
-            router.query.Akhir !== undefined)) && (
+            router.query.Akhir !== undefined) ||
+          router.query.Order !== undefined) && (
           <div className="control">
             <div className="tags has-addons">
               <button
@@ -343,7 +446,7 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
             <th className="has-text-centered is-vcentered">No</th>
             <th className="has-text-centered is-vcentered">No Opname</th>
             <th className="has-text-centered is-vcentered">Tanggal</th>
-            <th className="has-text-centered is-vcentered">User</th>
+            <th className="has-text-centered is-vcentered">TTK</th>
             <th className="has-text-centered is-vcentered">Detail</th>
           </tr>
         </thead>
@@ -354,6 +457,16 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
         currentPage={router.query.p}
         jumlah={jumlah[0].jumlah}
       />
+
+      <FloatButton
+        shape="circle"
+        type="primary"
+        style={{ right: 24, width: "50px", height: "50px" }}
+        icon={<PlusOutlined />}
+        tooltip="Tambah Transaksi Stok Opname"
+        onClick={() => router.push("/Transaksi/TransaksiStokOpname/Tambah?p=1")}
+      />
+
       <Modal show={isModalOpened === true && "is-active"}>
         <div className="modal-card">
           <header className="modal-card-head">
@@ -391,14 +504,14 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
 
 export async function getServerSideProps(context) {
   let query =
-    "select no_opname,tanggal,user.username " +
+    "select no_opname,time_stamp,user.username " +
     "from transaksi_stok_opname inner join user on transaksi_stok_opname.idUser=user.idUser ";
 
   let queryJumlah =
     "select count(no_opname) as jumlah " +
     "from transaksi_stok_opname inner join user on transaksi_stok_opname.idUser=user.idUser ";
 
-  const { p, User, Search, Awal, Akhir } = context.query;
+  const { p, User, Search, Awal, Akhir, Order } = context.query;
 
   if (
     Search !== undefined ||
@@ -422,16 +535,21 @@ export async function getServerSideProps(context) {
     }
     if (Awal !== undefined && Akhir !== undefined) {
       if (Search !== undefined || User !== undefined) {
-        query = query + " and tanggal between ? and ?";
-        queryJumlah = queryJumlah + " and tanggal between ? and ?";
+        query = query + " and time_stamp between ? and ?";
+        queryJumlah = queryJumlah + " and time_stamp between ? and ?";
       } else {
-        query = query + " tanggal between ? and ?";
-        queryJumlah = queryJumlah + " tanggal between ? and ?";
+        query = query + " time_stamp between ? and ?";
+        queryJumlah = queryJumlah + " time_stamp between ? and ?";
       }
     }
   }
 
-  query = query + " order by tanggal LIMIT ?,10";
+  if (Order !== undefined) {
+    query = query + " order by time_stamp  LIMIT ?,10";
+  } else {
+    query = query + " order by time_stamp desc LIMIT ?,10";
+  }
+
   const values = [];
 
   if (Search !== undefined) {
@@ -475,5 +593,5 @@ export async function getServerSideProps(context) {
 }
 
 TransaksiStokOpname.getLayout = function getLayout(page) {
-  return <Layout clicked="Transaksi Stok Opname">{page}</Layout>;
+  return <Layout clicked="Rekap Transaksi Stok Opname">{page}</Layout>;
 };

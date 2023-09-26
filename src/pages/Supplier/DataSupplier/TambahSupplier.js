@@ -12,6 +12,7 @@ import {
 } from "../../../../components/AllComponent";
 import handlerQuery from "../../../../lib/db";
 import {
+  faCity,
   faMapMarkedAlt,
   faPhone,
   faSignature,
@@ -103,6 +104,7 @@ export default function TambahSupplier({ DaftarKota }) {
           field={field}
           arr={DaftarKota}
           mappingElement={["id_kota", "nama_kota"]}
+          icon={faCity}
         />
 
         <Field

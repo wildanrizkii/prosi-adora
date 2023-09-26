@@ -13,6 +13,7 @@ import { useState } from "react";
 import { Badge } from "antd";
 import axios from "axios";
 import {
+  faCity,
   faMapMarkedAlt,
   faPhone,
   faSignature,
@@ -112,6 +113,7 @@ export default function Edit({ hasil, DaftarKota }) {
               arr={DaftarKota}
               mappingElement={["id_kota", "nama_kota"]}
               placeholder={hasil[0].statusKota === 1 ? undefined : ""}
+              icon={faCity}
             />
           </div>
         ) : (
@@ -123,6 +125,7 @@ export default function Edit({ hasil, DaftarKota }) {
             arr={DaftarKota}
             mappingElement={["id_kota", "nama_kota"]}
             placeholder={hasil[0].statusKota === 1 ? undefined : ""}
+            icon={faCity}
           />
         )}
 

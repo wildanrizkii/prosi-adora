@@ -83,5 +83,5 @@ export async function getServerSideProps() {
 }
 
 StokMin.getLayout = function getLayout(page) {
-  return <Layout clicked="Transaksi Pembelian">{page}</Layout>;
+  return <Layout clicked="Rekap Transaksi Pembelian">{page}</Layout>;
 };

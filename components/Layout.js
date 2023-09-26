@@ -28,27 +28,60 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
 import axios from "axios";
+import dayjs from "dayjs";
 const Layout = ({ children, clicked }) => {
   const clickedMenu = clicked;
   const dropdownProduk = [
-    { nama: "Daftar Item?p=1", icon: faCapsules },
-    { nama: "Jenis Item", icon: faPills },
-    { nama: "Satuan Item", icon: faPrescriptionBottle },
-    { nama: "Rak", icon: faCubes },
+    { nama: "Daftar Item", icon: faCapsules, link: "/Produk/DaftarItem?p=1" },
+    { nama: "Jenis Item", icon: faPills, link: "/Produk/JenisItem" },
+    {
+      nama: "Satuan Item",
+      icon: faPrescriptionBottle,
+      link: "/Produk/SatuanItem",
+    },
+    { nama: "Rak", icon: faCubes, link: "/Produk/Rak" },
   ];
   const dropdownTransaksi = [
-    { nama: "Transaksi Stok Opname?p=1", icon: faFileInvoiceDollar },
-    { nama: "Transaksi Pembelian?p=1", icon: faFileInvoiceDollar },
-    { nama: "Transaksi Penjualan?p=1", icon: faFileInvoiceDollar },
+    {
+      nama: "Rekap Transaksi Stok Opname",
+      icon: faFileInvoiceDollar,
+      link: "/Transaksi/TransaksiStokOpname?p=1",
+    },
+    {
+      nama: "Rekap Transaksi Pembelian",
+      icon: faFileInvoiceDollar,
+      link: "/Transaksi/TransaksiPembelian?p=1",
+    },
+    {
+      nama: "Rekap Transaksi Penjualan",
+      icon: faFileInvoiceDollar,
+      link: "/Transaksi/TransaksiPenjualan?p=1",
+    },
   ];
   const dropdownLaporan = [
-    { nama: "Laporan Penjualan", icon: faFileAlt },
-    { nama: "Laporan Pembelian", icon: faFileAlt },
-    { nama: "Laporan Item Terlaris", icon: faFileAlt },
+    {
+      nama: "Laporan Penjualan",
+      icon: faFileAlt,
+      link: "/Laporan/LaporanPenjualan",
+    },
+    {
+      nama: "Laporan Pembelian",
+      icon: faFileAlt,
+      link: "/Laporan/LaporanPembelian",
+    },
+    {
+      nama: "Laporan Item Terlaris",
+      icon: faFileAlt,
+      link: "/Laporan/LaporanItemTerlaris",
+    },
   ];
   const dropdownSupplier = [
-    { nama: "Data Supplier", icon: faAddressBook },
-    { nama: "Kota", icon: faCity },
+    {
+      nama: "Data Supplier",
+      icon: faAddressBook,
+      link: "/Supplier/DataSupplier/",
+    },
+    { nama: "Kota", icon: faCity, link: "/Supplier/Kota" },
   ];
 
   const { data: session, status, update } = useSession({ required: true });
@@ -159,8 +192,18 @@ const Layout = ({ children, clicked }) => {
   };
   const AksesPemilik = (
     <>
-      <Menu clickedMenu={clickedMenu} nama="Dashboard" icon={faChartLine} />
-      <Menu clickedMenu={clickedMenu} nama="Kasir" icon={faCashRegister} />
+      <Menu
+        clickedMenu={clickedMenu}
+        nama="Dashboard"
+        icon={faChartLine}
+        link="/Dashboard"
+      />
+      <Menu
+        clickedMenu={clickedMenu}
+        nama="Kasir"
+        icon={faCashRegister}
+        link="/Kasir"
+      />
       <MenuWithDropdown
         clickedMenu={clickedMenu}
         dropdown={dropdownSupplier}
@@ -169,7 +212,7 @@ const Layout = ({ children, clicked }) => {
       />
       <MenuWithDropdown
         clickedMenu={clickedMenu}
-        nama="Transaksi"
+        nama="Rekap Transaksi"
         dropdown={dropdownTransaksi}
         icon={faWallet}
       />
@@ -197,14 +240,19 @@ const Layout = ({ children, clicked }) => {
       />
       <MenuWithDropdown
         clickedMenu={clickedMenu}
-        nama="Transaksi"
+        nama="Rekap Transaksi"
         dropdown={dropdownTransaksi}
         icon={faWallet}
       />
     </>
   );
   const AksesKasir = (
-    <Menu clickedMenu={clickedMenu} nama="Kasir" icon={faCashRegister} />
+    <Menu
+      clickedMenu={clickedMenu}
+      nama="Kasir"
+      icon={faCashRegister}
+      link="/Kasir"
+    />
   );
   const idUser = status === "authenticated" && session.user.idUser;
   const CheckUsername = async (Username) => {
@@ -293,6 +341,7 @@ const Layout = ({ children, clicked }) => {
                     clickedMenu={clickedMenu}
                     nama="Pengaturan User"
                     icon={faUserGear}
+                    link="/PengaturanUser"
                   />
                 )}
 

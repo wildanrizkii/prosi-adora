@@ -5,10 +5,11 @@ export default async function handler(req, res) {
     const query = req.query;
     const { no } = query;
     const queryDB =
-      "select no_detail_penjualan,item.nama as namaItem,jumlah,jenis_pelanggan,subtotal,harga_per_satuan,jenis.nama as namaJenis,satuan.nama as namaSatuan " +
+      "select no_detail_penjualan,item.nama as namaItem,jumlah,jenis_pelanggan,subtotal,harga_per_satuan,jenis.nama as namaJenis,satuan.nama as namaSatuan,total " +
       "from detail_transaksi_penjualan inner join item on item.id_item=detail_transaksi_penjualan.id_item " +
       "inner join satuan on item.id_satuan=satuan.id_satuan inner join jenis on item.id_jenis_item=jenis.id_jenis " +
-      "where no_transaksi=?";
+      "inner join transaksi_penjualan on detail_transaksi_penjualan.no_transaksi=transaksi_penjualan.no_transaksi " +
+      "where transaksi_penjualan.no_transaksi=?";
     const values = [no];
 
     try {

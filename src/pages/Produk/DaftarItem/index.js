@@ -8,13 +8,17 @@ import {
   IsiModalSuccess,
   Pagination,
 } from "../../../../components/AllComponent";
-import { Badge } from "antd";
+import { Badge, FloatButton } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { EditFilled } from "@ant-design/icons";
+import {
+  faPills,
+  faPrescriptionBottle,
+  faSearch,
+} from "@fortawesome/free-solid-svg-icons";
+import { EditFilled, PlusOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
   let semuaAkun;
@@ -248,16 +252,17 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
         <title>Daftar Item</title>
       </Head>
       <h1 className="title">Daftar Item</h1>
-      <Link
+      {/* <Link
         className="button is-link"
         href="/Produk/DaftarItem/Tambah"
         style={{ marginBottom: "10px" }}
       >
         Tambah
-      </Link>
-      <div className="field">
-        <label className="label">Jenis</label>
-        <div className="control">
+      </Link> */}
+
+      <div className="field is-grouped">
+        <div className="field control has-icons-left">
+          <label className="label">Jenis</label>
           <div className="select">
             <select onChange={onChangeJenis} value={dropdown.Jenis}>
               {jenis.map((el) => {
@@ -268,12 +273,13 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
                 );
               })}
             </select>
+            <span className="icon is-left">
+              <FontAwesomeIcon icon={faPills} />
+            </span>
           </div>
         </div>
-      </div>
-      <div className="field">
-        <label className="label">Satuan</label>
-        <div className="control">
+        <div className="field control has-icons-left">
+          <label className="label">Satuan</label>
           <div className="select">
             <select onChange={onChangeSatuan} value={dropdown.Satuan}>
               {satuan.map((el) => {
@@ -284,11 +290,15 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
                 );
               })}
             </select>
+            <span className="icon is-left">
+              <FontAwesomeIcon icon={faPrescriptionBottle} />
+            </span>
           </div>
         </div>
       </div>
+
       <div className="field">
-        <label className="label">Search by Name</label>
+        <label className="label">Pencarian dengan Nama Item</label>
         <div className="control has-icons-left has-icons-right">
           <input
             className="input"
@@ -313,20 +323,46 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
       <div className="field is-grouped is-grouped-multiline">
         {router.query.Search !== undefined && (
           <div className="control">
-            <span
-              className="tag is-medium is-rounded"
-              style={{ backgroundColor: "white", fontWeight: "bold" }}
-            >
-              {`hasil "${router.query.Search}"`}
-              <button className="delete" onClick={() => clearSearch()} />
-            </span>
+            <div className="tags has-addons">
+              <span className="tag is-medium is-success">
+                <FontAwesomeIcon
+                  icon={faSearch}
+                  style={{ marginRight: "5px" }}
+                />
+                {`"${router.query.Search}"`}
+              </span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearSearch()}
+              />
+            </div>
           </div>
         )}
-
+        {router.query.Jenis !== undefined && (
+          <div className="control">
+            <div className="tags has-addons">
+              <span className="tag is-medium is-primary">
+                <FontAwesomeIcon
+                  icon={faPills}
+                  style={{ marginRight: "5px" }}
+                />
+                {jenisDipilih.nama}
+              </span>
+              <button
+                className="button tag is-medium is-delete"
+                onClick={() => clearJenis()}
+              />
+            </div>
+          </div>
+        )}
         {router.query.Satuan !== undefined && (
           <div className="control">
             <div className="tags has-addons">
               <span className="tag is-medium is-link">
+                <FontAwesomeIcon
+                  icon={faPrescriptionBottle}
+                  style={{ marginRight: "5px" }}
+                />
                 {satuanDipilih.nama}
               </span>
               <button
@@ -336,17 +372,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
             </div>
           </div>
         )}
-        {router.query.Jenis !== undefined && (
-          <div className="control">
-            <div className="tags has-addons">
-              <span className="tag is-medium is-link">{jenisDipilih.nama}</span>
-              <button
-                className="button tag is-medium is-delete"
-                onClick={() => clearJenis()}
-              />
-            </div>
-          </div>
-        )}
+
         {(router.query.Search !== undefined ||
           router.query.Satuan !== undefined ||
           router.query.Jenis !== undefined) && (
@@ -385,6 +411,14 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
         href={router.asPath}
         currentPage={router.query.p}
         jumlah={jumlah[0].jumlah}
+      />
+      <FloatButton
+        shape="circle"
+        type="primary"
+        style={{ right: 24, width: "50px", height: "50px" }}
+        icon={<PlusOutlined />}
+        tooltip="Tambah Item"
+        onClick={() => router.push("/Produk/DaftarItem/Tambah")}
       />
       <Modal show={modal.isModalClosed === false && "is-active"}>
         {modal.isSuccess === true ? (
