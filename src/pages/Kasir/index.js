@@ -7,12 +7,10 @@ import { useRouter } from "next/router";
 export default function Kasir({
   hasil
 }) {
-  let item = [];
+
   const onClickTambah = (e) => {
-    
-    item.push(e.target.value)
-  } 
-  console.log(item[0])
+    console.log(e);
+  }
 
   let semuaData;
   const router = useRouter();
@@ -34,14 +32,13 @@ export default function Kasir({
           <td className="is-vcentered">
             <button
               className="button is-success"
-              onClick={() => onClickTambah(x.id_item)}
+              onClick={() => onClickTambah(x)}
             >
               +
             </button>
           </td>
         </tr>
       );
-      console.log(semuaData);
     });
   } catch (e) {
     semuaData = (
