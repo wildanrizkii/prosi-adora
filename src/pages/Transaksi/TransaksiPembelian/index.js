@@ -111,10 +111,12 @@ export default function TransaksiPembelian({
             <td className="is-vcentered">{x.nama}</td>
             <td className="is-vcentered">{x.jumlah}</td>
             <td className="is-vcentered">{x.namaSatuan}</td>
-            <td className="is-vcentered">
+            <td className="is-vcentered has-text-right">
               {rupiah.format(x.harga_per_satuan)}
             </td>
-            <td className="is-vcentered">{rupiah.format(x.subtotal)}</td>
+            <td className="is-vcentered has-text-right">
+              {rupiah.format(x.subtotal)}
+            </td>
           </tr>
         );
       });
@@ -183,7 +185,9 @@ export default function TransaksiPembelian({
               Detail
             </button>
           </td>
-          <td className="is-vcentered">{rupiah.format(x.total)}</td>
+          <td className="is-vcentered has-text-right">
+            {rupiah.format(x.total)}
+          </td>
         </tr>
       );
     });
@@ -578,7 +582,7 @@ export default function TransaksiPembelian({
             />
           </header>
           <section className="modal-card-body">
-            <table className="table has-text-centered">
+            <table className="table has-text-centered" align="center">
               <thead>
                 <tr>
                   <th className="has-text-centered is-vcentered">No</th>
@@ -693,8 +697,8 @@ export async function getServerSideProps(context) {
     values.push(Supplier);
   }
   if (Awal !== undefined) {
-    values.push(Awal);
-    values.push(Akhir);
+    values.push(Awal + " 00:00:00");
+    values.push(Akhir + " 23:59:59");
   }
   values.push((parseInt(p) - 1) * 10);
 
