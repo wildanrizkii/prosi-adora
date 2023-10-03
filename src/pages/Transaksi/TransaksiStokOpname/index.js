@@ -479,7 +479,7 @@ export default function TransaksiStokOpname({ hasil, jumlah, user }) {
             />
           </header>
           <section className="modal-card-body">
-            <table className="table has-text-centered">
+            <table className="table has-text-centered" align="center">
               <thead>
                 <tr>
                   <th className="has-text-centered is-vcentered">No</th>
@@ -559,8 +559,8 @@ export async function getServerSideProps(context) {
     values.push(User);
   }
   if (Awal !== undefined && Akhir !== undefined) {
-    values.push(Awal);
-    values.push(Akhir);
+    values.push(Awal + " 00:00:00");
+    values.push(Akhir + " 23:59:59");
   }
   values.push((parseInt(p) - 1) * 10);
 

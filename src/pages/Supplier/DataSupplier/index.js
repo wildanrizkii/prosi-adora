@@ -1,28 +1,20 @@
 import Layout from "../../../../components/Layout";
 import Head from "next/head";
 import handlerQuery from "../../../../lib/db";
-import Link from "next/link";
-
-import {
-  Modal,
-  IsiModalSuccess,
-  IsiModalFailed,
-} from "../../../../components/AllComponent";
 
 import axios from "axios";
-import { useState } from "react";
+
 import { useRouter } from "next/router";
-import { Badge, FloatButton } from "antd";
+import { Badge, FloatButton, notification } from "antd";
 import { EditFilled, PlusOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 export default function DataSupplier({ hasil }) {
   let semuaAkun;
+  const [api, contextHolder] = notification.useNotification();
 
-  const [modal, setModal] = useState({
-    pesan: undefined,
-    isSuccess: true,
-    isModalClosed: true,
-  });
+  const openNotificationWithIcon = (type, message, description) => {
+    api[type]({ message, description, placement: "top" });
+  };
 
   const router = useRouter();
   async function changeStatus(id, toActive) {
@@ -33,13 +25,11 @@ export default function DataSupplier({ hasil }) {
       } else if (toActive === false) {
         res = await axios.patch("/api/UpdateStatusSupplier", { id, status: 0 });
       }
-      setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
+      openNotificationWithIcon("success", "Sukses", res.data);
+      router.push(router.asPath);
     } catch (e) {
-      setModal({
-        pesan: e.response.data,
-        isSuccess: false,
-        isModalClosed: false,
-      });
+      openNotificationWithIcon("error", "Gagal", e.response.data);
+      router.push(router.asPath);
     }
   }
 
@@ -63,13 +53,7 @@ export default function DataSupplier({ hasil }) {
           <td className="is-vcentered">
             {x.status === 1 ? "Aktif" : "Non-Aktif"}
           </td>
-          <td className="is-vcentered">
-            {/* <Link
-              href={`DataSupplier/Edit/${x.id_supplier}`}
-              className="button is-success is-small"
-            >
-              Edit
-            </Link> */}
+          <td className="is-vcentered" style={{ width: "20%" }}>
             {x.statusKota !== 1 && x.status === 1 ? (
               <>
                 <Button
@@ -123,7 +107,10 @@ export default function DataSupplier({ hasil }) {
     semuaAkun = (
       <tr>
         <td colSpan="8" className="is-vcentered">
-          {hasil}
+          <div className="field">{hasil}</div>
+          <Button type="primary" onClick={() => router.reload()}>
+            Muat Ulang
+          </Button>
         </td>
       </tr>
     );
@@ -135,15 +122,7 @@ export default function DataSupplier({ hasil }) {
         <title>Data Supplier</title>
       </Head>
       <h1 className="title">Data Supplier</h1>
-
-      {/* <Link
-        className="button is-link"
-        href="DataSupplier/TambahSupplier"
-        style={{ marginBottom: "10px" }}
-      >
-        Tambah
-      </Link> */}
-
+      {contextHolder}
       <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
@@ -167,33 +146,6 @@ export default function DataSupplier({ hasil }) {
         tooltip="Tambah Data Supplier"
         onClick={() => router.push("/Supplier/DataSupplier/TambahSupplier")}
       />
-      <Modal show={modal.isModalClosed === false && "is-active"}>
-        {modal.isSuccess === true ? (
-          <IsiModalSuccess pesan={modal.pesan}>
-            <button
-              className="button is-success"
-              onClick={() => {
-                setModal({ ...modal, isModalClosed: true });
-                router.push(router.asPath);
-              }}
-            >
-              OK
-            </button>
-          </IsiModalSuccess>
-        ) : (
-          <IsiModalFailed pesan={modal.pesan}>
-            <button
-              className="button is-danger"
-              onClick={() => {
-                setModal({ ...modal, isModalClosed: true });
-                router.push(router.asPath);
-              }}
-            >
-              OK
-            </button>
-          </IsiModalFailed>
-        )}
-      </Modal>
     </>
   );
 }
