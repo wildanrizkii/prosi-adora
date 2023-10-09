@@ -1,19 +1,26 @@
 import Layout from "../../../../components/Layout";
 import Head from "next/head";
 import handlerQuery from "../../../../lib/db";
+import Link from "next/link";
+import {
+  Modal,
+  IsiModalSuccess,
+  IsiModalFailed,
+} from "../../../../components/AllComponent";
 
 import axios from "axios";
-
+import { useState } from "react";
 import { useRouter } from "next/router";
-import { Button, FloatButton, notification } from "antd";
+import { Badge, Button, FloatButton } from "antd";
 import { EditFilled, PlusOutlined } from "@ant-design/icons";
 export default function JenisItem({ hasil }) {
   let semuaAkun;
-  const [api, contextHolder] = notification.useNotification();
 
-  const openNotificationWithIcon = (type, message, description) => {
-    api[type]({ message, description, placement: "top" });
-  };
+  const [modal, setModal] = useState({
+    pesan: undefined,
+    isSuccess: true,
+    isModalClosed: true,
+  });
 
   const router = useRouter();
   async function changeStatus(id, toActive) {
@@ -24,11 +31,13 @@ export default function JenisItem({ hasil }) {
       } else if (toActive === false) {
         res = await axios.patch("/api/UpdateStatusJenis", { id, status: 0 });
       }
-      openNotificationWithIcon("success", "Sukses", res.data);
-      router.push(router.asPath);
+      setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
     } catch (e) {
-      openNotificationWithIcon("error", "Gagal", e.response.data);
-      router.push(router.asPath);
+      setModal({
+        pesan: e.response.data,
+        isSuccess: false,
+        isModalClosed: false,
+      });
     }
   }
 
@@ -48,7 +57,13 @@ export default function JenisItem({ hasil }) {
           <td className="is-vcentered">
             {x.status === 1 ? "Aktif" : "Non-Aktif"}
           </td>
-          <td className="is-vcentered" style={{ width: "20%" }}>
+          <td className="is-vcentered">
+            {/* <Link
+              href={`JenisItem/Edit/${x.id_jenis}`}
+              className="button is-success is-small"
+            >
+              Edit
+            </Link> */}
             <Button
               icon={<EditFilled />}
               onClick={() =>
@@ -84,10 +99,7 @@ export default function JenisItem({ hasil }) {
     semuaAkun = (
       <tr>
         <td colSpan="4" className="is-vcentered">
-          <div className="field">{hasil}</div>
-          <Button type="primary" onClick={() => router.reload()}>
-            Muat Ulang
-          </Button>
+          {hasil}
         </td>
       </tr>
     );
@@ -99,7 +111,15 @@ export default function JenisItem({ hasil }) {
         <title>Jenis Item</title>
       </Head>
       <h1 className="title">Jenis Item</h1>
-      {contextHolder}
+
+      {/* <Link
+        className="button is-link"
+        href="JenisItem/TambahJenis"
+        style={{ marginBottom: "10px" }}
+      >
+        Tambah
+      </Link> */}
+
       <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
@@ -119,6 +139,33 @@ export default function JenisItem({ hasil }) {
         tooltip="Tambah Jenis"
         onClick={() => router.push("/Produk/JenisItem/TambahJenis")}
       />
+      <Modal show={modal.isModalClosed === false && "is-active"}>
+        {modal.isSuccess === true ? (
+          <IsiModalSuccess pesan={modal.pesan}>
+            <button
+              className="button is-success"
+              onClick={() => {
+                setModal({ ...modal, isModalClosed: true });
+                router.push(router.asPath);
+              }}
+            >
+              OK
+            </button>
+          </IsiModalSuccess>
+        ) : (
+          <IsiModalFailed pesan={modal.pesan}>
+            <button
+              className="button is-danger"
+              onClick={() => {
+                setModal({ ...modal, isModalClosed: true });
+                router.push(router.asPath);
+              }}
+            >
+              OK
+            </button>
+          </IsiModalFailed>
+        )}
+      </Modal>
     </>
   );
 }
