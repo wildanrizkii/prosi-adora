@@ -292,7 +292,6 @@ export default function TransaksiPembelian({
     hrefBelakang.set("p", 1);
     router.push(hrefDepan + "?" + hrefBelakang.toString());
   };
-  const [state, setState] = useState("aaaaaaaaa");
 
   return (
     <>
@@ -536,8 +535,6 @@ export default function TransaksiPembelian({
         </thead>
         <tbody>{semuaData}</tbody>
       </table>
-      {state}
-      <button onClick={() => setState("bbbbbbb")}>ganti state</button>
       <div className="field">
         <p style={{ fontWeight: "bolder" }}>
           Total : {rupiah.format(sum[0].sumTotal || 0)}
