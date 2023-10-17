@@ -517,7 +517,7 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
               </div>
             </div>
           </div>
-          <div className="field">
+          {/* <div className="field">
             <label className="label ">Kembalian:</label>
             <div className="control">
               <input
@@ -527,7 +527,7 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
                 readOnly
               />
             </div>
-          </div>
+          </div> */}
           <div className="field">
             <div className="control">
               <button className="button is-danger" onClick={handleCancelClick}>
