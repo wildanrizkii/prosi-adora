@@ -1,22 +1,30 @@
 import Layout from "../../../../components/Layout";
 import Head from "next/head";
 import handlerQuery from "../../../../lib/db";
+import Link from "next/link";
+
+import {
+  Modal,
+  IsiModalSuccess,
+  IsiModalFailed,
+} from "../../../../components/AllComponent";
 
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCity, faSearch } from "@fortawesome/free-solid-svg-icons";
-import { Button, FloatButton, notification } from "antd";
+import { Button, FloatButton } from "antd";
 import { EditFilled, PlusOutlined } from "@ant-design/icons";
 export default function Kota({ hasil }) {
   let semuaAkun;
-
-  const [api, contextHolder] = notification.useNotification();
-  const openNotificationWithIcon = (type, message, description) => {
-    api[type]({ message, description, placement: "top" });
-  };
   const router = useRouter();
+
+  const [modal, setModal] = useState({
+    pesan: undefined,
+    isSuccess: true,
+    isModalClosed: true,
+  });
 
   const [filterSearch, setFilterSearch] = useState(
     router.query.Search !== undefined ? router.query.Search : ""
@@ -75,11 +83,13 @@ export default function Kota({ hasil }) {
       } else if (toActive === false) {
         res = await axios.patch("/api/UpdateStatusKota", { id, status: 0 });
       }
-      openNotificationWithIcon("success", "Sukses", res.data);
-      router.push(router.asPath);
+      setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
     } catch (e) {
-      openNotificationWithIcon("error", "Gagal", e.response.data);
-      router.push(router.asPath);
+      setModal({
+        pesan: e.response.data,
+        isSuccess: false,
+        isModalClosed: false,
+      });
     }
   }
 
@@ -99,7 +109,7 @@ export default function Kota({ hasil }) {
           <td className="is-vcentered">
             {x.status === 1 ? "Aktif" : "Non-Aktif"}
           </td>
-          <td className="is-vcentered" style={{ width: "20%" }}>
+          <td className="is-vcentered">
             <Button
               icon={<EditFilled />}
               block
@@ -132,10 +142,7 @@ export default function Kota({ hasil }) {
     semuaAkun = (
       <tr>
         <td colSpan="4" className="is-vcentered">
-          <div className="field">{hasil}</div>
-          <Button type="primary" onClick={() => router.reload()}>
-            Muat Ulang
-          </Button>
+          {hasil}
         </td>
       </tr>
     );
@@ -174,7 +181,13 @@ export default function Kota({ hasil }) {
         <title>Kota</title>
       </Head>
       <h1 className="title">Kota</h1>
-      {contextHolder}
+      {/* <Link
+        className="button is-link"
+        href="Kota/TambahKota"
+        style={{ marginBottom: "10px" }}
+      >
+        Tambah
+      </Link> */}
       <div className="field control has-icons-left">
         <label className="label">KAB/KOTA</label>
         <div className="select">
@@ -278,6 +291,33 @@ export default function Kota({ hasil }) {
         tooltip="Tambah Kota"
         onClick={() => router.push("/Supplier/Kota/TambahKota")}
       />
+      <Modal show={modal.isModalClosed === false && "is-active"}>
+        {modal.isSuccess === true ? (
+          <IsiModalSuccess pesan={modal.pesan}>
+            <button
+              className="button is-success"
+              onClick={() => {
+                setModal({ ...modal, isModalClosed: true });
+                router.push(router.asPath);
+              }}
+            >
+              OK
+            </button>
+          </IsiModalSuccess>
+        ) : (
+          <IsiModalFailed pesan={modal.pesan}>
+            <button
+              className="button is-danger"
+              onClick={() => {
+                setModal({ ...modal, isModalClosed: true });
+                router.push(router.asPath);
+              }}
+            >
+              OK
+            </button>
+          </IsiModalFailed>
+        )}
+      </Modal>
     </>
   );
 }
