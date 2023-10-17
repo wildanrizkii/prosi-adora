@@ -223,10 +223,10 @@ export default function Tambah({ dataRak, item, jumlah, time_stamp, info }) {
     </div>
   );
 
-  let index = (parseInt(router.query.p) - 1) * 10;
+  // let index = (parseInt(router.query.p) - 1) * 10;
   try {
     semuaAkun = detail.map((x, i) => {
-      index = index + 1;
+      // index = index + 1;
       return (
         <tr
           key={x.id_item}
@@ -236,7 +236,7 @@ export default function Tambah({ dataRak, item, jumlah, time_stamp, info }) {
             color: x.status === 0 ? "white" : "rgb(54,54,54)",
           }}
         >
-          <td className="is-vcentered">{index}</td>
+          <td className="is-vcentered">{x.index}</td>
           <td className="is-vcentered">{x.nama_rak}</td>
           <td className="is-vcentered">{x.nama}</td>
           <td className="is-vcentered">{x.nama_jenis}</td>
@@ -641,6 +641,7 @@ export async function getServerSideProps(context) {
 
     const getItem = await handlerQuery({ query, values });
     const item = JSON.parse(JSON.stringify(getItem));
+    let index = (parseInt(p) - 1) * 10;
     for (let i = 0; i < item.length; i++) {
       if (item[i].stok_fisik !== null) {
         item[i].status_stok_fisik = 1;
@@ -649,6 +650,8 @@ export async function getServerSideProps(context) {
         item[i].status_stok_fisik = 0;
         item[i].selisih = null;
       }
+      index++;
+      item[i].index = index;
     }
 
     const getJumlah = await handlerQuery({ query: query2, values });
