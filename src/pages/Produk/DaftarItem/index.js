@@ -1,9 +1,14 @@
 import Layout from "../../../../components/Layout";
 import Head from "next/head";
 import handlerQuery from "../../../../lib/db";
-
-import { Pagination } from "../../../../components/AllComponent";
-import { Badge, FloatButton, notification } from "antd";
+import Link from "next/link";
+import {
+  Modal,
+  IsiModalFailed,
+  IsiModalSuccess,
+  Pagination,
+} from "../../../../components/AllComponent";
+import { Badge, FloatButton } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -18,11 +23,11 @@ import { Button } from "antd";
 export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
   let semuaAkun;
 
-  const [api, contextHolder] = notification.useNotification();
-
-  const openNotificationWithIcon = (type, message, description) => {
-    api[type]({ message, description, placement: "top" });
-  };
+  const [modal, setModal] = useState({
+    pesan: undefined,
+    isSuccess: true,
+    isModalClosed: true,
+  });
 
   const router = useRouter();
 
@@ -97,11 +102,13 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
       } else if (toActive === false) {
         res = await axios.patch("/api/UpdateStatusItem", { id, status: 0 });
       }
-      openNotificationWithIcon("success", "Sukses", res.data);
-      router.push(router.asPath);
+      setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
     } catch (e) {
-      openNotificationWithIcon("error", "Gagal", e.response.data);
-      router.push(router.asPath);
+      setModal({
+        pesan: e.response.data,
+        isSuccess: false,
+        isModalClosed: false,
+      });
     }
   }
   let index = (parseInt(router.query.p) - 1) * 10;
@@ -128,7 +135,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
           <td className="is-vcentered">
             {x.status === 1 ? "Aktif" : "Non-Aktif"}
           </td>
-          <td className="is-vcentered" style={{ width: "20%" }}>
+          <td className="is-vcentered">
             {(x.statusRak !== 1 ||
               x.statusJenis !== 1 ||
               x.statusSatuan !== 1) &&
@@ -185,10 +192,7 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
     semuaAkun = (
       <tr>
         <td colSpan="10" className="is-vcentered">
-          <div className="field">{hasil}</div>
-          <Button type="primary" onClick={() => router.reload()}>
-            Muat Ulang
-          </Button>
+          {hasil}
         </td>
       </tr>
     );
@@ -248,7 +252,14 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
         <title>Daftar Item</title>
       </Head>
       <h1 className="title">Daftar Item</h1>
-      {contextHolder}
+      {/* <Link
+        className="button is-link"
+        href="/Produk/DaftarItem/Tambah"
+        style={{ marginBottom: "10px" }}
+      >
+        Tambah
+      </Link> */}
+
       <div className="field is-grouped">
         <div className="field control has-icons-left">
           <label className="label">Jenis</label>
@@ -409,6 +420,33 @@ export default function DaftarItem({ hasil, jumlah, jenis, satuan }) {
         tooltip="Tambah Item"
         onClick={() => router.push("/Produk/DaftarItem/Tambah")}
       />
+      <Modal show={modal.isModalClosed === false && "is-active"}>
+        {modal.isSuccess === true ? (
+          <IsiModalSuccess pesan={modal.pesan}>
+            <button
+              className="button is-success"
+              onClick={() => {
+                setModal({ ...modal, isModalClosed: true });
+                router.push(router.asPath);
+              }}
+            >
+              OK
+            </button>
+          </IsiModalSuccess>
+        ) : (
+          <IsiModalFailed pesan={modal.pesan}>
+            <button
+              className="button is-danger"
+              onClick={() => {
+                setModal({ ...modal, isModalClosed: true });
+                router.push(router.asPath);
+              }}
+            >
+              OK
+            </button>
+          </IsiModalFailed>
+        )}
+      </Modal>
     </>
   );
 }

@@ -8,8 +8,8 @@ import {
   Pagination,
   readableDate,
 } from "../../../../components/AllComponent";
-import { useEffect, useState } from "react";
-import { Button, FloatButton, Popover, Select, notification } from "antd";
+import { useState } from "react";
+import { Select } from "antd";
 
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -19,36 +19,22 @@ import { faReceipt } from "@fortawesome/free-solid-svg-icons";
 import { NumericFormat } from "react-number-format";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]";
-import {
-  CheckCircleOutlined,
-  CheckOutlined,
-  CloseCircleOutlined,
-  EllipsisOutlined,
-  UnorderedListOutlined,
-} from "@ant-design/icons";
+import { CheckOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
-import { Modal as Modal2 } from "antd";
 
-export default function Tambah({ dataRak, item, jumlah, time_stamp, info }) {
+export default function Tambah({ dataRak, item, jumlah, time_stamp }) {
+  console.log(item);
   let semuaAkun;
-
+  const [field, setField] = useState({
+    "No Opname": "",
+    "No Opname Checked": false,
+  });
   const [modal, setModal] = useState({
     pesan: undefined,
     isSuccess: true,
-    isOpen: false,
+    isModalClosed: true,
   });
-  const [api, contextHolder] = notification.useNotification();
-
-  const [modalInfo, setModalInfo] = useState(false);
-
-  const openNotificationWithIcon = (type, message, description) => {
-    api[type]({
-      message,
-      description,
-      placement: "top",
-    });
-  };
   const router = useRouter();
 
   const { Rak } = router.query;
@@ -62,20 +48,22 @@ export default function Tambah({ dataRak, item, jumlah, time_stamp, info }) {
 
   const { data: session, status } = useSession({ required: true });
   const idUser = status === "authenticated" && session.user.idUser;
-  const [detail, setDetail] = useState([...item]);
-  const checkSemuaOpname = () => {
-    let bener = 0;
-    for (let i = 0; i < info.length; i++) {
-      if (info[i].jumlah_dicek_per_rak === info[i].jumlah_per_rak) {
-        bener = bener + 1;
-      }
-    }
-    return bener >= 7;
-  };
-  const opnameSemua = checkSemuaOpname();
-  const submit = opnameSemua === true;
 
+  const [detail, setDetail] = useState([]);
+
+  const submit = field["No Opname Checked"] === true && detail.length > 0;
+
+  const onChangeNoOpname = async (NoOpname) => {
+    if (NoOpname === "") {
+      return "default";
+    }
+    const res = await axios.post("/api/CheckNoOpname", {
+      NoOpname,
+    });
+    return res.data;
+  };
   const onSelectRak = async (value) => {
+    setRak([...rak, value]);
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
@@ -90,11 +78,13 @@ export default function Tambah({ dataRak, item, jumlah, time_stamp, info }) {
     const duplikat = [...rak];
     const idxRakHapus = duplikat.indexOf(value);
     duplikat.splice(idxRakHapus, 1);
+    setRak(duplikat);
 
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
 
+    // hrefBelakang.delete("Rak", value.toString());
     const simpan = hrefBelakang.getAll("Rak");
     hrefBelakang.delete("Rak");
     const idx = simpan.indexOf(value.toString());
@@ -107,9 +97,22 @@ export default function Tambah({ dataRak, item, jumlah, time_stamp, info }) {
     hrefBelakang.set("p", 1);
 
     router.push(hrefDepan + "?" + hrefBelakang.toString());
+    // router.push(hrefDepan + "?" + hrefBelakang.toString());
   };
 
+  const onChangeRak = (value) => {
+    setRak(value);
+    const bagi = router.asPath.split("?");
+    const hrefDepan = bagi[0];
+    const hrefBelakang = new URLSearchParams(bagi[1]);
+
+    hrefBelakang.append("Rak", 1);
+    hrefBelakang.append("Rak", 2);
+
+    router.push(hrefDepan + "?" + hrefBelakang.toString());
+  };
   const onClear = (value) => {
+    setDetail([]);
     const bagi = router.asPath.split("?");
     const hrefDepan = bagi[0];
     const hrefBelakang = new URLSearchParams(bagi[1]);
@@ -119,44 +122,29 @@ export default function Tambah({ dataRak, item, jumlah, time_stamp, info }) {
 
     router.push(hrefDepan + "?" + hrefBelakang.toString());
   };
-  const onChangeJumlah = (stokFisik, index) => {
-    const arrBaru = [...detail];
+  const onChangeJumlah = (index, stokFisik) => {
+    const arrBaru = [...item];
 
-    let hasil;
-    if (stokFisik !== undefined) {
-      hasil = {
-        ...arrBaru[index],
-        stok_fisik: stokFisik,
-        selisih: stokFisik - arrBaru[index].stok,
-      };
-    } else {
-      hasil = {
-        ...arrBaru[index],
-        stok_fisik: stokFisik,
-        selisih: undefined,
-      };
-    }
-
+    const hasil = {
+      ...arrBaru[index],
+      stok_fisik: stokFisik,
+    };
     arrBaru[index] = hasil;
-    setDetail(arrBaru);
   };
   const onSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const res = await axios.post("/api/TambahTransaksiOpname", {
+        No_Opname: field["No Opname"],
         Id_User: idUser,
+        detail,
       });
-      setModal({
-        pesan: res.data,
-        isSuccess: true,
-        isOpen: true,
-      });
+      setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
     } catch (e) {
       setModal({
         pesan: e.response.data,
         isSuccess: false,
-        isOpen: true,
+        isModalClosed: false,
       });
     }
   };
@@ -164,68 +152,9 @@ export default function Tambah({ dataRak, item, jumlah, time_stamp, info }) {
   const filterOption = (input, option) =>
     (option?.nama_rak ?? "").toLowerCase().includes(input.toLowerCase());
 
-  const simpanSementara = async (id_item, idUser, stok_fisik) => {
-    if (stok_fisik !== null && stok_fisik !== undefined) {
-      try {
-        const res = await axios.post("/api/TambahDetailOpnameSementara", {
-          id_item,
-          idUser,
-          stok_fisik,
-        });
-        router.push(router.asPath);
-        openNotificationWithIcon("success", "Sukses", res.data);
-      } catch (e) {
-        openNotificationWithIcon("error", "Gagal", e.response.data);
-      }
-    } else {
-      openNotificationWithIcon(
-        "warning",
-        "Gagal",
-        "Stok Fisik tidak bisa dikosongkan"
-      );
-    }
-  };
-  const updateSementara = async (id_item, idUser, stok_fisik) => {
-    if (stok_fisik !== null && stok_fisik !== undefined) {
-      try {
-        const res = await axios.patch("/api/TambahDetailOpnameSementara", {
-          id_item,
-          idUser,
-          stok_fisik,
-        });
-        router.push(router.asPath);
-        openNotificationWithIcon("success", "Sukses", res.data);
-      } catch (e) {
-        openNotificationWithIcon("error", "Gagal", e.response.data);
-      }
-    } else {
-      openNotificationWithIcon(
-        "warning",
-        "Gagal",
-        "Stok Fisik tidak bisa dikosongkan"
-      );
-    }
-  };
-  const ubahStatusStokFisik = (index) => {
-    const arr = [...detail];
-    arr[index].status_stok_fisik = 2;
-    setDetail(arr);
-  };
-  const contentStatus_0 = (
-    <div>
-      <p>Tekan Enter atau klik Simpan untuk menyimpan</p>
-    </div>
-  );
-  const contentStatus_2 = (
-    <div>
-      <p>Tekan Enter atau klik Simpan untuk menyimpan</p>
-      <p>Tekan Esc untuk membatalkan</p>
-    </div>
-  );
-
   let index = (parseInt(router.query.p) - 1) * 10;
   try {
-    semuaAkun = detail.map((x, i) => {
+    semuaAkun = item.map((x) => {
       index = index + 1;
       return (
         <tr
@@ -241,122 +170,38 @@ export default function Tambah({ dataRak, item, jumlah, time_stamp, info }) {
           <td className="is-vcentered">{x.nama}</td>
           <td className="is-vcentered">{x.nama_jenis}</td>
           <td className="is-vcentered">{x.nama_satuan}</td>
+          <td className="is-vcentered">{x.stok}</td>
           <td className="is-vcentered">
-            <NumericFormat
-              displayType="text"
-              value={x.stok}
-              thousandSeparator="."
-              decimalSeparator=","
-            />
-          </td>
-          <td className="is-vcentered">
-            {x.status_stok_fisik === 1 ? (
+            {x.stok_fisik !== null ? (
+              x.stok_fisik
+            ) : (
               <NumericFormat
-                displayType="text"
+                allowNegative={false}
+                thousandSeparator="."
+                decimalSeparator=","
+                decimalScale={0}
+                className="input has-text-centered"
                 value={x.stok_fisik}
-                thousandSeparator="."
-                decimalSeparator=","
-              />
-            ) : x.status_stok_fisik === 0 ? (
-              <Popover content={contentStatus_0} trigger="focus">
-                <NumericFormat
-                  allowLeadingZeros={false}
-                  allowNegative={false}
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  decimalScale={0}
-                  className="input has-text-centered"
-                  value={x.stok_fisik}
-                  onValueChange={(value) => {
-                    onChangeJumlah(value.floatValue, i);
-                  }}
-                  isAllowed={(values) =>
-                    values.floatValue === undefined || values.floatValue >= 0
-                  }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      simpanSementara(x.id_item, idUser, x.stok_fisik);
-                    }
-                  }}
-                />
-              </Popover>
-            ) : (
-              <Popover content={contentStatus_2} trigger="focus">
-                <NumericFormat
-                  title="Tekan Esc untuk membatalkan"
-                  allowLeadingZeros={false}
-                  allowNegative={false}
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  decimalScale={0}
-                  className="input has-text-centered"
-                  value={x.stok_fisik}
-                  onValueChange={(value) => {
-                    onChangeJumlah(value.floatValue, i);
-                  }}
-                  isAllowed={(values) =>
-                    values.floatValue === undefined || values.floatValue >= 0
-                  }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      updateSementara(x.id_item, idUser, x.stok_fisik);
-                    }
-                    if (e.key === "Escape") {
-                      router.push(router.asPath);
-                    }
-                  }}
-                />
-              </Popover>
-            )}
-          </td>
-          <td className="is-vcentered">
-            {x.selisih !== undefined && (
-              <NumericFormat
-                displayType="text"
-                value={x.selisih}
-                thousandSeparator="."
-                decimalSeparator=","
+                onValueChange={(value) => {
+                  onChangeJumlah(value.floatValue, index);
+                }}
+                isAllowed={(values) =>
+                  values.floatValue === undefined || values.floatValue > 0
+                }
               />
             )}
           </td>
           <td className="is-vcentered">
-            {x.status_stok_fisik === 1 ? (
-              <CheckOutlined style={{ color: "green" }} />
-            ) : x.status_stok_fisik === 2 ? (
-              <EllipsisOutlined style={{ color: "blue" }} />
-            ) : undefined}
+            {x.stok_fisik !== null ? x.stok_fisik - x.stok : ""}
           </td>
           <td className="is-vcentered">
-            {x.status_stok_fisik === 1 ? (
-              <button
-                className="button is-danger"
-                onClick={(e) => {
-                  e.preventDefault();
-                  ubahStatusStokFisik(i);
-                }}
-              >
-                Ubah
-              </button>
-            ) : x.status_stok_fisik === 0 ? (
-              <button
-                className="button is-primary"
-                onClick={(e) => {
-                  e.preventDefault();
-                  simpanSementara(x.id_item, idUser, x.stok_fisik);
-                }}
-              >
-                Simpan
-              </button>
+            {x.stok_fisik !== null && <CheckOutlined color="green" />}
+          </td>
+          <td className="is-vcentered">
+            {x.stok_fisik === null ? (
+              <button className="button is-primary">Simpan</button>
             ) : (
-              <button
-                className="button is-primary"
-                onClick={(e) => {
-                  e.preventDefault();
-                  updateSementara(x.id_item, idUser, x.stok_fisik);
-                }}
-              >
-                Simpan
-              </button>
+              <button className="button is-danger">Ubah</button>
             )}
           </td>
         </tr>
@@ -371,40 +216,40 @@ export default function Tambah({ dataRak, item, jumlah, time_stamp, info }) {
       </tr>
     );
   }
-
-  useEffect(() => {
-    setDetail(item);
-  }, [item]);
-
-  useEffect(() => {
-    setRak(router.query.Rak !== undefined ? isi : []);
-  }, [router.query.Rak]);
-
   return (
     <>
       <Head>
         <title>Tambah Transaksi Stok Opname</title>
       </Head>
       <h1 className="title">Tambah Transaksi Stok Opname</h1>
-      {contextHolder}
-      <div className="field">
-        <label className="label">Rak</label>
-        <Select
-          mode="multiple"
-          allowClear
-          style={{ width: "100%" }}
-          placeholder="Pilih Rak"
-          fieldNames={{ label: "nama_rak", value: "id_rak" }}
-          filterOption={filterOption}
-          options={dataRak}
-          size="large"
-          onSelect={(value) => onSelectRak(value)}
-          onDeselect={(value) => onDeselectRak(value)}
-          onClear={onClear}
-          value={rak}
+      <form onSubmit={onSubmit}>
+        <Field
+          nama="No Opname"
+          value={field["No Opname"]}
+          onChange={setField}
+          IconLeft={faReceipt}
+          field={field}
+          maxLength="50"
+          fungsiCheck={onChangeNoOpname}
         />
-      </div>
-      <div className="field">
+        <div className="field">
+          <label className="label">Rak</label>
+          <Select
+            mode="multiple"
+            allowClear
+            style={{ width: "100%" }}
+            placeholder="Pilih Rak"
+            fieldNames={{ label: "nama_rak", value: "id_rak" }}
+            filterOption={filterOption}
+            options={dataRak}
+            size="large"
+            onSelect={(value) => onSelectRak(value)}
+            onDeselect={(value) => onDeselectRak(value)}
+            // onChange={(value) => onChangeRak(value)}
+            onClear={onClear}
+            value={rak}
+          />
+        </div>
         {time_stamp[0].time_stamp !== null ? (
           <div style={{ fontStyle: "italic" }}>
             {`Terakhir dikerjakan pada ${readableDate(
@@ -412,111 +257,37 @@ export default function Tambah({ dataRak, item, jumlah, time_stamp, info }) {
             )}`}
           </div>
         ) : undefined}
-      </div>
-      <div className="field">
-        <table className="table has-text-centered is-fullwidth">
-          <thead>
-            <tr>
-              <th className="has-text-centered is-vcentered">No</th>
-              <th className="has-text-centered is-vcentered">Rak</th>
-              <th className="has-text-centered is-vcentered">Nama Item</th>
-              <th className="has-text-centered is-vcentered">Jenis</th>
-              <th className="has-text-centered is-vcentered">Satuan</th>
-              <th className="has-text-centered is-vcentered">Stok Sistem</th>
-              <th className="has-text-centered is-vcentered">Stok Fisik</th>
-              <th className="has-text-centered is-vcentered">Selisih</th>
-              <th className="has-text-centered is-vcentered">Status</th>
-              <th className="has-text-centered is-vcentered">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>{semuaAkun}</tbody>
-        </table>
-        <Pagination
-          href={router.asPath}
-          currentPage={router.query.p}
-          jumlah={jumlah[0].jumlah}
-        />
-      </div>
-
-      <Modal2
-        title="Jumlah Item yang sudah diopname pada tiap rak"
-        open={modalInfo}
-        footer={[]}
-        onCancel={() => setModalInfo(false)}
-      >
-        <div>[Rak] [Jumlah Item yang sudah diopname]/[Jumlah Item di Rak]</div>
-        {info.map((x) => {
-          return (
-            <div style={{ fontWeight: "bold" }} key={x.id_rak}>
-              {`${x.nama_rak} ${x.jumlah_dicek_per_rak}/${x.jumlah_per_rak}`}
-              {x.jumlah_per_rak === x.jumlah_dicek_per_rak ? (
-                <CheckCircleOutlined
-                  style={{ color: "green", marginLeft: "10px" }}
-                />
-              ) : (
-                <CloseCircleOutlined
-                  style={{ color: "red", marginLeft: "10px" }}
-                />
-              )}
-            </div>
-          );
-        })}
-      </Modal2>
-      <Modal2
-        open={modal.isOpen}
-        title={modal.pesan}
-        centered
-        footer={null}
-        closeIcon={false}
-        width="50vw"
-        style={{ textAlign: "center" }}
-      >
         <div className="field">
-          {modal.isSuccess === true ? (
-            <CheckCircleOutlined style={{ color: "green", fontSize: "50px" }} />
-          ) : (
-            <CloseCircleOutlined style={{ color: "red", fontSize: "50px" }} />
-          )}
+          <label className="label">Detail</label>
+          <table className="table has-text-centered is-fullwidth">
+            <thead>
+              <tr>
+                <th className="has-text-centered is-vcentered">No</th>
+                <th className="has-text-centered is-vcentered">Rak</th>
+                <th className="has-text-centered is-vcentered">Nama Item</th>
+                <th className="has-text-centered is-vcentered">Jenis</th>
+                <th className="has-text-centered is-vcentered">Satuan</th>
+                <th className="has-text-centered is-vcentered">Stok Sistem</th>
+                <th className="has-text-centered is-vcentered">Stok Fisik</th>
+                <th className="has-text-centered is-vcentered">Selisih</th>
+                <th className="has-text-centered is-vcentered">Status</th>
+                <th className="has-text-centered is-vcentered">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>{semuaAkun}</tbody>
+          </table>
+
+          <button className="button is-link" disabled={!submit}>
+            Submit
+          </button>
         </div>
-        {modal.isSuccess === true ? (
-          <Button
-            key="Kembali"
-            type="primary"
-            onClick={() => router.push("/Transaksi/TransaksiStokOpname?p=1")}
-          >
-            Kembali Ke halaman Transaksi Stok Opname
-          </Button>
-        ) : (
-          <Button
-            type="primary"
-            danger
-            onClick={() => setModal({ ...modal, isOpen: false })}
-          >
-            OK
-          </Button>
-        )}
-      </Modal2>
-
-      {submit === true && (
-        <FloatButton
-          shape="circle"
-          type="primary"
-          icon={<CheckOutlined />}
-          style={{ right: 24, bottom: 105, width: "50px", height: "50px" }}
-          tooltip="Submit"
-          onClick={onSubmit}
-        />
-      )}
-
-      <FloatButton
-        shape="circle"
-        type="primary"
-        style={{ right: 24, width: "50px", height: "50px" }}
-        icon={<UnorderedListOutlined />}
-        tooltip="Info Opname"
-        onClick={() => setModalInfo(true)}
+      </form>
+      <Pagination
+        href={router.asPath}
+        currentPage={router.query.p}
+        jumlah={jumlah[0].jumlah}
       />
-      {/* <Modal show={modal.isModalClosed === false && "is-active"}>
+      <Modal show={modal.isModalClosed === false && "is-active"}>
         {modal.isSuccess === true ? (
           <IsiModalSuccess pesan={modal.pesan}>
             <button
@@ -543,7 +314,7 @@ export default function Tambah({ dataRak, item, jumlah, time_stamp, info }) {
             </button>
           </IsiModalFailed>
         )}
-      </Modal> */}
+      </Modal>
     </>
   );
 }
@@ -604,35 +375,6 @@ export async function getServerSideProps(context) {
     "select time_stamp from transaksi_opname_temp where idUser=?";
   const valuesLastUpdated = [idUser];
 
-  // const queryJumlahRak =
-  //   "SELECT rak.id_rak,rak.nama_rak,count(item.id_item) as jumlah_per_rak " +
-  //   "from rak left join item on item.id_rak=rak.id_rak and item.status=1 " +
-  //   "where rak.status=1 " +
-  //   "group by rak.id_rak";
-
-  // const queryDicekPerRak =
-  //   "SELECT rak.id_rak,rak.nama_rak,count(a.id_item) as jumlah_dicek_per_rak " +
-  //   "from (select id_item,stok_fisik,idUser from detail_opname_temp inner join " +
-  //   "transaksi_opname_temp on transaksi_opname_temp.id_opname_temp=detail_opname_temp.id_opname_temp where idUser=?)as a " +
-  //   "inner join item on item.id_item=a.id_item right join rak on item.id_rak=rak.id_rak " +
-  //   "where rak.status=1 " +
-  //   "group by rak.id_rak";
-
-  const queryInfo =
-    "select hasil1.id_rak,hasil1.nama_rak,hasil1.jumlah_per_rak,hasil2.jumlah_dicek_per_rak from " +
-    "(SELECT rak.id_rak,rak.nama_rak,count(item.id_item) as jumlah_per_rak " +
-    "from rak left join item on item.id_rak=rak.id_rak and item.status=1 " +
-    "where rak.status=1 " +
-    "group by rak.id_rak)as hasil1 " +
-    "inner join " +
-    "(SELECT rak.id_rak,rak.nama_rak,count(a.id_item) as jumlah_dicek_per_rak " +
-    "from (select id_item,stok_fisik,idUser from detail_opname_temp inner join " +
-    "transaksi_opname_temp on transaksi_opname_temp.id_opname_temp=detail_opname_temp.id_opname_temp where idUser=?)as a " +
-    "inner join item on item.id_item=a.id_item right join rak on item.id_rak=rak.id_rak " +
-    "where rak.status=1 " +
-    "group by rak.id_rak)as hasil2 on hasil1.id_rak=hasil2.id_rak ";
-
-  const valuesInfo = [idUser];
   try {
     await handlerQuery({ query: queryInsert, values: valuesInsert });
 
@@ -641,15 +383,6 @@ export async function getServerSideProps(context) {
 
     const getItem = await handlerQuery({ query, values });
     const item = JSON.parse(JSON.stringify(getItem));
-    for (let i = 0; i < item.length; i++) {
-      if (item[i].stok_fisik !== null) {
-        item[i].status_stok_fisik = 1;
-        item[i].selisih = item[i].stok_fisik - item[i].stok;
-      } else {
-        item[i].status_stok_fisik = 0;
-        item[i].selisih = null;
-      }
-    }
 
     const getJumlah = await handlerQuery({ query: query2, values });
     const jumlah = JSON.parse(JSON.stringify(getJumlah));
@@ -659,20 +392,12 @@ export async function getServerSideProps(context) {
       values: valuesLastUpdated,
     });
     const time_stamp = JSON.parse(JSON.stringify(getLastUpdated));
-
-    const getInfo = await handlerQuery({
-      query: queryInfo,
-      values: valuesInfo,
-    });
-    const info = JSON.parse(JSON.stringify(getInfo));
-
     return {
       props: {
         dataRak,
         item,
         jumlah,
         time_stamp,
-        info,
       },
     };
   } catch (e) {

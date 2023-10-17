@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import Layout from "../../../../components/Layout";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import dayjs from "dayjs";
 import axios from "axios";
 import handlerQuery from "../../../../lib/db";
@@ -109,12 +109,10 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
             <td className="is-vcentered">{x.namaJenis}</td>
             <td className="is-vcentered">{x.jumlah}</td>
             <td className="is-vcentered">{x.namaSatuan}</td>
-            <td className="is-vcentered has-text-right">
+            <td className="is-vcentered">
               {rupiah.format(x.harga_per_satuan)}
             </td>
-            <td className="is-vcentered has-text-right">
-              {rupiah.format(x.subtotal)}
-            </td>
+            <td className="is-vcentered">{rupiah.format(x.subtotal)}</td>
             <td className="is-vcentered">{x.jenis_pelanggan}</td>
           </tr>
         );
@@ -163,12 +161,8 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
           <td className="is-vcentered">{x.no_transaksi}</td>
           <td className="is-vcentered">{readableDate(x.time_stamp)}</td>
           <td className="is-vcentered">{x.username}</td>
-          <td className="is-vcentered has-text-right">
-            {rupiah.format(x.biaya_racik)}
-          </td>
-          <td className="is-vcentered has-text-right">
-            {rupiah.format(x.diskon)}
-          </td>
+          <td className="is-vcentered">{rupiah.format(x.biaya_racik)}</td>
+          <td className="is-vcentered">{rupiah.format(x.diskon)}</td>
           <td className="is-vcentered">
             <button
               className="button is-success"
@@ -177,9 +171,7 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
               Detail
             </button>
           </td>
-          <td className="is-vcentered has-text-right">
-            {rupiah.format(x.total)}
-          </td>
+          <td className="is-vcentered">{rupiah.format(x.total)}</td>
         </tr>
       );
     });
@@ -494,7 +486,7 @@ export default function TransaksiPenjualan({ hasil, sum, user, jumlah }) {
             />
           </header>
           <section className="modal-card-body">
-            <table className="table has-text-centered" align="center">
+            <table className="table has-text-centered">
               <thead>
                 <tr>
                   <th className="has-text-centered is-vcentered">No</th>
@@ -588,8 +580,8 @@ export async function getServerSideProps(context) {
     values.push(User);
   }
   if (Awal !== undefined && Akhir !== undefined) {
-    values.push(Awal + " 00:00:00");
-    values.push(Akhir + " 23:59:59");
+    values.push(Awal);
+    values.push(Akhir);
   }
   values.push((parseInt(p) - 1) * 10);
 

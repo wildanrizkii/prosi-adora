@@ -273,7 +273,7 @@ export default function Tambah({ supplier, item }) {
                     <td className="is-vcentered">{x.Jenis}</td>
                     <td className="is-vcentered">{x.Satuan}</td>
                     <td className="is-vcentered">{x.Margin}</td>
-                    <td className="is-vcentered" style={{ width: "10%" }}>
+                    <td className="is-vcentered">
                       <NumericFormat
                         allowNegative={false}
                         thousandSeparator="."
@@ -290,13 +290,13 @@ export default function Tambah({ supplier, item }) {
                         }
                       />
                     </td>
-                    <td className="is-vcentered" style={{ width: "20%" }}>
+                    <td className="is-vcentered">
                       <NumericFormat
                         allowNegative={false}
                         thousandSeparator="."
                         decimalSeparator=","
                         decimalScale={0}
-                        className="input has-text-centered has-text-right"
+                        className="input has-text-centered"
                         value={x.Harga_Beli}
                         onValueChange={(value) => {
                           onChangeHarga(value.floatValue, index);
@@ -309,7 +309,7 @@ export default function Tambah({ supplier, item }) {
                         }
                       />
                     </td>
-                    <td className="is-vcentered has-text-right">
+                    <td className="is-vcentered">
                       {!isNaN(x.Subtotal)
                         ? rupiah.format(x.Subtotal)
                         : undefined}

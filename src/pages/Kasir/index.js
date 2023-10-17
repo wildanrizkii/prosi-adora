@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import Layout from "../../../components/Layout";
 import Head from "next/head";
 import handlerQuery from "../../../lib/db";
@@ -7,13 +8,19 @@ import {
   Modal,
   IsiModalSuccess,
   IsiModalFailed,
+  Pagination,
 } from "../../../components/AllComponent";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSquareMinus,
+  faSquarePlus,
+} from "@fortawesome/free-regular-svg-icons";
 
-export default function Kasir({ hasil, stokInfo }) {
+export default function Kasir({ hasil, stokInfo, jumlah }) {
   const [selectedItems, setSelectedItems] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
   const [itemQuantities, setItemQuantities] = useState({});
-  const [customerType, setCustomerType] = useState("umum"); // Pelanggan: umum atau resep
+  const [customerType, setCustomerType] = useState(""); // Pelanggan: umum atau resep
   const [discountPercentage, setDiscountPercentage] = useState(0); // Potongan dalam persen
   const [totalBeforeDiscount, setTotalBeforeDiscount] = useState(0); // Total sebelum potongan
   const [paymentAmount, setPaymentAmount] = useState(0); // Jumlah bayar dari kasir
@@ -24,6 +31,12 @@ export default function Kasir({ hasil, stokInfo }) {
     isSuccess: true,
     isModalClosed: true,
   });
+  const [compoundingFee, setCompoundingFee] = useState(0);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [filteredItems, setFilteredItems] = useState(hasil);
+
+  const router = useRouter();
 
   const onClickTambah = (item) => {
     const newItemQuantities = { ...itemQuantities };
@@ -71,15 +84,43 @@ export default function Kasir({ hasil, stokInfo }) {
     setSubtotal(newSubtotal);
   };
 
+  const formatRupiah = (number) => {
+    if (typeof number !== "number") {
+      return "Rp 0";
+    }
+
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(number);
+  };
+
   // Menampilkan item yang telah dipilih dalam tabel "Daftar Beli"
   const daftarBeli = selectedItems.map((item, index) => (
     <tr key={item.id_item}>
       <td>{index + 1}</td>
       <td>{item.id_item}</td>
       <td>{item.nama_item}</td>
-      <td>{item.harga}</td>
-      <td>{itemQuantities[item.id_item]}</td>
-      <td>{item.harga * itemQuantities[item.id_item]}</td>
+      <td>{formatRupiah(item.harga)}</td>
+      <td className="is-flex">
+        <span className="icon is-left">
+          <FontAwesomeIcon
+            icon={faSquareMinus}
+            onClick={() => onClickHapus(item)}
+            className="is-clickable"
+          />
+        </span>
+        {itemQuantities[item.id_item]}
+        <span className="icon is-left">
+          <FontAwesomeIcon
+            icon={faSquarePlus}
+            onClick={() => onClickTambah(item)}
+            className=""
+          />
+        </span>
+      </td>
+      <td>{formatRupiah(item.harga * itemQuantities[item.id_item])}</td>
       <td>
         <button className="button is-danger" onClick={() => onClickHapus(item)}>
           Hapus
@@ -89,7 +130,7 @@ export default function Kasir({ hasil, stokInfo }) {
   ));
 
   // Menampilkan item yang tersedia dalam tabel "Daftar Item"
-  const daftarItem = hasil.map((x, index) => (
+  const daftarItem = filteredItems.map((x, index) => (
     <tr key={x.id_item}>
       <td className="is-vcentered">{index + 1}</td>
       <td className="is-vcentered">{x.id_item}</td>
@@ -97,7 +138,7 @@ export default function Kasir({ hasil, stokInfo }) {
       <td className="is-vcentered">{x.stok}</td>
       <td className="is-vcentered">{x.nama_satuan}</td>
       <td className="is-vcentered">{x.nama_jenis}</td>
-      <td className="is-vcentered">{x.harga}</td>
+      <td className="is-vcentered">{formatRupiah(x.harga)}</td>
       <td className="is-vcentered">{x.nama_rak}</td>
       <td className="is-vcentered">-</td>
       <td>
@@ -111,7 +152,9 @@ export default function Kasir({ hasil, stokInfo }) {
   const calculateTotalBeforeDiscount = () => {
     const total = selectedItems.reduce(
       (acc, selectedItem) =>
-        acc + selectedItem.harga * itemQuantities[selectedItem.id_item],
+        acc +
+        selectedItem.harga * itemQuantities[selectedItem.id_item] +
+        (customerType === "resep" ? compoundingFee : 0),
       0
     );
     return total;
@@ -119,7 +162,13 @@ export default function Kasir({ hasil, stokInfo }) {
 
   const calculateTotalAfterDiscount = () => {
     const totalBeforeDiscount = calculateTotalBeforeDiscount();
-    const discountAmount = (discountPercentage / 100) * totalBeforeDiscount;
+    let effectiveDiscount = discountPercentage;
+
+    if (effectiveDiscount > 100) {
+      effectiveDiscount = 100;
+    }
+
+    const discountAmount = (effectiveDiscount / 100) * totalBeforeDiscount;
     const totalAfterDiscount = totalBeforeDiscount - discountAmount;
     return totalAfterDiscount;
   };
@@ -129,15 +178,52 @@ export default function Kasir({ hasil, stokInfo }) {
   };
 
   const handleCustomerTypeChange = (e) => {
+    setSelectedItems([]);
     setCustomerType(e.target.value);
+
+    if (e.target.value === "umum") {
+      setCompoundingFee(0);
+    }
+
+    const filteredItemsByCustomerType = hasil.filter((item) => {
+      if (e.target.value === "umum") {
+        return item.nama_jenis === "UMUM";
+      } else if (e.target.value === "resep") {
+        return item.nama_jenis === "KERAS";
+      } else {
+        return true;
+      }
+    });
+
+    const filteredItems = filteredItemsByCustomerType.filter((item) =>
+      item.nama_item.toLowerCase().includes(searchKeyword.toLowerCase())
+    );
+
+    setFilteredItems(filteredItems);
   };
 
   const handleDiscountPercentageChange = (e) => {
-    setDiscountPercentage(Number(e.target.value));
+    let newDiscountPercentage = Number(e.target.value);
+
+    if (newDiscountPercentage > 100) {
+      newDiscountPercentage = 100;
+    }
+
+    setDiscountPercentage(newDiscountPercentage);
   };
 
   const handlePaymentAmountChange = (e) => {
-    setPaymentAmount(Number(e.target.value));
+    const inputValue = e.target.value;
+
+    const numericValue = parseFloat(
+      inputValue.replace(/[^\d,]/g, "").replace(/,/g, ".")
+    );
+
+    if (!isNaN(numericValue)) {
+      setPaymentAmount(numericValue);
+    } else {
+      setPaymentAmount(0);
+    }
   };
 
   const handleCancelClick = () => {
@@ -169,6 +255,45 @@ export default function Kasir({ hasil, stokInfo }) {
     openConfirmationModal();
   };
 
+  const handleCompoundingFeeChange = (e) => {
+    const inputValue = e.target.value;
+
+    const numericValue = parseFloat(
+      inputValue.replace(/[^\d,]/g, "").replace(/,/g, ".")
+    );
+
+    if (!isNaN(numericValue) && numericValue <= 10000) {
+      setCompoundingFee(numericValue);
+    } else if (!isNaN(numericValue) && numericValue > 10000) {
+      setCompoundingFee(10000);
+    } else {
+      setCompoundingFee(0);
+    }
+  };
+
+  // const generateTransactionNumber = async () => {
+  //   try {
+  //     // Mengambil nomor terakhir dari database
+  //     const query =
+  //       "SELECT MAX(no_transaksi) as max_no_transaksi FROM transaksi_penjualan";
+  //     const result = await handlerQuery({ query });
+
+  //     let nextNumber = 1; // Nilai default jika tidak ada data di database
+
+  //     if (result && result.length > 0 && result[0].max_no_transaksi !== null) {
+  //       nextNumber = result[0].max_no_transaksi + 1;
+  //     }
+
+  //     // Format nomor transaksi
+  //     const transactionNumber = `no_${nextNumber}`; // Modify the format here
+
+  //     return transactionNumber;
+  //   } catch (error) {
+  //     console.error("Gagal menghasilkan nomor transaksi:", error);
+  //     return null;
+  //   }
+  // };
+
   const handleConfirmPayment = async () => {
     try {
       for (const selectedItem of selectedItems) {
@@ -178,23 +303,51 @@ export default function Kasir({ hasil, stokInfo }) {
         );
       }
 
-      closeConfirmationModal();
+      const transactionNumber = "no_14";
 
-      // setSelectedItems([]);
-      // setSubtotal(0);
-      // setItemQuantities({});
-      // setCustomerType("umum");
-      // setDiscountPercentage(0);
-      // setTotalBeforeDiscount(0);
-      // setPaymentAmount(0);
-      // setChangeAmount(0);
+      const transactionData = {
+        transactionNumber,
+        timestamp: new Date(),
+        totalBeforeDiscount: calculateTotalBeforeDiscount(),
+        compoundingFee,
+        discount: discountPercentage,
+        idUser: 1,
+      };
+
+      const apiUrl = "/api/TransaksiPenjualan";
+      const response = await axios.post(apiUrl, transactionData);
+
+      if (response.status === 200) {
+        setTimeout(function () {
+          setModal({ isModalClosed: true });
+        }, 2000);
+        setTimeout(function () {
+          window.location.reload();
+        }, 2000);
+
+        closeConfirmationModal();
+        setSelectedItems([]);
+        setSubtotal(0);
+        setItemQuantities({});
+        setCustomerType("umum");
+        setDiscountPercentage(0);
+        setTotalBeforeDiscount(0);
+        setPaymentAmount(0);
+        setChangeAmount(0);
+      } else {
+        setModal({
+          pesan: "Transaksi gagal",
+          isSuccess: false,
+          isModalClosed: false,
+        });
+      }
     } catch (error) {
       console.error("Gagal mengurangi stok item:", error);
     }
   };
 
   const reduceItemStock = async (itemId, quantity) => {
-    const apiUrl = "/api/KurangStok"; // Adjust the API URL as needed
+    const apiUrl = "/api/KurangStok";
     const requestBody = { itemId, quantity };
 
     try {
@@ -270,15 +423,38 @@ export default function Kasir({ hasil, stokInfo }) {
               </div>
             </div>
             <div className="column is-6">
-              <div className="field">
+              <div className="field is-hidden">
                 <label className="label">Total Sebelum Potongan:</label>
                 <div className="control">
                   <input
                     type="text"
                     className="input"
-                    value={totalBeforeDiscount}
+                    value={formatRupiah(totalBeforeDiscount)}
                     readOnly
                   />
+                </div>
+              </div>
+              <div className="field">
+                <label className="label">Tipe Pembayaran::</label>
+                <div className="control">
+                  <label className="radio">
+                    <input
+                      type="radio"
+                      value="cash"
+                      checked={selectedPaymentMethod === "cash"}
+                      onChange={() => setSelectedPaymentMethod("cash")}
+                    />
+                    Cash
+                  </label>
+                  <label className="radio">
+                    <input
+                      type="radio"
+                      value="noncash"
+                      checked={selectedPaymentMethod === "non-cash"}
+                      onChange={() => setSelectedPaymentMethod("non-cash")}
+                    />
+                    Non-Cash
+                  </label>
                 </div>
               </div>
             </div>
@@ -297,6 +473,23 @@ export default function Kasir({ hasil, stokInfo }) {
                 </div>
               </div>
             </div>
+            {customerType === "resep" && (
+              <div className="column is-6">
+                <div className="field">
+                  <label className="label">Biaya Racik:</label>
+                  <div className="control">
+                    <input
+                      type="text"
+                      className="input"
+                      value={formatRupiah(compoundingFee)}
+                      onChange={handleCompoundingFeeChange}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="columns">
             <div className="column is-6">
               <div className="field">
                 <label className="label">Total Tagihan:</label>
@@ -304,31 +497,33 @@ export default function Kasir({ hasil, stokInfo }) {
                   <input
                     type="text"
                     className="input"
-                    value={calculateTotalAfterDiscount()}
+                    value={formatRupiah(calculateTotalAfterDiscount())}
                     readOnly
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="column is-6">
+              <div className="field">
+                <label className="label">Bayar:</label>
+                <div className="control">
+                  <input
+                    type="text"
+                    className="input"
+                    value={formatRupiah(paymentAmount)}
+                    onChange={handlePaymentAmountChange}
                   />
                 </div>
               </div>
             </div>
           </div>
           <div className="field">
-            <label className="label">Bayar:</label>
+            <label className="label ">Kembalian:</label>
             <div className="control">
               <input
                 type="text"
                 className="input"
-                value={paymentAmount}
-                onChange={handlePaymentAmountChange}
-              />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Kembalian:</label>
-            <div className="control">
-              <input
-                type="text"
-                className="input"
-                value={changeAmount.toFixed(2)}
+                value={formatRupiah(changeAmount)}
                 readOnly
               />
             </div>
@@ -342,7 +537,10 @@ export default function Kasir({ hasil, stokInfo }) {
                 className="button is-success ml-2"
                 onClick={handlePayClick}
                 disabled={
-                  selectedItems.length === 0 || paymentAmount < subtotal
+                  selectedItems.length === 0 ||
+                  paymentAmount < subtotal ||
+                  customerType === "" ||
+                  selectedPaymentMethod === ""
                 }
               >
                 Bayar
@@ -363,7 +561,77 @@ export default function Kasir({ hasil, stokInfo }) {
             ></button>
           </header>
           <section className="modal-card-body">
-            <p>Apakah Anda yakin ingin melakukan pembayaran?</p>
+            <div className="content">
+              <p>Apakah Anda yakin ingin melakukan pembayaran?</p>
+            </div>
+
+            <div className="content">
+              <h2>Daftar Belanjaan:</h2>
+              <ul>
+                {selectedItems.map((item, index) => (
+                  <li key={index}>
+                    {item.nama_item} - {itemQuantities[item.id_item]} pcs
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="columns">
+              <div className="column">
+                <div className="content">
+                  <p>Total Sebelum Potongan:</p>
+                  <p className="has-text-weight-bold">
+                    {formatRupiah(totalBeforeDiscount)}
+                  </p>
+                </div>
+              </div>
+              <div className="column">
+                <div className="content">
+                  <p>Potongan:</p>
+                  <p className="has-text-weight-bold">
+                    {formatRupiah(discountPercentage)}%
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="columns">
+              <div className="column">
+                <div className="content">
+                  <p>Total Tagihan:</p>
+                  <p className="has-text-weight-bold">
+                    {formatRupiah(calculateTotalAfterDiscount())}
+                  </p>
+                </div>
+              </div>
+              <div className="column">
+                <div className="content">
+                  <p>Biaya Racik:</p>
+                  <p className="has-text-weight-bold">
+                    {formatRupiah(compoundingFee)}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="columns">
+              <div className="column">
+                <div className="content">
+                  <p>Bayar:</p>
+                  <div className="is-flex">
+                    <p className="has-text-weight-bold mr-1">
+                      {formatRupiah(paymentAmount)}
+                    </p>
+                    <span>({selectedPaymentMethod})</span>
+                  </div>
+                </div>
+              </div>
+              <div className="column">
+                <div className="content">
+                  <p className="is-size-6">Kembalian:</p>
+                  <p className="has-text-weight-bold is-size-5 is-underlined  has-text-success">
+                    {formatRupiah(changeAmount)}
+                  </p>
+                </div>
+              </div>
+            </div>
           </section>
           <footer className="modal-card-foot">
             <button className="button is-danger" onClick={handleConfirmPayment}>
@@ -375,7 +643,31 @@ export default function Kasir({ hasil, stokInfo }) {
           </footer>
         </div>
       </div>
-      <h1 className="title">Daftar Item</h1>
+      <div className="columns">
+        <div className="column is-10">
+          <h1 className="title">Daftar Item</h1>
+        </div>
+        <div className="column is-2">
+          <div className="field is-horizontal">
+            <div className="field-label is-normal">
+              <label className="label">Cari</label>
+            </div>
+            <div className="field-body">
+              <div className="field">
+                <div className="control has-addons-centered">
+                  <input
+                    type="text"
+                    className="input"
+                    value={searchKeyword}
+                    onChange={(e) => setSearchKeyword(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
@@ -393,6 +685,11 @@ export default function Kasir({ hasil, stokInfo }) {
         </thead>
         <tbody>{daftarItem}</tbody>
       </table>
+      {/* <Pagination
+        href={router.asPath}
+        currentPage={router.query.p}
+        jumlah={jumlah[0].jumlah}
+      /> */}
       <Modal show={modal.isModalClosed === false && "is-active"}>
         {modal.isSuccess === true ? (
           <IsiModalSuccess pesan={modal.pesan}></IsiModalSuccess>
