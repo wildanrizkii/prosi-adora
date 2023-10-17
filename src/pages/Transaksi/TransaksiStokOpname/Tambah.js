@@ -152,68 +152,9 @@ export default function Tambah({ dataRak, item, jumlah, time_stamp }) {
   const filterOption = (input, option) =>
     (option?.nama_rak ?? "").toLowerCase().includes(input.toLowerCase());
 
-  const simpanSementara = async (id_item, idUser, stok_fisik) => {
-    if (stok_fisik !== null && stok_fisik !== undefined) {
-      try {
-        const res = await axios.post("/api/TambahDetailOpnameSementara", {
-          id_item,
-          idUser,
-          stok_fisik,
-        });
-        router.push(router.asPath);
-        openNotificationWithIcon("success", "Sukses", res.data);
-      } catch (e) {
-        openNotificationWithIcon("error", "Gagal", e.response.data);
-      }
-    } else {
-      openNotificationWithIcon(
-        "warning",
-        "Gagal",
-        "Stok Fisik tidak bisa dikosongkan"
-      );
-    }
-  };
-  const updateSementara = async (id_item, idUser, stok_fisik) => {
-    if (stok_fisik !== null && stok_fisik !== undefined) {
-      try {
-        const res = await axios.patch("/api/TambahDetailOpnameSementara", {
-          id_item,
-          idUser,
-          stok_fisik,
-        });
-        router.push(router.asPath);
-        openNotificationWithIcon("success", "Sukses", res.data);
-      } catch (e) {
-        openNotificationWithIcon("error", "Gagal", e.response.data);
-      }
-    } else {
-      openNotificationWithIcon(
-        "warning",
-        "Gagal",
-        "Stok Fisik tidak bisa dikosongkan"
-      );
-    }
-  };
-  const ubahStatusStokFisik = (index) => {
-    const arr = [...detail];
-    arr[index].status_stok_fisik = 2;
-    setDetail(arr);
-  };
-  const contentStatus_0 = (
-    <div>
-      <p>Tekan Enter atau klik Simpan untuk menyimpan</p>
-    </div>
-  );
-  const contentStatus_2 = (
-    <div>
-      <p>Tekan Enter atau klik Simpan untuk menyimpan</p>
-      <p>Tekan Esc untuk membatalkan</p>
-    </div>
-  );
-
   let index = (parseInt(router.query.p) - 1) * 10;
   try {
-    semuaAkun = detail.map((x, i) => {
+    semuaAkun = item.map((x) => {
       index = index + 1;
       return (
         <tr
@@ -442,15 +383,6 @@ export async function getServerSideProps(context) {
 
     const getItem = await handlerQuery({ query, values });
     const item = JSON.parse(JSON.stringify(getItem));
-    for (let i = 0; i < item.length; i++) {
-      if (item[i].stok_fisik !== null) {
-        item[i].status_stok_fisik = 1;
-        item[i].selisih = item[i].stok_fisik - item[i].stok;
-      } else {
-        item[i].status_stok_fisik = 0;
-        item[i].selisih = null;
-      }
-    }
 
     const getJumlah = await handlerQuery({ query: query2, values });
     const jumlah = JSON.parse(JSON.stringify(getJumlah));
