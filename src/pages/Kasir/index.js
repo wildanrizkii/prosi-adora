@@ -315,7 +315,7 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
         if (stockReductionResponse.status === 200) {
           // Stock reduction was successful
           setModal({
-            pesan: "Stok berhasil dikurangi",
+            pesan: "Pembayaran Berhasil",
             isSuccess: true,
             isModalClosed: false,
           });
@@ -330,7 +330,7 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
         } else {
           // Handle errors in stock reduction
           setModal({
-            pesan: "Gagal mengurangi stok",
+            pesan: "Pembayaran Gagal",
             isSuccess: false,
             isModalClosed: false,
           });
@@ -604,7 +604,7 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
               </div>
             </div>
           </div>
-          <div className="field">
+          {/* <div className="field">
             <label className="label ">Kembalian:</label>
             <div className="control">
               <input
@@ -614,7 +614,7 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
                 readOnly
               />
             </div>
-          </div>
+          </div> */}
           <div className="field">
             <div className="control">
               <button className="button is-danger" onClick={handleCancelClick}>

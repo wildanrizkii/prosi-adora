@@ -1,10 +1,11 @@
 import Layout from "../../../components/Layout";
 import Head from "next/head";
-import moment from "moment"; // Import library moment untuk manajemen tanggal
+import moment from "moment";
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import handlerQuery from "../../../lib/db";
 
-export default function Dashboard() {
-  // Tanggal hari ini dalam format tertentu
+export default function Dashboard({ hasil }) {
   const todayDate = moment().format("D MMMM YYYY");
 
   const formatRupiah = (number) => {
@@ -62,66 +63,14 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Item 1</td>
-                <td>50</td>
-                <td>pcs</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Item 2</td>
-                <td>45</td>
-                <td>pcs</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Item 3</td>
-                <td>40</td>
-                <td>pcs</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>Item 4</td>
-                <td>35</td>
-                <td>pcs</td>
-              </tr>
-              <tr>
-                <td>5</td>
-                <td>Item 5</td>
-                <td>30</td>
-                <td>pcs</td>
-              </tr>
-              <tr>
-                <td>6</td>
-                <td>Item 6</td>
-                <td>25</td>
-                <td>pcs</td>
-              </tr>
-              <tr>
-                <td>7</td>
-                <td>Item 7</td>
-                <td>20</td>
-                <td>pcs</td>
-              </tr>
-              <tr>
-                <td>8</td>
-                <td>Item 8</td>
-                <td>15</td>
-                <td>pcs</td>
-              </tr>
-              <tr>
-                <td>9</td>
-                <td>Item 9</td>
-                <td>10</td>
-                <td>pcs</td>
-              </tr>
-              <tr>
-                <td>10</td>
-                <td>Item 10</td>
-                <td>5</td>
-                <td>pcs</td>
-              </tr>
+              {hasil.map((item, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{item.Nama_Item}</td>
+                  <td>{item.Jumlah_Item_Terjual}</td>
+                  <td>{item.Satuan}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -182,6 +131,37 @@ export default function Dashboard() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  try {
+    let query = `
+      SELECT i.nama AS Nama_Item, SUM(dt.jumlah) AS Jumlah_Item_Terjual, s.nama AS Satuan
+      FROM transaksi_penjualan tp
+      JOIN detail_transaksi_penjualan dt ON tp.no_transaksi = dt.no_transaksi
+      JOIN item i ON dt.id_item = i.id_item
+      JOIN satuan s ON i.id_satuan = s.id_satuan
+      WHERE MONTH(tp.time_stamp) = MONTH(CURRENT_DATE()) AND YEAR(tp.time_stamp) = YEAR(CURRENT_DATE())
+      GROUP BY i.nama, s.nama
+      ORDER BY Jumlah_Item_Terjual DESC
+      LIMIT 10;
+    `;
+
+    const getData = await handlerQuery({ query });
+    const hasil = JSON.parse(JSON.stringify(getData));
+
+    return {
+      props: {
+        hasil,
+      },
+    };
+  } catch (e) {
+    return {
+      props: {
+        hasil: e.message,
+      },
+    };
+  }
 }
 
 Dashboard.getLayout = function getLayout(page) {
