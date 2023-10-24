@@ -1,27 +1,19 @@
 import Layout from "../../../../components/Layout";
 import Head from "next/head";
 import handlerQuery from "../../../../lib/db";
-import Link from "next/link";
-
-import {
-  Modal,
-  IsiModalFailed,
-  IsiModalSuccess,
-} from "../../../../components/AllComponent";
 
 import axios from "axios";
-import { useState } from "react";
+
 import { useRouter } from "next/router";
-import { Badge, Button, FloatButton } from "antd";
+import { Button, FloatButton, notification } from "antd";
 import { EditFilled, PlusOutlined } from "@ant-design/icons";
 export default function Rak({ hasil }) {
   let semuaAkun;
 
-  const [modal, setModal] = useState({
-    pesan: undefined,
-    isSuccess: true,
-    isModalClosed: true,
-  });
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type, message, description) => {
+    api[type]({ message, description, placement: "top" });
+  };
 
   const router = useRouter();
   async function changeStatus(id, toActive) {
@@ -32,13 +24,11 @@ export default function Rak({ hasil }) {
       } else if (toActive === false) {
         res = await axios.patch("/api/UpdateStatusRak", { id, status: 0 });
       }
-      setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
+      openNotificationWithIcon("success", "Sukses", res.data);
+      router.push(router.asPath);
     } catch (e) {
-      setModal({
-        pesan: e.response.data,
-        isSuccess: false,
-        isModalClosed: false,
-      });
+      openNotificationWithIcon("error", "Gagal", e.response.data);
+      router.push(router.asPath);
     }
   }
 
@@ -58,13 +48,7 @@ export default function Rak({ hasil }) {
           <td className="is-vcentered">
             {x.status === 1 ? "Aktif" : "Non-Aktif"}
           </td>
-          <td className="is-vcentered">
-            {/* <Link
-              href={`Rak/Edit/${x.id_rak}`}
-              className="button is-success is-small"
-            >
-              Edit
-            </Link> */}
+          <td className="is-vcentered" style={{ width: "20%" }}>
             <Button
               icon={<EditFilled />}
               block
@@ -97,7 +81,10 @@ export default function Rak({ hasil }) {
     semuaAkun = (
       <tr>
         <td colSpan="4" className="is-vcentered">
-          {hasil}
+          <div className="field"> {hasil}</div>
+          <Button type="primary" onClick={() => router.reload()}>
+            Muat Ulang
+          </Button>
         </td>
       </tr>
     );
@@ -109,15 +96,7 @@ export default function Rak({ hasil }) {
         <title>Rak</title>
       </Head>
       <h1 className="title">Rak</h1>
-
-      {/* <Link
-        className="button is-link"
-        href="Rak/TambahRak"
-        style={{ marginBottom: "10px" }}
-      >
-        Tambah
-      </Link> */}
-
+      {contextHolder}
       <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
@@ -137,33 +116,6 @@ export default function Rak({ hasil }) {
         tooltip="Tambah Rak"
         onClick={() => router.push("/Produk/Rak/TambahRak")}
       />
-      <Modal show={modal.isModalClosed === false && "is-active"}>
-        {modal.isSuccess === true ? (
-          <IsiModalSuccess pesan={modal.pesan}>
-            <button
-              className="button is-success"
-              onClick={() => {
-                setModal({ ...modal, isModalClosed: true });
-                router.push(router.asPath);
-              }}
-            >
-              OK
-            </button>
-          </IsiModalSuccess>
-        ) : (
-          <IsiModalFailed pesan={modal.pesan}>
-            <button
-              className="button is-danger"
-              onClick={() => {
-                setModal({ ...modal, isModalClosed: true });
-                router.push(router.asPath);
-              }}
-            >
-              OK
-            </button>
-          </IsiModalFailed>
-        )}
-      </Modal>
     </>
   );
 }
