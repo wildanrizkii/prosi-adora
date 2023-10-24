@@ -14,13 +14,12 @@ export default async function handler(req, res) {
       } = req.body;
 
       const query = `
-        INSERT INTO transaksi_penjualan (no_transaksi, time_stamp, total, biaya_racik, diskon, idUser)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO transaksi_penjualan (no_transaksi,  total, biaya_racik, diskon, idUser)
+        VALUES (?, ?, ?, ?, ?)
       `;
 
       const values = [
         transactionNumber,
-        timestamp,
         totalBeforeDiscount,
         compoundingFee,
         discount,

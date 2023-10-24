@@ -111,12 +111,22 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
             className="is-clickable"
           />
         </span>
-        {itemQuantities[item.id_item]}
+        <input
+          type="text"
+          value={itemQuantities[item.id_item]}
+          onChange={(e) => handleQuantityChange(item, e.target.value)}
+          className="has-text-centered"
+          style={{
+            width: "50px",
+            WebkitAppearance: "none",
+            MozAppearance: "textfield",
+          }}
+        />
         <span className="icon is-left">
           <FontAwesomeIcon
             icon={faSquarePlus}
             onClick={() => onClickTambah(item)}
-            className=""
+            className="is-clickable"
           />
         </span>
       </td>
@@ -180,6 +190,8 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
   const handleCustomerTypeChange = (e) => {
     setSelectedItems([]);
     setCustomerType(e.target.value);
+    setPaymentAmount(0);
+    setItemQuantities({});
 
     if (e.target.value === "umum") {
       setCompoundingFee(0);
@@ -197,6 +209,17 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
 
     const filteredItems = filteredItemsByCustomerType.filter((item) =>
       item.nama_item.toLowerCase().includes(searchKeyword.toLowerCase())
+    );
+
+    setFilteredItems(filteredItems);
+  };
+
+  const handleSearchKeywordChange = (e) => {
+    const keyword = e.target.value;
+    setSearchKeyword(keyword);
+
+    const filteredItems = hasil.filter((item) =>
+      item.nama_item.toLowerCase().includes(keyword.toLowerCase())
     );
 
     setFilteredItems(filteredItems);
@@ -230,7 +253,7 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
     setSelectedItems([]);
     setSubtotal(0);
     setItemQuantities({});
-    setCustomerType("umum");
+    setCustomerType("");
     setDiscountPercentage(0);
     setTotalBeforeDiscount(0);
     setPaymentAmount(0);
@@ -246,13 +269,23 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
   };
 
   const handlePayClick = () => {
-    const totalBeforeDiscount = calculateTotalBeforeDiscount();
-    setTotalBeforeDiscount(totalBeforeDiscount);
+    if (selectedPaymentMethod === "qris" || selectedPaymentMethod === "debit") {
+      const totalBeforeDiscount = calculateTotalBeforeDiscount();
+      setPaymentAmount(calculateTotalAfterDiscount());
+      setTotalBeforeDiscount(totalBeforeDiscount);
 
-    const changeAmount = calculateChangeAmount();
-    setChangeAmount(changeAmount);
+      setChangeAmount(0);
 
-    openConfirmationModal();
+      openConfirmationModal();
+    } else {
+      const totalBeforeDiscount = calculateTotalBeforeDiscount();
+      setTotalBeforeDiscount(totalBeforeDiscount);
+
+      const changeAmount = calculateChangeAmount();
+      setChangeAmount(changeAmount);
+
+      openConfirmationModal();
+    }
   };
 
   const handleCompoundingFeeChange = (e) => {
@@ -271,60 +304,101 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
     }
   };
 
-  // const generateTransactionNumber = async () => {
-  //   try {
-  //     // Mengambil nomor terakhir dari database
-  //     const query =
-  //       "SELECT MAX(no_transaksi) as max_no_transaksi FROM transaksi_penjualan";
-  //     const result = await handlerQuery({ query });
-
-  //     let nextNumber = 1; // Nilai default jika tidak ada data di database
-
-  //     if (result && result.length > 0 && result[0].max_no_transaksi !== null) {
-  //       nextNumber = result[0].max_no_transaksi + 1;
-  //     }
-
-  //     // Format nomor transaksi
-  //     const transactionNumber = `no_${nextNumber}`; // Modify the format here
-
-  //     return transactionNumber;
-  //   } catch (error) {
-  //     console.error("Gagal menghasilkan nomor transaksi:", error);
-  //     return null;
-  //   }
-  // };
-
   const handleConfirmPayment = async () => {
     try {
       for (const selectedItem of selectedItems) {
-        await reduceItemStock(
-          selectedItem.id_item,
-          itemQuantities[selectedItem.id_item]
-        );
+        // Reduce item stock
+        const stockReductionResponse = await axios.post("/api/KurangStok", {
+          itemId: selectedItem.id_item,
+          quantity: itemQuantities[selectedItem.id_item],
+        });
+
+        if (stockReductionResponse.status === 200) {
+          // Stock reduction was successful
+          setModal({
+            pesan: "Pembayaran Berhasil",
+            isSuccess: true,
+            isModalClosed: false,
+          });
+
+          setTimeout(function () {
+            setModal({ isModalClosed: true });
+          }, 2000);
+
+          setTimeout(function () {
+            window.location.reload();
+          }, 2000);
+        } else {
+          // Handle errors in stock reduction
+          setModal({
+            pesan: "Pembayaran Gagal",
+            isSuccess: false,
+            isModalClosed: false,
+          });
+        }
       }
 
-      const transactionNumber = "no_14";
+      // Generate the transaction number
+      const transactionNumberResponse = await axios.get(
+        "/api/GenerateNextTransactionNumber"
+      );
 
+      if (transactionNumberResponse.status !== 200) {
+        throw new Error("Gagal mendapatkan nomor transaksi");
+      }
+
+      const transactionNumber = transactionNumberResponse.data;
+
+      // Data transaksi
       const transactionData = {
         transactionNumber,
         timestamp: new Date(),
         totalBeforeDiscount: calculateTotalBeforeDiscount(),
         compoundingFee,
-        discount: discountPercentage,
+        discount: (discountPercentage / 100) * totalBeforeDiscount,
         idUser: 1,
       };
 
-      const apiUrl = "/api/TransaksiPenjualan";
-      const response = await axios.post(apiUrl, transactionData);
+      // Perform the sales transaction
+      const transaksiPenjualanUrl = "/api/TransaksiPenjualan";
+      const transaksiResponse = await axios.post(
+        transaksiPenjualanUrl,
+        transactionData
+      );
 
-      if (response.status === 200) {
-        setTimeout(function () {
-          setModal({ isModalClosed: true });
-        }, 2000);
-        setTimeout(function () {
-          window.location.reload();
-        }, 2000);
+      if (transaksiResponse.status !== 200) {
+        throw new Error("Gagal melakukan transaksi");
+      }
 
+      // Generate the detail transaction number
+      const detailTransactionNumberResponse = await axios.get(
+        "/api/GenerateNextDetailTransactionNumber"
+      );
+
+      if (detailTransactionNumberResponse.status !== 200) {
+        throw new Error("Gagal mendapatkan nomor detail transaksi");
+      }
+
+      const nextDetailTransactionNumber = detailTransactionNumberResponse.data;
+
+      // Data detail transaksi
+      const detailTransactionData = selectedItems.map((selectedItem) => ({
+        transactionNumber,
+        IdItem: selectedItem.id_item,
+        quantity_detail: itemQuantities[selectedItem.id_item],
+        customer_type: customerType,
+        subtotal: selectedItem.harga * itemQuantities[selectedItem.id_item],
+        unit_price: selectedItem.harga,
+        detailTransactionNumber: nextDetailTransactionNumber,
+      }));
+
+      // Perform the detail sales transaction
+      const detailTransaksiPenjualanUrl = "/api/DetailTransaksiPenjualan";
+      const DetailTransaksiResponse = await axios.post(
+        detailTransaksiPenjualanUrl,{detailTransactionData,transactionNumber}
+      );
+
+      if (DetailTransaksiResponse.status === 200) {
         closeConfirmationModal();
         setSelectedItems([]);
         setSubtotal(0);
@@ -334,42 +408,46 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
         setTotalBeforeDiscount(0);
         setPaymentAmount(0);
         setChangeAmount(0);
+
+        console.log("Transaksi berhasil, nomor transaksi:", transactionNumber);
       } else {
-        setModal({
-          pesan: "Transaksi gagal",
-          isSuccess: false,
-          isModalClosed: false,
-        });
+        throw new Error("Transaksi detail gagal");
       }
     } catch (error) {
-      console.error("Gagal mengurangi stok item:", error);
-    }
-  };
-
-  const reduceItemStock = async (itemId, quantity) => {
-    const apiUrl = "/api/KurangStok";
-    const requestBody = { itemId, quantity };
-
-    try {
-      const res = await axios.post(apiUrl, requestBody, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      setModal({ pesan: res.data, isSuccess: true, isModalClosed: false });
-      setTimeout(function () {
-        setModal({ isModalClosed: true });
-      }, 2000);
-      setTimeout(function () {
-        window.location.reload();
-      }, 2000);
-    } catch (e) {
+      console.error("Gagal melakukan transaksi:", error);
       setModal({
-        pesan: e.response.data,
+        pesan: "Transaksi gagal: " + error.message,
         isSuccess: false,
         isModalClosed: false,
       });
     }
+  };
+
+  const recalculateSubtotal = () => {
+    let newSubtotal = 0;
+    for (const selectedItem of selectedItems) {
+      const quantity = itemQuantities[selectedItem.id_item] || 0;
+      newSubtotal += selectedItem.harga * quantity;
+    }
+    setSubtotal(newSubtotal);
+  };
+
+  const handleQuantityChange = (item, newQuantity) => {
+    const newItemQuantities = { ...itemQuantities };
+    const parsedQuantity = parseInt(newQuantity);
+
+    if (!isNaN(parsedQuantity)) {
+      if (parsedQuantity <= stokInfo[item.id_item]) {
+        newItemQuantities[item.id_item] = parsedQuantity;
+      } else {
+        newItemQuantities[item.id_item] = stokInfo[item.id_item];
+      }
+    } else {
+      newItemQuantities[item.id_item] = 0;
+    }
+
+    setItemQuantities(newItemQuantities);
+    recalculateSubtotal();
   };
 
   return (
@@ -449,11 +527,20 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
                   <label className="radio">
                     <input
                       type="radio"
-                      value="noncash"
-                      checked={selectedPaymentMethod === "non-cash"}
-                      onChange={() => setSelectedPaymentMethod("non-cash")}
+                      value="qris"
+                      checked={selectedPaymentMethod === "qris"}
+                      onChange={() => setSelectedPaymentMethod("qris")}
                     />
-                    Non-Cash
+                    Qris
+                  </label>
+                  <label className="radio">
+                    <input
+                      type="radio"
+                      value="debit"
+                      checked={selectedPaymentMethod === "debit"}
+                      onChange={() => setSelectedPaymentMethod("debit")}
+                    />
+                    Debit
                   </label>
                 </div>
               </div>
@@ -512,6 +599,10 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
                     className="input"
                     value={formatRupiah(paymentAmount)}
                     onChange={handlePaymentAmountChange}
+                    readOnly={
+                      selectedPaymentMethod === "qris" ||
+                      selectedPaymentMethod === "debit"
+                    }
                   />
                 </div>
               </div>
@@ -538,7 +629,9 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
                 onClick={handlePayClick}
                 disabled={
                   selectedItems.length === 0 ||
-                  paymentAmount < subtotal ||
+                  (selectedPaymentMethod !== "qris" &&
+                    selectedPaymentMethod !== "debit" &&
+                    paymentAmount < calculateTotalAfterDiscount()) ||
                   customerType === "" ||
                   selectedPaymentMethod === ""
                 }
@@ -564,73 +657,57 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
             <div className="content">
               <p>Apakah Anda yakin ingin melakukan pembayaran?</p>
             </div>
-
             <div className="content">
-              <h2>Daftar Belanjaan:</h2>
-              <ul>
-                {selectedItems.map((item, index) => (
-                  <li key={index}>
-                    {item.nama_item} - {itemQuantities[item.id_item]} pcs
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="columns">
-              <div className="column">
-                <div className="content">
-                  <p>Total Sebelum Potongan:</p>
-                  <p className="has-text-weight-bold">
-                    {formatRupiah(totalBeforeDiscount)}
-                  </p>
-                </div>
-              </div>
-              <div className="column">
-                <div className="content">
-                  <p>Potongan:</p>
-                  <p className="has-text-weight-bold">
-                    {formatRupiah(discountPercentage)}%
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="columns">
-              <div className="column">
-                <div className="content">
-                  <p>Total Tagihan:</p>
-                  <p className="has-text-weight-bold">
-                    {formatRupiah(calculateTotalAfterDiscount())}
-                  </p>
-                </div>
-              </div>
-              <div className="column">
-                <div className="content">
-                  <p>Biaya Racik:</p>
-                  <p className="has-text-weight-bold">
-                    {formatRupiah(compoundingFee)}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="columns">
-              <div className="column">
-                <div className="content">
-                  <p>Bayar:</p>
-                  <div className="is-flex">
-                    <p className="has-text-weight-bold mr-1">
-                      {formatRupiah(paymentAmount)}
+              <h2>Daftar Belanjaan</h2>
+              {selectedItems.map((item, index) => (
+                <div
+                  key={index}
+                  className="is-flex is-justify-content-space-between mb-5"
+                >
+                  <div className="is-flex is-flex-direction-column">
+                    <p className="p-0">{item.nama_item}</p>
+                    <p>
+                      {itemQuantities[item.id_item]} pcs x{" "}
+                      {formatRupiah(item.harga)}
                     </p>
-                    <span>({selectedPaymentMethod})</span>
                   </div>
-                </div>
-              </div>
-              <div className="column">
-                <div className="content">
-                  <p className="is-size-6">Kembalian:</p>
-                  <p className="has-text-weight-bold is-size-5 is-underlined  has-text-success">
-                    {formatRupiah(changeAmount)}
+                  <p className="is-align-self-flex-end">
+                    {formatRupiah(itemQuantities[item.id_item] * item.harga)}
                   </p>
                 </div>
-              </div>
+              ))}
+            </div>
+            <hr />
+            <div className="is-flex is-justify-content-space-between">
+              <p>Total Sebelum Potongan</p>
+              <p>{formatRupiah(totalBeforeDiscount)}</p>
+            </div>
+            <div className="is-flex is-justify-content-space-between">
+              <p>Potongan ({discountPercentage}%)</p>
+              <p>
+                {formatRupiah((discountPercentage / 100) * totalBeforeDiscount)}
+              </p>
+            </div>
+            <div className="is-flex is-justify-content-space-between mb-5">
+              <p>Biaya Racik</p>
+              <p>{formatRupiah(compoundingFee)}</p>
+            </div>
+            <div className="is-flex is-justify-content-space-between">
+              <p>Total Tagihan</p>
+              <p>{formatRupiah(calculateTotalAfterDiscount())}</p>
+            </div>
+            <div className="is-flex is-justify-content-space-between mb-5">
+              <p>Bayar</p>
+              <p>
+                {formatRupiah(paymentAmount)}
+                <span> ({selectedPaymentMethod})</span>
+              </p>
+            </div>
+            <div className="content is-flex is-justify-content-space-between">
+              <p className="is-size-6">Kembalian</p>
+              <p className="has-text-weight-bold is-size-5  has-text-success">
+                {formatRupiah(changeAmount)}
+              </p>
             </div>
           </section>
           <footer className="modal-card-foot">
@@ -659,7 +736,7 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
                     type="text"
                     className="input"
                     value={searchKeyword}
-                    onChange={(e) => setSearchKeyword(e.target.value)}
+                    onChange={handleSearchKeywordChange}
                   />
                 </div>
               </div>
@@ -667,7 +744,6 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
           </div>
         </div>
       </div>
-
       <table className="table has-text-centered is-fullwidth">
         <thead>
           <tr>
@@ -686,10 +762,10 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
         <tbody>{daftarItem}</tbody>
       </table>
       {/* <Pagination
-        href={router.asPath}
-        currentPage={router.query.p}
-        jumlah={jumlah[0].jumlah}
-      /> */}
+          href={router.asPath}
+          currentPage={router.query.p}
+          jumlah={jumlah[0].jumlah}
+        /> */}
       <Modal show={modal.isModalClosed === false && "is-active"}>
         {modal.isSuccess === true ? (
           <IsiModalSuccess pesan={modal.pesan}></IsiModalSuccess>
@@ -712,14 +788,14 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
 
 export async function getServerSideProps(context) {
   let query = `
-    SELECT DISTINCT item.id_item, item.nama as nama_item, stok, satuan.nama as nama_satuan, jenis.nama as nama_jenis, history_harga_jual.harga, rak.nama_rak
-    FROM item
-    INNER JOIN satuan ON item.id_satuan = satuan.id_satuan
-    INNER JOIN jenis ON item.id_jenis_item = jenis.id_jenis
-    INNER JOIN rak ON item.id_rak = rak.id_rak
-    INNER JOIN history_harga_jual ON item.id_item = history_harga_jual.id_item
-    GROUP BY item.id_item, item.nama;
-  `;
+      SELECT DISTINCT item.id_item, item.nama as nama_item, stok, satuan.nama as nama_satuan, jenis.nama as nama_jenis, history_harga_jual.harga, rak.nama_rak
+      FROM item
+      INNER JOIN satuan ON item.id_satuan = satuan.id_satuan
+      INNER JOIN jenis ON item.id_jenis_item = jenis.id_jenis
+      INNER JOIN rak ON item.id_rak = rak.id_rak
+      INNER JOIN history_harga_jual ON item.id_item = history_harga_jual.id_item
+      GROUP BY item.id_item, item.nama;
+    `;
 
   try {
     const getData = await handlerQuery({ query });
