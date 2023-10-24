@@ -395,8 +395,7 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
       // Perform the detail sales transaction
       const detailTransaksiPenjualanUrl = "/api/DetailTransaksiPenjualan";
       const DetailTransaksiResponse = await axios.post(
-        detailTransaksiPenjualanUrl,
-        detailTransactionData
+        detailTransaksiPenjualanUrl,{detailTransactionData,transactionNumber}
       );
 
       if (DetailTransaksiResponse.status === 200) {
