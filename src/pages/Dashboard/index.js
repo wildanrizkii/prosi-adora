@@ -20,18 +20,21 @@ export default function Dashboard({ hasil }) {
     }).format(number);
   };
 
-  const [totalUmum, setTotalUmum] = useState(70);
-  const [totalResep, setTotalResep] = useState(5);
-  const [omsetUmum, setOmsetUmum] = useState(3150000);
-  const [omsetResep, setOmsetResep] = useState(825000);
+  const [totalUmum, setTotalUmum] = useState(0);
+  const [totalKeras, setTotalKeras] = useState(0);
+  const [totalOmsetUmum, setTotalOmsetUmum] = useState(0);
+  const [totalOmsetKeras, setTotalOmsetKeras] = useState(0);
 
   useEffect(() => {
     const fetchTotalTransactions = async () => {
       try {
         const response = await axios.get("/api/TotalTransaksiHariIni"); // Replace with your actual API endpoint
-        const { totalUmum, totalResep } = response.data;
+        const { totalUmum, totalKeras, totalOmsetUmum, totalOmsetKeras } =
+          response.data;
         setTotalUmum(totalUmum);
-        setTotalResep(totalResep);
+        setTotalKeras(totalKeras);
+        setTotalOmsetUmum(totalOmsetUmum);
+        setTotalOmsetKeras(totalOmsetKeras);
       } catch (error) {
         console.error("Failed to fetch total transactions:", error);
       }
@@ -96,7 +99,7 @@ export default function Dashboard({ hasil }) {
                   Resep
                 </p>
                 <p className="has-text-white has-text-centered title is-5">
-                  {totalResep}
+                  {totalKeras}
                 </p>
               </div>
             </div>
@@ -112,7 +115,7 @@ export default function Dashboard({ hasil }) {
                   Umum
                 </p>
                 <p className="has-text-white has-text-centered title is-5">
-                  {formatRupiah(omsetUmum)}
+                  {formatRupiah(totalOmsetUmum)}
                 </p>
               </div>
             </div>
@@ -122,7 +125,7 @@ export default function Dashboard({ hasil }) {
                   Resep
                 </p>
                 <p className="has-text-white has-text-centered title is-5">
-                  {formatRupiah(omsetResep)}
+                  {formatRupiah(totalOmsetKeras)}
                 </p>
               </div>
             </div>

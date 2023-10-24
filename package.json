@@ -28,6 +28,7 @@
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.6.0",
     "knex": "^2.4.2",
+    "moment-timezone": "^0.5.43",
     "mysql": "^2.18.1",
     "next": "13.3.1",
     "next-auth": "^4.22.1",

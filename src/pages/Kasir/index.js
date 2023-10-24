@@ -271,6 +271,7 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
   const handlePayClick = () => {
     if (selectedPaymentMethod === "qris" || selectedPaymentMethod === "debit") {
       const totalBeforeDiscount = calculateTotalBeforeDiscount();
+      setPaymentAmount(calculateTotalAfterDiscount());
       setTotalBeforeDiscount(totalBeforeDiscount);
 
       setChangeAmount(0);
@@ -599,6 +600,10 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
                     className="input"
                     value={formatRupiah(paymentAmount)}
                     onChange={handlePaymentAmountChange}
+                    readOnly={
+                      selectedPaymentMethod === "qris" ||
+                      selectedPaymentMethod === "debit"
+                    }
                   />
                 </div>
               </div>
@@ -625,7 +630,9 @@ export default function Kasir({ hasil, stokInfo, jumlah }) {
                 onClick={handlePayClick}
                 disabled={
                   selectedItems.length === 0 ||
-                  paymentAmount < calculateTotalAfterDiscount() ||
+                  (selectedPaymentMethod !== "qris" &&
+                    selectedPaymentMethod !== "debit" &&
+                    paymentAmount < calculateTotalAfterDiscount()) ||
                   customerType === "" ||
                   selectedPaymentMethod === ""
                 }
